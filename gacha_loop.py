@@ -165,7 +165,7 @@ def main():
             time.sleep(0.5)
             continue
         if state == 's05-name-02':
-            username = USERNAME.replace('{IDX}', '{%03d}' % user_idx)
+            username = USERNAME.replace('{IDX}', '%03d' % user_idx)
             ldagent.input_text(username)
             user_idx += 1
             with open('var/user_idx.txt', 'w') as f:
