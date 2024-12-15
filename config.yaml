@@ -1,0 +1,11 @@
+# TARGET_PACK: c=Charizard, m=Mewtwo, p=Pikachu
+TARGET_PACK: "c"
+# refer to res/card
+TARGET_CARD_LIST:
+  - "cTR_20_000170_00_NATSUME_SR"
+
+# user name in game
+USERNAME: "abc"
+
+LD_EMU_NAME: "PTCGP-Gacha-00"
+LDPLAYER_PATH: "D:\\LDPlayer\\LDPlayer9"
