@@ -4,8 +4,8 @@ TARGET_PACK: "c"
 TARGET_CARD_LIST:
   - "cTR_20_000170_00_NATSUME_SR"
 
-# user name in game
-USERNAME: "abc"
+# user name in game, add {IDX} for 3 digi index, reset after 1000
+USERNAME: "abc{IDX}"
 
 LD_EMU_NAME: "PTCGP-Gacha-00"
 LDPLAYER_PATH: "D:\\LDPlayer\\LDPlayer9"
