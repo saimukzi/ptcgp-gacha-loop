@@ -288,16 +288,6 @@ def main():
             time.sleep(0.5)
             continue
 
-        if state == 's10-home':
-            if TARGET_PACK == 'c':
-                ldagent.tap(88,160)
-            if TARGET_PACK == 'm':
-                ldagent.tap(150,160)
-            if TARGET_PACK == 'p':
-                ldagent.tap(211,160)
-            time.sleep(8)
-            continue
-
         if state == 's11-hourglass-00':
             ldagent.tap(200,311)
             time.sleep(0.5)
@@ -442,6 +432,16 @@ def main():
             if set(gacha_result) & TARGET_CARD_SET:
                 sys.exit(0)
             ldagent.tap(150,377)
+            time.sleep(8)
+            continue
+
+        if state == 'xxx-home':
+            if TARGET_PACK == 'c':
+                ldagent.tap(88,160)
+            if TARGET_PACK == 'm':
+                ldagent.tap(150,160)
+            if TARGET_PACK == 'p':
+                ldagent.tap(211,160)
             time.sleep(8)
             continue
 
