@@ -45,6 +45,9 @@ def get_state(img, debug=False):
             diff = new_diff
             state = new_state
     print(f'{state}: {diff}')
+
+    # extra rule to fix
+
     return state
 
 def _get_state_diff(img, img_min, img_max, img_mask, debug=False):

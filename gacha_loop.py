@@ -120,7 +120,7 @@ def main():
         if state == 's02-toc-00':
             if state_history[-1] != 's02-toc-01':
                 ldagent.tap(149, 207)
-                time.sleep(4)
+                time.sleep(1)
                 continue
             else:
                 ldagent.tap(74, 268)
@@ -133,7 +133,7 @@ def main():
         if state == 's02-toc-02':
             if state_history[-1] != 's02-toc-01':
                 ldagent.tap(150, 240)
-                time.sleep(4)
+                time.sleep(1)
                 continue
             else:
                 ldagent.tap(73, 294)
