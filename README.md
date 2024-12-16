@@ -24,10 +24,10 @@
 3. 安裝 PTCGP，亦確保沒有登入任何賬號。
 4. 手動刷一次首抽。包括第一包自選，第二包制超夢，第三四包自選，第五包 12 沙漏。確認下載更新完成，也略過 Google Play 的問卷。完成後刪賬，回到標題畫面。
 5. 修改 config.yaml
-6. 打開 PowerShell 並 cd 到本資料夾。
+6. 打開命令提示字元並 cd 到本資料夾。
 <pre>
 python -m venv venv
-.\venv\Scripts\Activate.ps1
+.\venv\Scripts\activate.bat
 python -m pip install --upgrade pip wheel setuptools
 python -m pip install --upgrade numpy opencv-python pyyaml
 
