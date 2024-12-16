@@ -5,6 +5,7 @@ import numpy as np
 
 
 state_data_list = []
+state_fix_dict = {}
 
 def load_state():
     state_list = os.listdir(os.path.join('res', 'state'))
@@ -30,6 +31,31 @@ def load_state():
             'img_max': img_max,
             'img_mask': img_mask,
         })
+    
+    state_fix_list = os.listdir(os.path.join('res', 'state', 'fix'))
+    state_fix_list = filter(lambda x: x.endswith('.max.png'), state_fix_list)
+    state_fix_list = map(lambda x: x[:-8], state_fix_list)
+    state_fix_list = list(state_fix_list)
+    for state_fix in state_fix_list:
+        state0, state1 = state_fix.split('.')
+        img_min_fn = os.path.join('res', 'state', 'fix', f'{state_fix}.min.png')
+        img_max_fn = os.path.join('res', 'state', 'fix', f'{state_fix}.max.png')
+        img_mask_fn = os.path.join('res', 'state', 'fix', f'{state_fix}.mask.png')
+        img_min = cv2.imread(img_min_fn).astype(np.float32)
+        img_max = cv2.imread(img_max_fn).astype(np.float32)
+        if os.path.exists(img_mask_fn):
+            img_mask = cv2.imread(img_mask_fn, cv2.IMREAD_UNCHANGED).astype(np.float32)
+            assert(img_mask.shape[2] == 4)
+        else:
+            img_mask = None
+        if state0 not in state_fix_dict:
+            state_fix_dict[state0] = []
+        state_fix_dict[state0].append({
+            'state1': state1,
+            'img_min': img_min,
+            'img_max': img_max,
+            'img_mask': img_mask,
+        })
 
 def get_state(img, debug=False):
     diff, state = 1, 'UNKNOWN'
@@ -46,7 +72,23 @@ def get_state(img, debug=False):
             state = new_state
     print(f'{state}: {diff}')
 
-    # extra rule to fix
+    while state in state_fix_dict:
+        old_state = state
+        diff, state = 1, state
+        for state_data in state_fix_dict[state]:
+            new_state = state_data['state1']
+            img_min = state_data['img_min']
+            img_max = state_data['img_max']
+            img_mask = state_data['img_mask']
+            new_diff = _get_state_diff(img, img_min, img_max, img_mask)
+            if debug:
+                print(f'{new_state}: {new_diff}')
+            if new_diff < diff:
+                diff = new_diff
+                state = new_state
+        print(f'{state}: {diff}')
+        if state == old_state:
+            break
 
     return state
 
