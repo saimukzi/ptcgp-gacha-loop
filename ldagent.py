@@ -82,6 +82,10 @@ def cap():
     cv2.imwrite('cap/cap_{:04d}.png'.format(cap_idx), img)
     cap_idx += 1
 
+def config(config_data):
+    set_LDPLAYER_PATH(config_data['LDPLAYER_PATH'])
+    set_LD_EMU_NAME(config_data['LD_EMU_NAME'])
+
 if __name__ == '__main__':
     check()
     print('END')
