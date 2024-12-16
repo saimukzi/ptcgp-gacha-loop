@@ -70,6 +70,9 @@ def input_text(txt):
 def swipe(x1, y1, x2, y2, duration):
     os.system(f'{ADB_PATH} -s emulator-{ADB_IDX} shell input swipe {x1} {y1} {x2} {y2} {duration}')
 
+def keyevent(key):
+    os.system(f'{ADB_PATH} -s emulator-{ADB_IDX} shell input keyevent {key}')
+
 cap_idx = 0
 
 def cap():

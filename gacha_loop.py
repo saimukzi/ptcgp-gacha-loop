@@ -94,6 +94,20 @@ def main():
                 continue
             flag_set.remove('xxx-swipeup')
 
+        if state == 'err-badname':
+            ldagent.tap(150, 280)
+            flag_set.add(state)
+            time.sleep(0.5)
+            continue
+        if 'err-badname' in flag_set:
+            if state == 'xxx-dialog-sc':
+                state = 's05-name-00'
+            if state == 'xxx-dialog-swc':
+                ldagent.tap(150, 179)
+                time.sleep(0.5)
+                state = 's05-name-02'
+            
+
         if state == 's00-cover':
             ldagent.tap(150, 200)
             time.sleep(4)
@@ -166,6 +180,13 @@ def main():
             time.sleep(0.5)
             continue
         if state == 's05-name-02':
+            for _ in range(10):
+                ldagent.keyevent(67)
+                time.sleep(0.2)
+            if 'err-badname' in flag_set:
+                flag_set.remove('err-badname')
+            continue
+        if state == 's05-name-02-empty':
             username = USERNAME.replace('{IDX}', '%03d' % user_idx)
             ldagent.input_text(username)
             user_idx += 1
