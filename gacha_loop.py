@@ -79,12 +79,12 @@ def main():
                 flag_set.remove('s03-start-01')
 
         if 'xxx-gacha-03' in flag_set:
-            if state not in ['xxx-gacha-05','s06-gacha1-03'] and (not state.startswith('xxx-gacha-03')):
+            if state not in ['xxx-gacha-05','s06-gacha1-03','s06-gacha1-04'] and (not state.startswith('xxx-gacha-03')):
                 ldagent.tap(150,304)
                 ldagent.tap(275,378)
                 time.sleep(0.1)
                 continue
-            if state in ['xxx-gacha-05','s06-gacha1-03']:
+            if state in ['xxx-gacha-05','s06-gacha1-03','s06-gacha1-04']:
                 flag_set.remove('xxx-gacha-03')
 
         if 'xxx-swipeup' in flag_set:
