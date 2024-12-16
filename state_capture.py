@@ -3,15 +3,20 @@ import shutil
 import time
 
 import cv2
+import yaml
 import ldagent
 import argparse
 
 def main():
     parser = argparse.ArgumentParser(description='Capture state')
     parser.add_argument('--append', action='store_true')
+    parser.add_argument('config', type=str)
     parser.add_argument('state', type=str)
     args = parser.parse_args()
-    
+
+    config_data = yaml.load(open(args.config, 'r'), Loader=yaml.FullLoader)
+    ldagent.config(config_data)
+
     img_min = None
     img_max = None
 
