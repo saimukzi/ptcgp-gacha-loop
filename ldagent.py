@@ -1,21 +1,47 @@
 import os
 import cv2
+import subprocess
 
 # LDPLAYER_PATH = r'D:\LDPlayer\LDPlayer9'
 # EMU_INDEX = 0
 
 LDPLAYER_PATH = None
 LDCONSOLE_PATH = None
-LD_EMU_NAME = 'LDPlayer'
+ADB_PATH = None
 
-def set_LD_EMU_NAME(name):
-    global LD_EMU_NAME
-    LD_EMU_NAME = name
+LD_EMU_NAME = 'LDPlayer'
+ADB_IDX = None
 
 def set_LDPLAYER_PATH(path):
-    global LDPLAYER_PATH, LDCONSOLE_PATH
+    global LDPLAYER_PATH, LDCONSOLE_PATH, ADB_PATH
     LDPLAYER_PATH = path
     LDCONSOLE_PATH = os.path.join(LDPLAYER_PATH, 'ldconsole.exe')
+    ADB_PATH = os.path.join(LDPLAYER_PATH, 'adb.exe')
+    check()
+
+def set_LD_EMU_NAME(name):
+    global LD_EMU_NAME, ADB_IDX
+    check()
+    
+    LD_EMU_NAME = name
+    process_ret = subprocess.run([LDCONSOLE_PATH, "list2"], capture_output=True)
+
+    pout = process_ret.stdout
+    pout = pout.decode('utf-8')
+    pout = pout.split('\r\n')
+
+    emu_idx = None
+    for line in pout:
+        if len(line) <= 0: continue
+        linee = line.split(',')
+        if linee[1] != name: continue
+        emu_idx = linee[0]
+        break
+    assert(emu_idx is not None)
+    
+    # refer to https://help.ldmnq.com/docs/LD9adbserver
+    ADB_IDX = str(int(emu_idx)*2+5554)
+    
 
 def check():
     if not os.path.exists(LDPLAYER_PATH):
@@ -24,22 +50,25 @@ def check():
     if not os.path.exists(LDCONSOLE_PATH):
         print('Please set the correct LDPlayer path in ldagent.py')
         return False
+    if not os.path.exists(ADB_PATH):
+        print('Please set the correct LDPlayer path in ldagent.py')
+        return False
     return True
 
 def screencap():
-    os.system(f'{LDCONSOLE_PATH} adb --name {LD_EMU_NAME} --command "shell screencap -p /sdcard/tmp-screencap.png"')
-    os.system(f'{LDCONSOLE_PATH} adb --name {LD_EMU_NAME} --command "pull /sdcard/tmp-screencap.png"')
+    os.system(f'{ADB_PATH} -s emulator-{ADB_IDX} shell screencap -p /sdcard/tmp-screencap.png')
+    os.system(f'{ADB_PATH} -s emulator-{ADB_IDX} pull /sdcard/tmp-screencap.png')
     img = cv2.imread('tmp-screencap.png')
     return img
 
 def tap(x, y):
-    os.system(f'{LDCONSOLE_PATH} adb --name {LD_EMU_NAME} --command "shell input tap {x} {y}"')
+    os.system(f'{ADB_PATH} -s emulator-{ADB_IDX} shell input tap {x} {y}')
 
 def input_text(txt):
-    os.system(f'{LDCONSOLE_PATH} action --name {LD_EMU_NAME} --key call.input --value {txt}')
+    os.system(f'{ADB_PATH} -s emulator-{ADB_IDX} shell input text "{txt}"')
 
 def swipe(x1, y1, x2, y2, duration):
-    os.system(f'{LDCONSOLE_PATH} adb --name {LD_EMU_NAME} --command "shell input swipe {x1} {y1} {x2} {y2} {duration}"')
+    os.system(f'{ADB_PATH} -s emulator-{ADB_IDX} shell input swipe {x1} {y1} {x2} {y2} {duration}')
 
 cap_idx = 0
 

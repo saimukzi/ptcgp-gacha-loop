@@ -30,8 +30,8 @@ def main():
     TARGET_CARD_SET = set(config_data['TARGET_CARD_LIST'])
     USERNAME = config_data['USERNAME']
 
-    ldagent.set_LD_EMU_NAME(config_data['LD_EMU_NAME'])
     ldagent.set_LDPLAYER_PATH(config_data['LDPLAYER_PATH'])
+    ldagent.set_LD_EMU_NAME(config_data['LD_EMU_NAME'])
 
     if not ldagent.check():
         return
