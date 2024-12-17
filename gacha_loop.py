@@ -376,37 +376,57 @@ def main():
             time.sleep(0.5)
             continue
 
-        if state == 'xxx-gacha-00-c':
-            if TARGET_PACK == 'p':
+        if state == 'xxx-gacha-00-charizard':
+            if TARGET_PACK == 'pikachu':
                 ldagent.tap(85,214)
                 time.sleep(0.5)
                 continue
-            if TARGET_PACK == 'm':
+            if TARGET_PACK == 'mewtwo':
                 ldagent.tap(218,221)
+                time.sleep(0.5)
+                continue
+            if TARGET_PACK == 'mew':
+                ldagent.tap(150,347)
                 time.sleep(0.5)
                 continue
             ldagent.tap(150,200)
             time.sleep(0.5)
             continue
-        if state == 'xxx-gacha-00-m':
-            if TARGET_PACK == 'c':
-                ldagent.tap(85,214)
-                time.sleep(0.5)
-                continue
-            if TARGET_PACK == 'p':
-                ldagent.tap(218,221)
+        if state == 'xxx-gacha-00-mew':
+            if TARGET_PACK != 'mew':
+                ldagent.tap(150,347)
                 time.sleep(0.5)
                 continue
             ldagent.tap(150,200)
             time.sleep(0.5)
             continue
-        if state == 'xxx-gacha-00-p':
-            if TARGET_PACK == 'm':
+        if state == 'xxx-gacha-00-mewtwo':
+            if TARGET_PACK == 'charizard':
                 ldagent.tap(85,214)
                 time.sleep(0.5)
                 continue
-            if TARGET_PACK == 'c':
+            if TARGET_PACK == 'pikachu':
                 ldagent.tap(218,221)
+                time.sleep(0.5)
+                continue
+            if TARGET_PACK == 'mew':
+                ldagent.tap(150,347)
+                time.sleep(0.5)
+                continue
+            ldagent.tap(150,200)
+            time.sleep(0.5)
+            continue
+        if state == 'xxx-gacha-00-pikachu':
+            if TARGET_PACK == 'mewtwo':
+                ldagent.tap(85,214)
+                time.sleep(0.5)
+                continue
+            if TARGET_PACK == 'charizard':
+                ldagent.tap(218,221)
+                time.sleep(0.5)
+                continue
+            if TARGET_PACK == 'mew':
+                ldagent.tap(150,347)
                 time.sleep(0.5)
                 continue
             ldagent.tap(150,200)
@@ -414,7 +434,7 @@ def main():
             continue
 
         if state.startswith('xxx-gacha-01-'):
-            if TARGET_PACK != state[-1]:
+            if TARGET_PACK != state[13:]:
                 ldagent.tap(150,348)
                 time.sleep(0.5)
                 continue
@@ -458,12 +478,10 @@ def main():
             continue
 
         if state == 'xxx-home':
-            if TARGET_PACK == 'c':
-                ldagent.tap(88,160)
-            if TARGET_PACK == 'm':
-                ldagent.tap(150,160)
-            if TARGET_PACK == 'p':
-                ldagent.tap(211,160)
+            if TARGET_PACK in ['charizard', 'pikachu', 'mewtwo']:
+                ldagent.tap(185,154)
+            if TARGET_PACK == 'mew':
+                ldagent.tap(111,154)
             time.sleep(8)
             continue
 
