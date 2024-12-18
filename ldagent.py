@@ -3,6 +3,7 @@ import time
 import cv2
 import subprocess
 from my_logger import logger
+import re
 
 # LDPLAYER_PATH = r'D:\LDPlayer\LDPlayer9'
 # EMU_INDEX = 0
@@ -39,7 +40,6 @@ def config(config_data):
     
     LD_EMU_NAME = config_data['LD_EMU_NAME']
     process_ret = subprocess.run([LDCONSOLE_PATH, "list2"], capture_output=True, timeout=10)
-
     logger.debug(f'LFAYVDBGMH ldconsole list2 returncode = {process_ret.returncode}')
     assert(process_ret.returncode == 0)
     logger.debug(f'LWSKFFCJQD ldconsole list2 stdout = {process_ret.stdout}')
@@ -102,7 +102,25 @@ def recover():
     logger.debug('YTQEMXRINZ recover START')
 
     try:
+        # if bad screen size, force quit
+        process_ret = subprocess.run([LDCONSOLE_PATH, 'list2'], capture_output=True, timeout=10)
+        logger.debug(f'NPGOIQWVWC list2 returncode = {process_ret.returncode}')
+        assert(process_ret.returncode == 0)
+        logger.debug(f'LWSKFFCJQD list2 stdout = {process_ret.stdout}')
+        list2_out = process_ret.stdout.decode('utf-8').split('\r\n')
+        for line in list2_out:
+            if len(line) <= 0: continue
+            linee = line.split(',')
+            if linee[0] != EMU_IDX: continue
+            if linee[7] != '300' or linee[7] != '400' or linee[8] != '120':
+                kill()
 
+        # force screen size
+        process_ret = subprocess.run([LDCONSOLE_PATH, "modify", '--index', str(EMU_IDX), "--resolution", "300,400,120"], capture_output=True, timeout=10)
+        logger.debug(f'VNQSKTTRFC modify returncode = {process_ret.returncode}')
+        assert(process_ret.returncode == 0)
+
+        # launch emu with app
         while True:
             process_ret = subprocess.run([LDCONSOLE_PATH, "isrunning", '--index', str(EMU_IDX)], capture_output=True, timeout=10)
             logger.debug(f'VNQSKTTRFC isrunning returncode = {process_ret.returncode}')
