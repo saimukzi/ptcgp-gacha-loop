@@ -101,34 +101,39 @@ def keyevent(key):
 def recover():
     logger.debug('YTQEMXRINZ recover START')
 
-    while True:
-        process_ret = subprocess.run([LDCONSOLE_PATH, "isrunning", '--index', str(EMU_IDX)], capture_output=True, timeout=10)
-        logger.debug(f'VNQSKTTRFC isrunning returncode = {process_ret.returncode}')
-        assert(process_ret.returncode == 0)
-        process_stdout = process_ret.stdout.decode('utf-8').strip()
-        logger.debug(f'ZSQKAYSNNX isrunning stdout = {process_stdout}')
-        if process_stdout == 'running':
-            break
-        elif process_stdout == 'stop':
-            process_ret = subprocess.run([LDCONSOLE_PATH, 'launchex', '--index', str(EMU_IDX), '--packagename', PACKAGE_NAME], capture_output=True, timeout=10)
-            logger.debug(f'PMHUALUBNQ launch returncode = {process_ret.returncode}')
-            assert(process_ret.returncode == 0)
-            # logger.debug(process_ret.stdout)
-            # logger.debug(process_ret.stderr)
-            time.sleep(5)
-        else:
-            logger.error(f'KRLUSFIKDV unknown ldconsole isrunning state: {process_stdout}')
-            assert(False)
+    try:
 
-    while True:
-        process_ret = subprocess.run([ADB_PATH, "-s", f"emulator-{ADB_IDX}",'shell', 'pidof', PACKAGE_NAME], capture_output=True, timeout=10)
-        logger.debug(f'OIADLYZHXI pidof returncode = {process_ret.returncode}')
-        if process_ret.returncode == 0:
-            break
-        process_ret = subprocess.run([LDCONSOLE_PATH, "runapp", '--index', str(EMU_IDX), '--packagename', PACKAGE_NAME], capture_output=True, timeout=10)
-        logger.debug(f'OLEATIUZMY runapp returncode = {process_ret.returncode}')
-        assert(process_ret.returncode == 0)
-        time.sleep(5)
+        while True:
+            process_ret = subprocess.run([LDCONSOLE_PATH, "isrunning", '--index', str(EMU_IDX)], capture_output=True, timeout=10)
+            logger.debug(f'VNQSKTTRFC isrunning returncode = {process_ret.returncode}')
+            assert(process_ret.returncode == 0)
+            process_stdout = process_ret.stdout.decode('utf-8').strip()
+            logger.debug(f'ZSQKAYSNNX isrunning stdout = {process_stdout}')
+            if process_stdout == 'running':
+                break
+            elif process_stdout == 'stop':
+                process_ret = subprocess.run([LDCONSOLE_PATH, 'launchex', '--index', str(EMU_IDX), '--packagename', PACKAGE_NAME], capture_output=True, timeout=10)
+                logger.debug(f'PMHUALUBNQ launch returncode = {process_ret.returncode}')
+                assert(process_ret.returncode == 0)
+                # logger.debug(process_ret.stdout)
+                # logger.debug(process_ret.stderr)
+                time.sleep(5)
+            else:
+                logger.error(f'KRLUSFIKDV unknown ldconsole isrunning state: {process_stdout}')
+                assert(False)
+
+        while True:
+            process_ret = subprocess.run([ADB_PATH, "-s", f"emulator-{ADB_IDX}",'shell', 'pidof', PACKAGE_NAME], capture_output=True, timeout=10)
+            logger.debug(f'OIADLYZHXI pidof returncode = {process_ret.returncode}')
+            if process_ret.returncode == 0:
+                break
+            process_ret = subprocess.run([LDCONSOLE_PATH, "runapp", '--index', str(EMU_IDX), '--packagename', PACKAGE_NAME], capture_output=True, timeout=10)
+            logger.debug(f'OLEATIUZMY runapp returncode = {process_ret.returncode}')
+            assert(process_ret.returncode == 0)
+            time.sleep(5)
+    except subprocess.TimeoutExpired:
+        logger.error(f'CRSVCSYWPX recover timeout')
+        raise LdAgentException('recover timeout')
 
 def kill():
     while True:
