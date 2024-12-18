@@ -1,6 +1,7 @@
 import os
 import cv2
 import subprocess
+from my_logger import logger
 
 # LDPLAYER_PATH = r'D:\LDPlayer\LDPlayer9'
 # EMU_INDEX = 0
@@ -45,13 +46,13 @@ def set_LD_EMU_NAME(name):
 
 def check():
     if not os.path.exists(LDPLAYER_PATH):
-        print('Please set the correct LDPlayer path in ldagent.py')
+        logger.error('Please set the correct LDPlayer path in ldagent.py')
         return False
     if not os.path.exists(LDCONSOLE_PATH):
-        print('Please set the correct LDPlayer path in ldagent.py')
+        logger.error('Please set the correct LDPlayer path in ldagent.py')
         return False
     if not os.path.exists(ADB_PATH):
-        print('Please set the correct LDPlayer path in ldagent.py')
+        logger.error('Please set the correct LDPlayer path in ldagent.py')
         return False
     return True
 

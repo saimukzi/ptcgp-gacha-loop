@@ -1,3 +1,5 @@
 # DONT CHANGE THIS FILE, PLEASE CHANGE config.yaml
 
 STOP_AT_RARE_PACK: true
+
+DEBUG_MODE: false

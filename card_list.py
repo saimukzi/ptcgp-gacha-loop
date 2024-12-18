@@ -1,6 +1,7 @@
 import os
 import cv2
 import numpy as np
+from my_logger import logger
 
 GACHA_RESULT_XY_LIST = [
     (51,111),(119,111),(187,111),
@@ -37,6 +38,6 @@ def read_gacha_result(img):
             diff = diff.mean()
             diff_list.append(diff)
         idx = np.argmin(diff_list)
-        print(f'{i}: {CARD_LIST[idx]["card"]}')
+        logger.debug(f'{i}: {CARD_LIST[idx]["card"]}')
         ret_list.append(CARD_LIST[idx]["card"])
     return ret_list

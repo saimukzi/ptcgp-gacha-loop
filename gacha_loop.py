@@ -9,6 +9,9 @@ import argparse
 import state_list
 import card_list
 import config
+from my_logger import logger, update_logger
+
+# YYYYMMDDHH = time.strftime('%Y%m%d%H', time.localtime(time.time()))
 
 # GACHA_RESULT_XY_LIST = [
 #     (51,111),(119,111),(187,111),
@@ -28,6 +31,7 @@ def main():
 
     # config_data = yaml.load(open(args.config, 'r'), Loader=yaml.FullLoader)
     config_data = config.get_config(args.config)
+    update_logger(config_data)
     TARGET_PACK = config_data['TARGET_PACK']
     TARGET_CARD_SET = set(config_data['TARGET_CARD_LIST'])
     USERNAME = config_data['USERNAME']
@@ -55,11 +59,14 @@ def main():
     state_history = ['UNKNOWN']*10
     state = 'UNKNOWN'
     while True:
-        img = ldagent.screencap().astype(np.float32)
-        
+        update_logger(config_data)
+        logger.debug('MMNRYHUKFQ tick')
+
         if state != 'UNKNOWN':
             state_history.append(state)
-            state_history = state_history[-5:]
+        state_history = state_history[-5:]
+
+        img = ldagent.screencap().astype(np.float32)
 
         # old_state = None
         # while True:
@@ -70,7 +77,10 @@ def main():
         #     time.sleep(0.1)
         state = state_list.get_state(img)
 
-        print(state_history, state)
+        # print(state_history, state)
+        logger.debug(f'PSDLSJCDBB state_history={state_history}')
+        logger.debug(f'WJPUTEHGOE state={state}')
+        logger.debug(f'YAISJIINTI flag_set={flag_set}')
 
         if 's03-start-01' in flag_set:
             if state not in ['xxx-dialog-swc', 'xxx-dialog-sc', 'xxx-dialog-lw']:
@@ -108,7 +118,9 @@ def main():
                 ldagent.tap(150, 179)
                 time.sleep(0.5)
                 state = 's05-name-02'
-            
+
+        logger.debug(f'IWFCYLNYDB state={state}')
+        logger.debug(f'IWFCYLNYDB flag_set={flag_set}')
 
         if state == 's00-cover':
             ldagent.tap(150, 200)

@@ -3,6 +3,7 @@ import os
 import cv2
 import numpy as np
 
+from my_logger import logger
 
 state_data_list = []
 state_fix_dict = {}
@@ -66,11 +67,13 @@ def get_state(img, debug=False):
         img_mask = state_data['img_mask']
         new_diff = _get_state_diff(img, img_min, img_max, img_mask)
         if debug:
-            print(f'{new_state}: {new_diff}')
+            # print(f'{new_state}: {new_diff}')
+            logger.debug(f'QWHAMZOXKX {new_state}: {new_diff}')
         if new_diff < diff:
             diff = new_diff
             state = new_state
-    print(f'{state}: {diff}')
+    # print(f'{state}: {diff}')
+    logger.debug(f'KQMCKKWRZP {state}: {diff}')
 
     while state in state_fix_dict:
         old_state = state
@@ -82,11 +85,11 @@ def get_state(img, debug=False):
             img_mask = state_data['img_mask']
             new_diff = _get_state_diff(img, img_min, img_max, img_mask)
             if debug:
-                print(f'{new_state}: {new_diff}')
+                logger.debug(f'YUEAHCIRPJ {new_state}: {new_diff}')
             if new_diff < diff:
                 diff = new_diff
                 state = new_state
-        print(f'{state}: {diff}')
+        logger.debug(f'EVUJCBNJDH {state}: {diff}')
         if state == old_state:
             break
 
