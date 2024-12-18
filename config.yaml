@@ -49,3 +49,6 @@ USERNAME: "abc{IDX}"
 
 LD_EMU_NAME: "PTCGP-Gacha-00"
 LDPLAYER_PATH: "D:\\LDPlayer\\LDPlayer9"
+
+# Enable debug mode to log, default is false
+# DEBUG_MODE: true
