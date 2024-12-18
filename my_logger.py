@@ -3,6 +3,8 @@ import const
 import os
 import time
 
+MY_PATH = os.path.dirname(os.path.abspath(__file__))
+
 logger = logging.getLogger(const.LOGGER_NAME)
 logging.basicConfig(
     format='%(asctime)s %(levelname)s %(message)s',
@@ -25,7 +27,7 @@ def update_logger(config_data):
     if logger_file_handler is not None:
         logger.removeHandler(logger_file_handler)
         logger_file_handler = None
-    fn = os.path.join('log', yyyy, mm, dd, f'{yyyy}{mm}{dd}-{hh}.log')
+    fn = os.path.join(MY_PATH,'log', yyyy, mm, dd, f'{yyyy}{mm}{dd}-{hh}.log')
     # print(fn)
     os.makedirs(os.path.dirname(fn), exist_ok=True)
     logger_file_handler = logging.FileHandler(fn)
