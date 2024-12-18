@@ -40,8 +40,8 @@ def main():
     # ldagent.set_LDPLAYER_PATH(config_data['LDPLAYER_PATH'])
     # ldagent.set_LD_EMU_NAME(config_data['LD_EMU_NAME'])
 
-    if not ldagent.check():
-        return
+    # if not ldagent.check():
+    #     return
     
     os.makedirs('var', exist_ok=True)
     user_idx = 0

@@ -13,83 +13,120 @@ ADB_PATH = None
 LD_EMU_NAME = 'LDPlayer'
 ADB_IDX = None
 
-def set_LDPLAYER_PATH(path):
-    global LDPLAYER_PATH, LDCONSOLE_PATH, ADB_PATH
-    LDPLAYER_PATH = path
+def config(config_data):
+    # set_LDPLAYER_PATH(config_data['LDPLAYER_PATH'])
+    # set_LD_EMU_NAME(config_data['LD_EMU_NAME'])
+
+    global LDPLAYER_PATH, LDCONSOLE_PATH, ADB_PATH, LD_EMU_NAME, ADB_IDX
+    LDPLAYER_PATH = config_data['LDPLAYER_PATH']
     LDCONSOLE_PATH = os.path.join(LDPLAYER_PATH, 'ldconsole.exe')
     ADB_PATH = os.path.join(LDPLAYER_PATH, 'adb.exe')
-    check()
 
-def set_LD_EMU_NAME(name):
-    global LD_EMU_NAME, ADB_IDX
-    check()
+    # checking
+    if not os.path.exists(LDPLAYER_PATH):
+        logger.error('QREGRQLDNY config LDPLAYER_PATH error')
+        assert(False)        
+    if not os.path.exists(LDCONSOLE_PATH):
+        logger.error('IIFSOVLEDY ldconsole.exe not found')
+        assert(False)        
+    if not os.path.exists(ADB_PATH):
+        logger.error('SNULPZOYCO adb.exe not found')
+        assert(False)        
     
-    LD_EMU_NAME = name
-    process_ret = subprocess.run([LDCONSOLE_PATH, "list2"], capture_output=True)
+    LD_EMU_NAME = config_data['LD_EMU_NAME']
+    process_ret = subprocess.run([LDCONSOLE_PATH, "list2"], capture_output=True, timeout=10)
+
+    logger.debug(f'LFAYVDBGMH ldconsole list2 returncode = {process_ret.returncode}')
+    assert(process_ret.returncode == 0)
+    logger.debug(f'LWSKFFCJQD ldconsole list2 stdout = {process_ret.stdout}')
 
     pout = process_ret.stdout
     pout = pout.decode('utf-8')
     pout = pout.split('\r\n')
 
+    # print(pout)
+
     emu_idx = None
     for line in pout:
         if len(line) <= 0: continue
         linee = line.split(',')
-        if linee[1] != name: continue
+        if linee[1] != LD_EMU_NAME: continue
         emu_idx = linee[0]
         break
-    assert(emu_idx is not None)
+    logger.debug(f'WOBQVCANIM emu_idx = {emu_idx}')
+    if emu_idx is None:
+        logger.error('ZCLTJRWBVX config LD_EMU_NAME error')
+        assert(False)
     
     # refer to https://help.ldmnq.com/docs/LD9adbserver
     ADB_IDX = str(int(emu_idx)*2+5554)
-    
+    logger.debug(f'LCBJLLYUJK ADB_IDX = {ADB_IDX}')
 
-def check():
-    if not os.path.exists(LDPLAYER_PATH):
-        logger.error('Please set the correct LDPlayer path in ldagent.py')
-        return False
-    if not os.path.exists(LDCONSOLE_PATH):
-        logger.error('Please set the correct LDPlayer path in ldagent.py')
-        return False
-    if not os.path.exists(ADB_PATH):
-        logger.error('Please set the correct LDPlayer path in ldagent.py')
-        return False
-    return True
+    # process_ret = subprocess.run([ADB_PATH, "-s", f"emulator-{ADB_IDX}", "shell", "echo", "ODSLKYUGNV"], capture_output=True, timeout=1)
+    process_ret = subprocess.run([ADB_PATH, "version"], capture_output=True, timeout=1)
+    logger.debug(f'VYCXJPKXSJ ADB version returncode = {process_ret.returncode}')
+    assert(process_ret.returncode == 0) 
+    logger.debug(f'GQINGWZXKN ADB version = {process_ret.stdout}')
+    # pout = process_ret.stdout
+    # pout = pout.decode('utf-8')
+    # pout = pout.strip()
+    # assert(pout == 'ODSLKYUGNV')
+
 
 def screencap():
-    os.system(f'{ADB_PATH} -s emulator-{ADB_IDX} shell screencap -p /sdcard/tmp-screencap.png')
-    os.system(f'{ADB_PATH} -s emulator-{ADB_IDX} pull /sdcard/tmp-screencap.png')
+    adb_exec(['shell', 'screencap', '-p', '/sdcard/tmp-screencap.png'])
+    adb_exec(['pull', '/sdcard/tmp-screencap.png'])
     img = cv2.imread('tmp-screencap.png')
     return img
 
 def tap(x, y):
-    os.system(f'{ADB_PATH} -s emulator-{ADB_IDX} shell input tap {x} {y}')
+    # os.system(f'{ADB_PATH} -s emulator-{ADB_IDX} shell input tap {x} {y}')
+    adb_exec(['shell', 'input', 'tap', str(x), str(y)])
 
 def input_text(txt):
-    os.system(f'{ADB_PATH} -s emulator-{ADB_IDX} shell input text "{txt}"')
+    # os.system(f'{ADB_PATH} -s emulator-{ADB_IDX} shell input text "{txt}"')
+    adb_exec(['shell', 'input', 'text', txt])
 
 def swipe(x1, y1, x2, y2, duration):
-    os.system(f'{ADB_PATH} -s emulator-{ADB_IDX} shell input swipe {x1} {y1} {x2} {y2} {duration}')
+    # os.system(f'{ADB_PATH} -s emulator-{ADB_IDX} shell input swipe {x1} {y1} {x2} {y2} {duration}')
+    adb_exec(['shell', 'input', 'swipe', str(x1), str(y1), str(x2), str(y2), str(duration)])
 
 def keyevent(key):
-    os.system(f'{ADB_PATH} -s emulator-{ADB_IDX} shell input keyevent {key}')
+    # os.system(f'{ADB_PATH} -s emulator-{ADB_IDX} shell input keyevent {key}')
+    adb_exec(['shell', 'input', 'keyevent', str(key)])
 
-cap_idx = 0
+def adb_exec(cmd, timeout=5):
+    try:
+        process_ret = subprocess.run([ADB_PATH, "-s", f"emulator-{ADB_IDX}"]+cmd, capture_output=True, timeout=timeout)
+        if process_ret.returncode != 0:
+            logger.error(f'RZBQUXKBHP adb_exec returncode = {process_ret.returncode}')
+            raise AdbException('adb_exec returncode!=0')
+    except subprocess.TimeoutExpired:
+        logger.error(f'SZLGCPJJAD adb_exec timeout')
+        raise AdbException('adb_exec timeout')
 
-def cap():
-    global cap_idx
-    img = screencap()
-    while True:
-        if not os.path.exists('cap/cap_{:04d}.png'.format(cap_idx)):
-            break
-        cap_idx += 1
-    cv2.imwrite('cap/cap_{:04d}.png'.format(cap_idx), img)
-    cap_idx += 1
+# cap_idx = 0
+# def cap():
+#     global cap_idx
+#     img = screencap()
+#     while True:
+#         if not os.path.exists('cap/cap_{:04d}.png'.format(cap_idx)):
+#             break
+#         cap_idx += 1
+#     cv2.imwrite('cap/cap_{:04d}.png'.format(cap_idx), img)
+#     cap_idx += 1
 
-def config(config_data):
-    set_LDPLAYER_PATH(config_data['LDPLAYER_PATH'])
-    set_LD_EMU_NAME(config_data['LD_EMU_NAME'])
+class AdbException(Exception):
+    pass
 
 if __name__ == '__main__':
-    check()
+    import argparse
+    import config as cconfig
+    parser = argparse.ArgumentParser(description='LDPlayer Agent')
+    parser.add_argument('config', type=str)
+    args = parser.parse_args()
+
+    config_data = cconfig.get_config(args.config)
+    config(config_data)
+
     print('END')
