@@ -8,6 +8,7 @@ import yaml
 import argparse
 import state_list
 import card_list
+import config
 
 # GACHA_RESULT_XY_LIST = [
 #     (51,111),(119,111),(187,111),
@@ -25,7 +26,8 @@ def main():
     parser.add_argument('config', type=str)
     args = parser.parse_args()
 
-    config_data = yaml.load(open(args.config, 'r'), Loader=yaml.FullLoader)
+    # config_data = yaml.load(open(args.config, 'r'), Loader=yaml.FullLoader)
+    config_data = config.get_config(args.config)
     TARGET_PACK = config_data['TARGET_PACK']
     TARGET_CARD_SET = set(config_data['TARGET_CARD_LIST'])
     USERNAME = config_data['USERNAME']
@@ -474,6 +476,12 @@ def main():
             gacha_result = card_list.read_gacha_result(img)
             if set(gacha_result) & TARGET_CARD_SET:
                 sys.exit(0)
+            if config_data['STOP_AT_RARE_PACK']:
+                all_rare = gacha_result
+                all_rare = map(is_rare, all_rare)
+                all_rare = all(all_rare)
+                if all_rare:
+                    sys.exit(0)
             ldagent.tap(150,377)
             time.sleep(8)
             continue
@@ -506,6 +514,13 @@ def main():
             ldagent.tap(150,377)
             time.sleep(3)
             continue
+
+RARE_SUFFIX_LIST = ['_UR', '_IM', '_SR', '_SAR', '_AR']
+def is_rare(card_id):
+    for suffix in RARE_SUFFIX_LIST:
+        if card_id.endswith(suffix):
+            return True
+    return False
 
         # if state == 'center':
         #     ldagent.tap(150,200)

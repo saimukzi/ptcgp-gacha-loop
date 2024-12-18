@@ -42,6 +42,8 @@ TARGET_CARD_LIST:
   - "cPK_20_002450_01_MEWex_SAR"
   - "cPK_20_002590_01_PTERAex_SAR"
 
+STOP_AT_RARE_PACK: true
+
 # user name in game, add {IDX} for 3 digi index, reset after 1000
 USERNAME: "abc{IDX}"
 
