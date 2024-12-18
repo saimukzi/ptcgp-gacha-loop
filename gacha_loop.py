@@ -62,15 +62,15 @@ def main():
     emu_ok = False
 
     while True:
-        update_logger(config_data)
-        logger.debug('MMNRYHUKFQ tick')
-
-        if not emu_ok:
-            ldagent.recover()
-            emu_ok = True
-            flag_set = set()
-
         try:
+            update_logger(config_data)
+            logger.debug('MMNRYHUKFQ tick')
+
+            if not emu_ok:
+                ldagent.recover()
+                emu_ok = True
+                flag_set = set()
+
             if state != 'UNKNOWN':
                 state_history.append(state)
             state_history = state_history[-5:]
@@ -536,8 +536,8 @@ def main():
                 time.sleep(3)
                 continue
 
-        except ldagent.AdbException as e:
-            logger.error(f'MYBPMBYDXK AdbException: {e}')
+        except ldagent.LdAgentException as e:
+            logger.error(f'MYBPMBYDXK LdAgentException: {e}')
             emu_ok = False
             ldagent.kill()
         

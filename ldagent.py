@@ -154,10 +154,10 @@ def adb_exec(cmd, timeout=5):
         process_ret = subprocess.run([ADB_PATH, "-s", f"emulator-{ADB_IDX}"]+cmd, capture_output=True, timeout=timeout)
         if process_ret.returncode != 0:
             logger.error(f'RZBQUXKBHP adb_exec returncode = {process_ret.returncode}')
-            raise AdbException('adb_exec returncode!=0')
+            raise LdAgentException('adb_exec returncode!=0')
     except subprocess.TimeoutExpired:
         logger.error(f'SZLGCPJJAD adb_exec timeout')
-        raise AdbException('adb_exec timeout')
+        raise LdAgentException('adb_exec timeout')
 
 # cap_idx = 0
 # def cap():
@@ -170,7 +170,7 @@ def adb_exec(cmd, timeout=5):
 #     cv2.imwrite('cap/cap_{:04d}.png'.format(cap_idx), img)
 #     cap_idx += 1
 
-class AdbException(Exception):
+class LdAgentException(Exception):
     pass
 
 if __name__ == '__main__':
