@@ -39,6 +39,7 @@ def config(config_data):
         assert(False)        
     
     LD_EMU_NAME = config_data['LD_EMU_NAME']
+    logger.debug(f'AFCTNYVSXS LD_EMU_NAME = {LD_EMU_NAME}')
     process_ret = subprocess.run([LDCONSOLE_PATH, "list2"], capture_output=True, timeout=10)
     logger.debug(f'LFAYVDBGMH ldconsole list2 returncode = {process_ret.returncode}')
     assert(process_ret.returncode == 0)

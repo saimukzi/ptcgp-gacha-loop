@@ -31,6 +31,10 @@ def main():
 
     config_data = config.get_config(args.config)
     update_logger(config_data)
+
+    logger.debug('NLHFIUUXBS PTCPG-GL start')
+    logger.debug(f'KLZUCSPIFK config path={args.config}')
+
     TARGET_PACK = config_data['TARGET_PACK']
     TARGET_CARD_SET = set(config_data['TARGET_CARD_LIST'])
     USERNAME = config_data['USERNAME']
