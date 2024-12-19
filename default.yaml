@@ -2,4 +2,4 @@
 
 STOP_AT_RARE_PACK: true
 
-DEBUG_MODE: false
+DEBUG_MODE: true
