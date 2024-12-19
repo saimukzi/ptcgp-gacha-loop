@@ -1,0 +1,19 @@
+# TARGET_PACK: charizard, mewtwo, pikachu, mew
+TARGET_PACK: "mew"
+
+# !!! IMPORTANT !!!
+# put empty list to TARGET_CARD_LIST
+TARGET_CARD_LIST: []
+
+# !!! IMPORTANT !!!
+# set true to STOP_AT_RARE_PACK so it will stop at rare pack
+STOP_AT_RARE_PACK: true
+
+# user name in game, add {IDX} for 3 digi index, reset after 1000
+USERNAME: "abc{IDX}"
+
+LD_EMU_NAME: "PTCGP-Gacha-00"
+LDPLAYER_PATH: "D:\\LDPlayer\\LDPlayer9"
+
+# Enable debug mode to log, default is true
+# DEBUG_MODE: false

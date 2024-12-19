@@ -2,7 +2,7 @@
 
 ## 警告
 
-- 不要在有真賬號的模擬器上使用，你的賬號會消失！
+- 不要在有真賬號的模擬器上使用，你的賬號會被刪除！
 
 ## 功能
 
@@ -10,6 +10,7 @@
 
 ## 需求
 
+- Windows 作業系統
 - LDPlayer 9.1.32.0(64)
 - Python 3.13.1
 
@@ -33,3 +34,21 @@ python -m pip install --upgrade numpy opencv-python pyyaml
 
 python gacha_loop.py config.yaml
 </pre>
+
+## config.yaml
+
+TARGET_PACK: 抽甚麼包
+- charizard: A1 噴火龍
+- mewtwo: A1 超夢
+- pikachu: A1 皮卡丘
+- mew: A1a 夢幻
+
+TARGET_CARD_LIST: 抽到甚麼卡的時候會停下來，卡片代號請參考 res\card 資料夾
+
+STOP_AT_RARE_PACK: 抽到神包停下來
+
+USERNAME: 新賬號的名字，{IDX}是三位數流水號
+
+LD_EMU_NAME: 模擬器名稱
+
+LDPLAYER_PATH: 雷電模擬器的安裝資料夾

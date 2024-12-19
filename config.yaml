@@ -1,6 +1,7 @@
 # TARGET_PACK: charizard, mewtwo, pikachu, mew
 TARGET_PACK: "mew"
-# refer to res/card
+
+# refer to res\card
 TARGET_CARD_LIST:
   - "cPK_20_000040_00_FUSHIGIBANAex_SR"
   - "cPK_20_000230_00_NASSYex_SR"
