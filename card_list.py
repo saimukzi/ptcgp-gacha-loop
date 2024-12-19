@@ -2,6 +2,7 @@ import os
 import cv2
 import numpy as np
 from my_logger import logger
+import const
 
 GACHA_RESULT_XY_LIST = [
     (51,111),(119,111),(187,111),
@@ -12,7 +13,9 @@ GACHA_RESULT_SIZE = (62,86)
 CARD_LIST = []
 
 def load_card_img():
-    card_list = os.listdir(os.path.join('res', 'card'))
+    if len(CARD_LIST) > 0:
+        return
+    card_list = os.listdir(os.path.join(const.MY_PATH, 'res', 'card'))
     card_list = filter(lambda x: x.endswith('.png'), card_list)
     card_list = map(lambda x: x[:-4], card_list)
     card_list = list(card_list)
