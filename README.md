@@ -55,6 +55,11 @@ LDPLAYER_PATH: 雷電模擬器的安裝資料夾
 
 ## FAQ
 
-[FAQ](FAQ.md)
-[Not FAQ](NotFAQ.md)
-[FAQ is LOVE](https://www.youtube.com/watch?v=kSr5bjoKU9I)
+- [FAQ](FAQ.md)
+- [Not FAQ](NotFAQ.md)
+- [FAQ is LOVE](https://www.youtube.com/watch?v=kSr5bjoKU9I)
+
+## Links
+
+- [This project](https://github.com/saimukzi/ptcgp-gacha-loop)
+- [Game asset source](https://x.com/ElChicoEevee/status/1839298287012294867)
