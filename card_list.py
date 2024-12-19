@@ -41,6 +41,6 @@ def read_gacha_result(img):
             diff = diff.mean()
             diff_list.append(diff)
         idx = np.argmin(diff_list)
-        logger.debug(f'{i}: {CARD_LIST[idx]["card"]}')
+        logger.debug(f'YTNYAWSKRB {i}: {CARD_LIST[idx]["card"]}')
         ret_list.append(CARD_LIST[idx]["card"])
     return ret_list

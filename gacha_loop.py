@@ -489,6 +489,7 @@ def main():
             # gacha result
             if state == 'xxx-gacha-05':
                 t = int(time.time())
+                logger.debug(f'ZNHRHBHGMT GACHA_RESULT: {t}')
                 os.makedirs('gacha_result', exist_ok=True)
                 ret_fn = os.path.join('gacha_result', f'{t}.png')
                 cv2.imwrite(ret_fn, img)
