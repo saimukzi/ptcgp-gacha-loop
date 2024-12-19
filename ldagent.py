@@ -113,7 +113,7 @@ def recover():
             if len(line) <= 0: continue
             linee = line.split(',')
             if linee[0] != EMU_IDX: continue
-            if linee[7] != '300' or linee[7] != '400' or linee[8] != '120':
+            if linee[7] != '300' or linee[8] != '400' or linee[9] != '120':
                 kill()
 
         # force screen size
