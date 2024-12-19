@@ -33,3 +33,7 @@ python -m pip install --upgrade numpy opencv-python pyyaml
 
 python gacha_loop.py config.yaml
 </pre>
+
+## 示範
+
+https://www.youtube.com/watch?v=_-laRxczYmo
