@@ -52,3 +52,9 @@ USERNAME: 新賬號的名字，{IDX}是三位數流水號
 LD_EMU_NAME: 模擬器名稱
 
 LDPLAYER_PATH: 雷電模擬器的安裝資料夾
+
+## FAQ
+
+[FAQ](FAQ.md)
+[Not FAQ](NotFAQ.md)
+[FAQ is LOVE](https://www.youtube.com/watch?v=kSr5bjoKU9I)
