@@ -1,5 +1,9 @@
 # FAQ
 
+## .\venv\Scripts\activate.bat 出現錯誤
+
+...
+
 ## 如何令程式只停在神包上？
 
 參考 config-god-pack.yaml 的設定。
