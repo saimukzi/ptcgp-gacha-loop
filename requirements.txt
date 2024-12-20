@@ -1,3 +1,4 @@
+charset-normalizer
 numpy
 opencv-python
 pyyaml
