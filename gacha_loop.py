@@ -34,6 +34,7 @@ def main():
 
     logger.debug('NLHFIUUXBS PTCPG-GL start')
     logger.debug(f'KLZUCSPIFK config path={args.config}')
+    logger.debug(f'JSOFIXCPAG config_data={config_data}')
 
     TARGET_PACK = config_data['TARGET_PACK']
     TARGET_CARD_SET = set(config_data['TARGET_CARD_LIST'])
