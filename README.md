@@ -11,8 +11,8 @@
 ## 需求
 
 - Windows 作業系統
-- LDPlayer 9.1.32.0(64)
-- Python 3.13.1
+- [LDPlayer 9.1.32.0(64)](https://www.ldplayer.tw/)
+- [Python 3.13.1](https://www.python.org/)
 
 ## 限制
 
