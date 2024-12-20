@@ -66,4 +66,13 @@ LDPLAYER_PATH: 雷電模擬器的安裝資料夾，「\\」符號要寫成「\\\
 ## Links
 
 - [This project](https://github.com/saimukzi/ptcgp-gacha-loop)
+
+## 支援
+
+- [西木子DC](https://discord.gg/kdZ5fQxP)
+- 電郵 saimukzi@hiauntie.com ，請附上 log 資料夾 zip 及 tmp-screencap.png 。
+
+## 感謝
+
 - [Game asset source](https://x.com/ElChicoEevee/status/1839298287012294867)
+- [哲盟BiiMiu](https://www.youtube.com/@BiiMiu)
