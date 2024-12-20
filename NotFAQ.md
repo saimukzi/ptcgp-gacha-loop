@@ -8,7 +8,7 @@
 
 ## 為甚麼要發佈這個 bot？
 
-- 表達我對[網絡社群](https://www.youtube.com/watch?v=E4VI8nuzDdo)的感謝
+- 表達我對[給我智慧果實的YTer](https://www.youtube.com/watch?v=E4VI8nuzDdo)的感謝
 - 只要網上有更多人刷包，我個人就更容易得到想要的咭，全圖女角咭。
 
 ## 可不可以商業用途？
