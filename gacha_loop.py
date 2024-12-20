@@ -10,6 +10,7 @@ import state_list
 import card_list
 import config
 from my_logger import logger, update_logger
+import const
 
 # YYYYMMDDHH = time.strftime('%Y%m%d%H', time.localtime(time.time()))
 
@@ -33,6 +34,7 @@ def main():
     update_logger(config_data)
 
     logger.debug('NLHFIUUXBS PTCPG-GL start')
+    logger.debug(f'EOWVSWOTMF MY_PATH={const.MY_PATH}')
     logger.debug(f'KLZUCSPIFK config path={args.config}')
     logger.debug(f'JSOFIXCPAG config_data={config_data}')
 
