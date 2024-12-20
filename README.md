@@ -30,7 +30,7 @@
 python -m venv venv
 .\venv\Scripts\activate.bat
 python -m pip install --upgrade pip wheel setuptools
-python -m pip install --upgrade numpy opencv-python pyyaml
+python -m pip install -r requirements.txt
 
 python gacha_loop.py config.yaml
 </pre>
