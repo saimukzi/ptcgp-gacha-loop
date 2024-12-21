@@ -6,6 +6,8 @@ import cv2
 import yaml
 import ldagent
 import argparse
+import numpy as np
+import config
 
 def main():
     parser = argparse.ArgumentParser(description='Capture state')
@@ -14,41 +16,78 @@ def main():
     parser.add_argument('state', type=str)
     args = parser.parse_args()
 
-    config_data = yaml.load(open(args.config, 'r'), Loader=yaml.FullLoader)
+    # config_data = yaml.load(open(args.config, 'r'), Loader=yaml.FullLoader)
+    config_data = config.get_config(args.config)
     ldagent.config(config_data)
 
     img_min = None
     img_max = None
+    img_svmin = None
+    img_svmax = None
 
     img_min_fn = os.path.join('res', 'state', f'{args.state}.min.png')
     img_max_fn = os.path.join('res', 'state', f'{args.state}.max.png')
+    img_svmin_fn = os.path.join('res', 'state', f'{args.state}.svmin.png')
+    img_svmax_fn = os.path.join('res', 'state', f'{args.state}.svmax.png')
 
     if not args.append:
         if os.path.exists(img_min_fn):
             raise('File already exists')
         if os.path.exists(img_max_fn):
             raise('File already exists')
+        if os.path.exists(img_svmin_fn):
+            raise('File already exists')
+        if os.path.exists(img_svmax_fn):
+            raise('File already exists')
     else:
-        shutil.copyfile(img_min_fn, img_min_fn + '.bak')
-        shutil.copyfile(img_max_fn, img_max_fn + '.bak')
-        img_min = cv2.imread(img_min_fn)
-        img_max = cv2.imread(img_max_fn)
+        if os.path.exists(img_min_fn):
+            shutil.copyfile(img_min_fn, img_min_fn + '.bak')
+            img_min = cv2.imread(img_min_fn)
+        if os.path.exists(img_max_fn):
+            shutil.copyfile(img_max_fn, img_max_fn + '.bak')
+            img_max = cv2.imread(img_max_fn)
+        if os.path.exists(img_svmin_fn):
+            shutil.copyfile(img_svmin_fn, img_svmin_fn + '.bak')
+            img_svmin = cv2.imread(img_svmin_fn)
+        if os.path.exists(img_svmax_fn):
+            shutil.copyfile(img_svmax_fn, img_svmax_fn + '.bak')
+            img_svmax = cv2.imread(img_svmax_fn)
 
 
     for _ in range(100):
         img = ldagent.screencap()
-        if img_min is None:
-            img_min = img
-            img_max = img
-        else:
-            img_min = cv2.min(img_min, img)
-            img_max = cv2.max(img_max, img)
+        img_zmax = img.max(axis=2)
+        img_zmin = img.min(axis=2)
+        imgs = (img_zmax - img_zmin).astype(img.dtype)
+        imgv = img_zmax.astype(img.dtype)
+        imgz = np.zeros_like(img_zmax, dtype=img.dtype)
+        imgsv = np.stack([imgs, imgv, imgz], axis=2).astype(img.dtype)
+        img_min = cv2_min(img_min, img)
+        img_max = cv2_max(img_max, img)
+        img_svmin = cv2_min(img_svmin, imgsv)
+        img_svmax = cv2_max(img_svmax, imgsv)
         time.sleep(0.05)
     
     os.makedirs(os.path.join('res', 'state'), exist_ok=True)
 
     cv2.imwrite(img_max_fn, img_max)
     cv2.imwrite(img_min_fn, img_min)
+    cv2.imwrite(img_svmax_fn, img_svmax)
+    cv2.imwrite(img_svmin_fn, img_svmin)
+
+def cv2_min(i0, i1):
+    if i0 is None:
+        return i1
+    if i1 is None:
+        return i0
+    return cv2.min(i0, i1)
+
+def cv2_max(i0, i1):
+    if i0 is None:
+        return i1
+    if i1 is None:
+        return i0
+    return cv2.max(i0, i1)
 
 if __name__ == '__main__':
     main()

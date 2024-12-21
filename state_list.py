@@ -16,16 +16,27 @@ def load_state():
     for state in state_list:
         img_min_fn = os.path.join('res', 'state', f'{state}.min.png')
         img_max_fn = os.path.join('res', 'state', f'{state}.max.png')
+        img_svmin_fn = os.path.join('res', 'state', f'{state}.svmin.png')
+        img_svmax_fn = os.path.join('res', 'state', f'{state}.svmax.png')
         img_mask_fn = os.path.join('res', 'state', f'{state}.mask.png')
         img_min = cv2.imread(img_min_fn).astype(np.float32)
         img_max = cv2.imread(img_max_fn).astype(np.float32)
+
+        if os.path.exists(img_svmin_fn):
+            assert(os.path.exists(img_svmax_fn))
+            img_svmin = cv2.imread(img_svmin_fn).astype(np.float32)
+            img_svmin = img_svmin[:,:,0:2]
+            img_svmax = cv2.imread(img_svmax_fn).astype(np.float32)
+            img_svmax = img_svmax[:,:,0:2]
+            img_min = np.append(img_min, img_svmin, axis=2)
+            img_max = np.append(img_max, img_svmax, axis=2)
+
         if os.path.exists(img_mask_fn):
-            # print(img_max_fn)
             img_mask = cv2.imread(img_mask_fn, cv2.IMREAD_UNCHANGED).astype(np.float32)
-            # print(img_mask.shape)
             assert(img_mask.shape[2] == 4)
         else:
             img_mask = None
+
         state_data_list.append({
             'state': state,
             'img_min': img_min,
@@ -96,6 +107,15 @@ def get_state(img, debug=False):
     return state
 
 def _get_state_diff(img, img_min, img_max, img_mask, debug=False):
+    if img_max.shape[2] == 5:
+        assert(img_max.shape[2] == 5)
+        imgmx = img.max(axis=2)
+        imgmn = img.min(axis=2)
+        imgs = imgmx-imgmn
+        imgv = imgmx
+        imgsv = np.stack([imgs, imgv], axis=2)
+        img = np.append(img, imgsv, axis=2)
+
     diff_max = img - img_max
     diff_max = np.maximum(diff_max, 0)
     diff_min = img_min - img
@@ -112,7 +132,7 @@ def _get_state_diff(img, img_min, img_max, img_mask, debug=False):
         mask = mask / 255
         diff = diff * mask
         mask_sum = mask.sum()
-        diff = diff.sum() / mask_sum / 3
+        diff = diff.sum() / mask_sum / img.shape[2]
     else:
         diff = diff.mean()
 

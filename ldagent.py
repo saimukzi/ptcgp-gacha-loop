@@ -208,7 +208,7 @@ def get_app_version():
     # print(process_stdout)
     for line in process_stdout.split('\n'):
         if 'versionName=' in line:
-            return line.strip().split('=').strip()[1]
+            return line.strip().split('=')[1].strip()
     assert(False)
 
 
