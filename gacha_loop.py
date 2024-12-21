@@ -285,10 +285,22 @@ def main():
                     flag_set.remove('err-badname')
                 continue
             if state == 's05-name-02-empty':
-                username = USERNAME.replace('{IDX}', '%03d' % user_idx)
+                yyyymmddhhmmss = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
+                username = USERNAME.replace('{IDX}', '%03d' % (user_idx%1000))
+                username = USERNAME.replace('{IDX1}', '%01d' % (user_idx%10))
+                username = USERNAME.replace('{IDX2}', '%02d' % (user_idx%100))
+                username = USERNAME.replace('{IDX3}', '%03d' % (user_idx%1000))
+                username = USERNAME.replace('{IDX4}', '%04d' % (user_idx%10000))
+                username = USERNAME.replace('{YYYY}', yyyymmddhhmmss[:4])
+                username = USERNAME.replace('{YY}', yyyymmddhhmmss[2:4])
+                username = USERNAME.replace('{MM}', yyyymmddhhmmss[4:6])
+                username = USERNAME.replace('{DD}', yyyymmddhhmmss[6:8])
+                username = USERNAME.replace('{hh}', yyyymmddhhmmss[8:10])
+                username = USERNAME.replace('{mm}', yyyymmddhhmmss[10:12])
+                username = USERNAME.replace('{ss}', yyyymmddhhmmss[12:14])
                 ldagent.input_text(username)
                 user_idx += 1
-                user_idx %= 1000
+                user_idx %= 10000
                 with open(USER_IDX_PATH, 'w') as f:
                     f.write(str(user_idx))
                 time.sleep(0.5)
