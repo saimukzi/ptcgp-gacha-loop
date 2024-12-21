@@ -70,6 +70,12 @@ def load_state():
         })
 
 def get_state(img, debug=False):
+    imgmx = img.max(axis=2)
+    imgmn = img.min(axis=2)
+    imgs = imgmx-imgmn
+    imgv = imgmx
+    imgsv = np.stack([imgs, imgv], axis=2)
+    img = np.append(img, imgsv, axis=2)
     diff, state = 1, 'UNKNOWN'
     for state_data in state_data_list:
         new_state = state_data['state']
@@ -107,14 +113,9 @@ def get_state(img, debug=False):
     return state
 
 def _get_state_diff(img, img_min, img_max, img_mask, debug=False):
-    if img_max.shape[2] == 5:
-        assert(img_max.shape[2] == 5)
-        imgmx = img.max(axis=2)
-        imgmn = img.min(axis=2)
-        imgs = imgmx-imgmn
-        imgv = imgmx
-        imgsv = np.stack([imgs, imgv], axis=2)
-        img = np.append(img, imgsv, axis=2)
+    assert(img_min.shape == img_max.shape)
+    if img_min.shape[2] == 3:
+        img = img[:,:,:3]
 
     diff_max = img - img_max
     diff_max = np.maximum(diff_max, 0)
