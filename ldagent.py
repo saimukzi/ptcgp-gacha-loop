@@ -198,6 +198,20 @@ def restore(path):
     logger.debug(f'WVOLRLKHAF restore returncode = {process_ret.returncode}')
     assert(process_ret.returncode == 0)
 
+
+def get_app_version():
+    process_ret = subprocess.run([ADB_PATH, "-s", f"emulator-{ADB_IDX}", 'shell', 'dumpsys', 'package', PACKAGE_NAME], capture_output=True, timeout=10)
+    logger.debug(f'CNIJYUXHFK dumpsys returncode = {process_ret.returncode}')
+    assert(process_ret.returncode == 0)
+    # process_stdout = process_ret.stdout.decode('utf-8')
+    process_stdout = decode_console(process_ret.stdout)
+    # print(process_stdout)
+    for line in process_stdout.split('\n'):
+        if 'versionName=' in line:
+            return line.strip().split('=').strip()[1]
+    assert(False)
+
+
 def adb_exec(cmd, timeout=5):
     try:
         process_ret = subprocess.run([ADB_PATH, "-s", f"emulator-{ADB_IDX}"]+cmd, capture_output=True, timeout=timeout)

@@ -11,6 +11,7 @@ import card_list
 import config
 from my_logger import logger, update_logger
 import const
+import seed_backup as backuppy
 
 # YYYYMMDDHH = time.strftime('%Y%m%d%H', time.localtime(time.time()))
 
@@ -54,8 +55,10 @@ def main():
     logger.debug(f'APP_VAR_FOLDER={APP_VAR_FOLDER}')
     os.makedirs(APP_VAR_FOLDER, exist_ok=True)
 
-    SEED_EMU_BACKUP_PATH = os.path.join(APP_VAR_FOLDER, 'seed_emu_backup.ldbk')
-    logger.debug(f'SEED_EMU_BACKUP_PATH={SEED_EMU_BACKUP_PATH}')
+    # SEED_EMU_BACKUP_PATH = os.path.join(APP_VAR_FOLDER, 'seed_emu_backup.ldbk')
+    # logger.debug(f'SEED_EMU_BACKUP_PATH={SEED_EMU_BACKUP_PATH}')
+
+    backup = backuppy.SeedBackup(config_data)
 
     INSTANCE_VAR_FOLDER = os.path.join(const.MY_PATH, 'var', 'instances', INSTANCE_ID)
     logger.debug(f'INSTANCE_VAR_FOLDER={INSTANCE_VAR_FOLDER}')
@@ -160,18 +163,16 @@ def main():
 
             if state == 's00-cover':
                 if 's12-end-03-confirm' in flag_set:
-                    if not os.path.exists(SEED_EMU_BACKUP_PATH):
+                    if not backup.is_backup_available():
                         ldagent.kill()
                         emu_ok = False
-                        ldagent.backup(SEED_EMU_BACKUP_PATH)
+                        backup.backup()
                         flag_set = set()
                         continue
-                    else:
-                        flag_set = set()
-                else:
-                    ldagent.tap(150, 200)
-                    time.sleep(4)
-                    continue
+                    flag_set = set()
+                ldagent.tap(150, 200)
+                time.sleep(4)
+                continue
             if state == 's01-info-00':
                 ldagent.tap(100, 292)
                 time.sleep(0.5)
