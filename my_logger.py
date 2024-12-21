@@ -28,7 +28,7 @@ def update_logger(config_data):
     if logger_file_handler is not None:
         logger.removeHandler(logger_file_handler)
         logger_file_handler = None
-    fn = os.path.join(MY_PATH,'log', yyyy, mm, dd, f'{yyyy}{mm}{dd}-{hh}-{INSTANCE_ID}.log')
+    fn = os.path.join(APP_PATH,'log', yyyy, mm, dd, f'{yyyy}{mm}{dd}-{hh}-{INSTANCE_ID}.log')
     # print(fn)
     os.makedirs(os.path.dirname(fn), exist_ok=True)
     logger_file_handler = logging.FileHandler(fn)

@@ -51,7 +51,7 @@ def main():
 
     config.check(config_data)
 
-    APP_VAR_FOLDER = os.path.join(const.MY_PATH, 'var')
+    APP_VAR_FOLDER = os.path.join(const.APP_PATH, 'var')
     logger.debug(f'APP_VAR_FOLDER={APP_VAR_FOLDER}')
     os.makedirs(APP_VAR_FOLDER, exist_ok=True)
 
@@ -572,8 +572,9 @@ def main():
             if state == 'xxx-gacha-05':
                 t = int(time.time())
                 logger.debug(f'ZNHRHBHGMT GACHA_RESULT: {t}')
-                os.makedirs('gacha_result', exist_ok=True)
-                ret_fn = os.path.join('gacha_result', f'{t}.png')
+                gacha_result_folder = os.path.join(const.APP_PATH, 'gacha_result')
+                os.makedirs(gacha_result_folder, exist_ok=True)
+                ret_fn = os.path.join(gacha_result_folder, f'{t}.png')
                 cv2.imwrite(ret_fn, img)
                 gacha_result = card_list.read_gacha_result(img)
                 if set(gacha_result) & TARGET_CARD_SET:

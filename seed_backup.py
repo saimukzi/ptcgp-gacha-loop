@@ -30,7 +30,7 @@ class SeedBackup:
 
     def _get_folder_path(self):
         if self.__folder_path == None:
-            self.__folder_path = os.path.join(const.MY_PATH, 'var', 'backup')
+            self.__folder_path = os.path.join(const.APP_PATH, 'var', 'backup')
         return self.__folder_path
 
     def _get_file_path(self):
