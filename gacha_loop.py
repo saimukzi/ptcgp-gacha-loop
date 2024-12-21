@@ -62,7 +62,7 @@ def main():
 
     emu_ok = False
 
-    # check if the state go pass these states in order
+    # [EJUUQPPRST] check if the state go pass these states in order
     # - s02-toc-00
     # - s03-start-00
     # - s12-end-00
