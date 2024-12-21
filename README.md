@@ -20,7 +20,7 @@
 
 ## 使用
 
-1. [下載刷包器](https://mega.nz/file/ddkyUABR#q2B_tD6hHPgmm02PtliL8_HSgfKhrYSeOcVt4bSf9_o)
+1. [下載 gacha_loop-20241221-213005.zip](https://mega.nz/file/RVc21B5Z#hFwFfAIzEtlreutR1ZX8k8DFfSIkQGZZ0SjjVd8Q4Fw)
 2. 打開雷電多開器。建立新模擬器，例如名為"PTCGP-Gacha-00"。畫面橫 300 直 400 DPI 120，中文。打開 ADB 到本地。
 3. 啟動新模擬器。
 4. 在模擬器安裝 PTCGP，亦確保沒有登入任何帳號。
