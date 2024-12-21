@@ -115,6 +115,8 @@ def main():
                 logger.debug(f'PNOCLZOWIW cycle timeout')
                 ldagent.kill()
                 emu_ok = False
+                if backup.is_backup_available():
+                    force_restore = True
                 continue
 
             if not emu_ok:
