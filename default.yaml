@@ -2,6 +2,8 @@
 
 STOP_AT_RARE_PACK: true
 
+ENABLE_BACKUP_SEED: true
+
 DEBUG_MODE: true
 
 CHECK_CYCLE_SECONDS: 900 # 15 minutes
