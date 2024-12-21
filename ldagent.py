@@ -271,7 +271,7 @@ def decode_console(bb):
     # print(ret)
     return ret
 
-def ldconsole_exec(cmd, timeout=5):
+def ldconsole_exec(cmd, timeout=10):
     process_ret = subprocess.run([LDCONSOLE_PATH, cmd[0], '--index', str(EMU_IDX)]+cmd[1:], capture_output=True, timeout=timeout)
     logger.debug(f'NYUTUZCBMC isrunning returncode = {process_ret.returncode}')
     assert(process_ret.returncode == 0)
