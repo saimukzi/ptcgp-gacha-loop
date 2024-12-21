@@ -1,5 +1,5 @@
 import os
-
+import const
 import cv2
 import numpy as np
 
@@ -9,19 +9,19 @@ state_data_list = []
 state_fix_dict = {}
 
 def load_state():
-    state_list = os.listdir(os.path.join('res', 'state'))
+    state_list = os.listdir(os.path.join(const.MY_PATH, 'res', 'state'))
     state_list = filter(lambda x: x.endswith('.max.png'), state_list)
     state_list = map(lambda x: x[:-8], state_list)
     state_list = list(state_list)
     for state in state_list:
-        img_min_fn = os.path.join('res', 'state', f'{state}.min.png')
-        img_max_fn = os.path.join('res', 'state', f'{state}.max.png')
-        img_svmin_fn = os.path.join('res', 'state', f'{state}.svmin.png')
-        img_svmax_fn = os.path.join('res', 'state', f'{state}.svmax.png')
-        img_mask_fn = os.path.join('res', 'state', f'{state}.mask.png')
+        img_min_fn = os.path.join(const.MY_PATH, 'res', 'state', f'{state}.min.png')
+        img_max_fn = os.path.join(const.MY_PATH, 'res', 'state', f'{state}.max.png')
+        img_svmin_fn = os.path.join(const.MY_PATH, 'res', 'state', f'{state}.svmin.png')
+        img_svmax_fn = os.path.join(const.MY_PATH, 'res', 'state', f'{state}.svmax.png')
+        img_mask_fn = os.path.join(const.MY_PATH, 'res', 'state', f'{state}.mask.png')
+
         img_min = cv2.imread(img_min_fn).astype(np.float32)
         img_max = cv2.imread(img_max_fn).astype(np.float32)
-
         if os.path.exists(img_svmin_fn):
             assert(os.path.exists(img_svmax_fn))
             img_svmin = cv2.imread(img_svmin_fn).astype(np.float32)
@@ -44,17 +44,29 @@ def load_state():
             'img_mask': img_mask,
         })
     
-    state_fix_list = os.listdir(os.path.join('res', 'state', 'fix'))
+    state_fix_list = os.listdir(os.path.join(const.MY_PATH, 'res', 'state', 'fix'))
     state_fix_list = filter(lambda x: x.endswith('.max.png'), state_fix_list)
     state_fix_list = map(lambda x: x[:-8], state_fix_list)
     state_fix_list = list(state_fix_list)
     for state_fix in state_fix_list:
         state0, state1 = state_fix.split('.')
-        img_min_fn = os.path.join('res', 'state', 'fix', f'{state_fix}.min.png')
-        img_max_fn = os.path.join('res', 'state', 'fix', f'{state_fix}.max.png')
-        img_mask_fn = os.path.join('res', 'state', 'fix', f'{state_fix}.mask.png')
+        img_min_fn = os.path.join(const.MY_PATH, 'res', 'state', 'fix', f'{state_fix}.min.png')
+        img_max_fn = os.path.join(const.MY_PATH, 'res', 'state', 'fix', f'{state_fix}.max.png')
+        img_mask_fn = os.path.join(const.MY_PATH, 'res', 'state', 'fix', f'{state_fix}.mask.png')
+        img_svmax_fn = os.path.join(const.MY_PATH, 'res', 'state', 'fix', f'{state_fix}.svmax.png')
+        img_mask_fn = os.path.join(const.MY_PATH, 'res', 'state', 'fix', f'{state_fix}.mask.png')
+
         img_min = cv2.imread(img_min_fn).astype(np.float32)
         img_max = cv2.imread(img_max_fn).astype(np.float32)
+        if os.path.exists(img_svmin_fn):
+            assert(os.path.exists(img_svmax_fn))
+            img_svmin = cv2.imread(img_svmin_fn).astype(np.float32)
+            img_svmin = img_svmin[:,:,0:2]
+            img_svmax = cv2.imread(img_svmax_fn).astype(np.float32)
+            img_svmax = img_svmax[:,:,0:2]
+            img_min = np.append(img_min, img_svmin, axis=2)
+            img_max = np.append(img_max, img_svmax, axis=2)
+
         if os.path.exists(img_mask_fn):
             img_mask = cv2.imread(img_mask_fn, cv2.IMREAD_UNCHANGED).astype(np.float32)
             assert(img_mask.shape[2] == 4)
