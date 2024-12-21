@@ -3,8 +3,8 @@ import sys
 
 MY_PATH = os.path.dirname(os.path.abspath(__file__))
 
-if getattr(sys, 'frozen', False):
-    APP_PATH = os.path.dirname(sys.executable)
+if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+    APP_PATH = sys._MEIPASS
 else:
     APP_PATH = MY_PATH
 
