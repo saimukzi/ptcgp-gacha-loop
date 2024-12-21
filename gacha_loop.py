@@ -61,6 +61,8 @@ def main():
     backup = backuppy.SeedBackup(config_data)
     force_restore = False
 
+    force_restart = False
+
     INSTANCE_VAR_FOLDER = os.path.join(APP_VAR_FOLDER, 'instances', INSTANCE_ID)
     logger.debug(f'INSTANCE_VAR_FOLDER={INSTANCE_VAR_FOLDER}')
     os.makedirs(INSTANCE_VAR_FOLDER, exist_ok=True)
@@ -86,6 +88,9 @@ def main():
     check_cycle_loop_state = None
     check_cycle_last_reset = time.time()
 
+    # [ZRTRNAFFLV] restart emu to free memory
+    freemem_last_reset = time.time()
+
     while True:
         try:
             update_logger(config_data)
@@ -97,6 +102,13 @@ def main():
                 backup.restore()
                 force_restore = False
                 emu_ok = False
+                continue
+
+            if force_restart:
+                logger.debug(f'KKTWULVBBG force_restart')
+                ldagent.kill()
+                emu_ok = False
+                force_restart = False
                 continue
 
             if time.time() - check_cycle_last_reset > config_data['CHECK_CYCLE_SECONDS']:
@@ -194,7 +206,9 @@ def main():
                 sys.exit(0)
 
             if state == 's00-cover':
+                # just after del account
                 if 's12-end-03-confirm' in flag_set:
+                    # backup seed
                     if not backup.is_backup_available():
                         ldagent.kill()
                         emu_ok = False
@@ -202,6 +216,13 @@ def main():
                         flag_set = set()
                         continue
                     flag_set = set()
+
+                # [ZRTRNAFFLV] restart emu to free memory
+                if time.time() - freemem_last_reset > config_data['FREEMEM_SECONDS']:
+                    logger.debug(f'OOHKRSARJM freemem')
+                    force_restart = True
+                    continue
+
                 ldagent.tap(150, 200)
                 time.sleep(4)
                 continue

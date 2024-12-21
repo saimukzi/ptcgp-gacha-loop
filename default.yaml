@@ -4,6 +4,9 @@ STOP_AT_RARE_PACK: true
 
 DEBUG_MODE: true
 
-CHECK_CYCLE_SECONDS: 900
+CHECK_CYCLE_SECONDS: 900 # 15 minutes
+
+# [ZRTRNAFFLV] restart emu to free memory
+FREEMEM_SECONDS: 21600 # 6 hours
 
 INSTANCE_ID: "default"
