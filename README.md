@@ -57,6 +57,8 @@ LD_EMU_NAME: 模擬器名稱
 
 LDPLAYER_PATH: 雷電模擬器的安裝資料夾，「\\」符號要寫成「\\\\」
 
+DEBUG_MODE: 除錯資訊輸出到 log
+
 ## FAQ
 
 - [FAQ](FAQ.md)
