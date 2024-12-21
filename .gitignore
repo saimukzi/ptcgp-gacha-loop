@@ -7,3 +7,4 @@ var
 log
 build
 dist
+*.spec
