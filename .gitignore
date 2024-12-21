@@ -5,3 +5,5 @@ tmp*
 var
 *.pyc
 log
+build
+dist
