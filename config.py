@@ -29,3 +29,14 @@ def check(config_data, check_TARGET_CARD_LIST=True):
             if target_card not in card_set:
                 logger.error(f'HCFBYRITEH Invalid TARGET_CARD: {target_card}')
                 assert(False)
+
+def main():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('config', type=str)
+    args = parser.parse_args()
+
+    config_data = get_config(args.config)
+
+    card_list.load_card_img()
+    check(config_data)

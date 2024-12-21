@@ -1,7 +1,7 @@
-# TARGET_PACK: charizard, mewtwo, pikachu, mew
+# TARGET_PACK: 抽甚麼包: charizard, mewtwo, pikachu, mew
 TARGET_PACK: "mew"
 
-# refer to res\card
+# TARGET_CARD_LIST: 抽到甚麼卡的時候會停下來，卡片代號請參考 res\card 資料夾
 TARGET_CARD_LIST:
   - "cPK_20_000040_00_FUSHIGIBANAex_SR"
   - "cPK_20_000230_00_NASSYex_SR"
@@ -43,15 +43,17 @@ TARGET_CARD_LIST:
   - "cPK_20_002450_01_MEWex_SAR"
   - "cPK_20_002590_01_PTERAex_SAR"
 
+# STOP_AT_RARE_PACK: 抽到神包停下來
 STOP_AT_RARE_PACK: true
 
-# user name in game, add {IDX} for 3 digi index, reset after 1000
+# USERNAME: 新賬號的名字，{IDX}是三位數流水號
 USERNAME: "abc{IDX}"
 
+# LD_EMU_NAME: 模擬器名稱
 LD_EMU_NAME: "PTCGP-Gacha-00"
 
-# LDPLAYER_PATH: write "\" as "\\"
+# LDPLAYER_PATH: 雷電模擬器的安裝資料夾，「\」符號要寫成「\\」
 LDPLAYER_PATH: "D:\\LDPlayer\\LDPlayer9"
 
-# Enable debug mode to log, default is true
+# DEBUG_MODE: 除錯資訊輸出到 log
 # DEBUG_MODE: false
