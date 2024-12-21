@@ -181,6 +181,23 @@ def kill():
             assert(False)
 
 
+def killapp():
+    process_ret = subprocess.run([LDCONSOLE_PATH, "killapp", '--index', str(EMU_IDX), '--packagename', PACKAGE_NAME], capture_output=True, timeout=20)
+    logger.debug(f'BRYURULFDU killapp returncode = {process_ret.returncode}')
+    assert(process_ret.returncode == 0)
+
+
+def backup(path):
+    process_ret = subprocess.run([LDCONSOLE_PATH, "backup", '--index', str(EMU_IDX), '--file', path], capture_output=True, timeout=120)
+    logger.debug(f'WNEGIMQAYH backup returncode = {process_ret.returncode}')
+    assert(process_ret.returncode == 0)
+
+
+def restore(path):
+    process_ret = subprocess.run([LDCONSOLE_PATH, "restore", '--index', str(EMU_IDX), '--file', path], capture_output=True, timeout=120)
+    logger.debug(f'WVOLRLKHAF restore returncode = {process_ret.returncode}')
+    assert(process_ret.returncode == 0)
+
 def adb_exec(cmd, timeout=5):
     try:
         process_ret = subprocess.run([ADB_PATH, "-s", f"emulator-{ADB_IDX}"]+cmd, capture_output=True, timeout=timeout)

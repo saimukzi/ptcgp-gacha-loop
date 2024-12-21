@@ -50,10 +50,17 @@ def main():
 
     config.check(config_data)
 
+    APP_VAR_FOLDER = os.path.join(const.MY_PATH, 'var')
+    logger.debug(f'APP_VAR_FOLDER={APP_VAR_FOLDER}')
+    os.makedirs(APP_VAR_FOLDER, exist_ok=True)
+
+    SEED_EMU_BACKUP_PATH = os.path.join(APP_VAR_FOLDER, 'seed_emu_backup.ldbk')
+    logger.debug(f'SEED_EMU_BACKUP_PATH={SEED_EMU_BACKUP_PATH}')
+
     INSTANCE_VAR_FOLDER = os.path.join(const.MY_PATH, 'var', 'instances', INSTANCE_ID)
     logger.debug(f'INSTANCE_VAR_FOLDER={INSTANCE_VAR_FOLDER}')
     os.makedirs(INSTANCE_VAR_FOLDER, exist_ok=True)
-    USER_IDX_PATH = os.path.join(INSTANCE_VAR_FOLDER, INSTANCE_ID, 'user_idx.txt')
+    USER_IDX_PATH = os.path.join(INSTANCE_VAR_FOLDER, 'user_idx.txt')
     user_idx = 0
     if os.path.exists(USER_IDX_PATH):
         with open(USER_IDX_PATH, 'r') as f:
@@ -152,9 +159,19 @@ def main():
             logger.debug(f'IWFCYLNYDB flag_set={flag_set}')
 
             if state == 's00-cover':
-                ldagent.tap(150, 200)
-                time.sleep(4)
-                continue
+                if 's12-end-03-confirm' in flag_set:
+                    if not os.path.exists(SEED_EMU_BACKUP_PATH):
+                        ldagent.kill()
+                        emu_ok = False
+                        ldagent.backup(SEED_EMU_BACKUP_PATH)
+                        flag_set = set()
+                        continue
+                    else:
+                        flag_set = set()
+                else:
+                    ldagent.tap(150, 200)
+                    time.sleep(4)
+                    continue
             if state == 's01-info-00':
                 ldagent.tap(100, 292)
                 time.sleep(0.5)
@@ -383,6 +400,7 @@ def main():
                 time.sleep(0.5)
                 continue
             if state == 's12-end-03':
+                flag_set.add(state)
                 ldagent.tap(150,327)
                 time.sleep(0.5)
                 continue
@@ -423,6 +441,8 @@ def main():
                 time.sleep(0.5)
                 continue
             if state == 'xxx-dialog-swr':
+                if 's12-end-03' in flag_set:
+                    flag_set.add('s12-end-03-confirm')
                 ldagent.tap(200, 266)
                 time.sleep(0.5)
                 continue
