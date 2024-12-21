@@ -28,7 +28,7 @@ import seed_backup as backuppy
 
 def main():
     parser = argparse.ArgumentParser(description='Gacha loop')
-    parser.add_argument('config', type=str)
+    parser.add_argument('config', type=str, default='config.yaml', nargs='?')
     args = parser.parse_args()
 
     config_data = config.get_config(args.config)
@@ -307,18 +307,19 @@ def main():
                 continue
             if state == 's05-name-02-empty':
                 yyyymmddhhmmss = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
-                username = USERNAME.replace('{IDX}', '%03d' % (user_idx%1000))
-                username = USERNAME.replace('{IDX1}', '%01d' % (user_idx%10))
-                username = USERNAME.replace('{IDX2}', '%02d' % (user_idx%100))
-                username = USERNAME.replace('{IDX3}', '%03d' % (user_idx%1000))
-                username = USERNAME.replace('{IDX4}', '%04d' % (user_idx%10000))
-                username = USERNAME.replace('{YYYY}', yyyymmddhhmmss[:4])
-                username = USERNAME.replace('{YY}', yyyymmddhhmmss[2:4])
-                username = USERNAME.replace('{MM}', yyyymmddhhmmss[4:6])
-                username = USERNAME.replace('{DD}', yyyymmddhhmmss[6:8])
-                username = USERNAME.replace('{hh}', yyyymmddhhmmss[8:10])
-                username = USERNAME.replace('{mm}', yyyymmddhhmmss[10:12])
-                username = USERNAME.replace('{ss}', yyyymmddhhmmss[12:14])
+                username = USERNAME
+                username = username.replace('{IDX}', '%03d' % (user_idx%1000))
+                username = username.replace('{IDX1}', '%01d' % (user_idx%10))
+                username = username.replace('{IDX2}', '%02d' % (user_idx%100))
+                username = username.replace('{IDX3}', '%03d' % (user_idx%1000))
+                username = username.replace('{IDX4}', '%04d' % (user_idx%10000))
+                username = username.replace('{YYYY}', yyyymmddhhmmss[:4])
+                username = username.replace('{YY}', yyyymmddhhmmss[2:4])
+                username = username.replace('{MM}', yyyymmddhhmmss[4:6])
+                username = username.replace('{DD}', yyyymmddhhmmss[6:8])
+                username = username.replace('{hh}', yyyymmddhhmmss[8:10])
+                username = username.replace('{mm}', yyyymmddhhmmss[10:12])
+                username = username.replace('{ss}', yyyymmddhhmmss[12:14])
                 logger.debug(f'DCMMMGVEHA username={username}')
                 ldagent.input_text(username)
                 user_idx += 1

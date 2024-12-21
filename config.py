@@ -9,7 +9,7 @@ DEFAULT_CONFIG_PATH = os.path.join(MY_PATH, 'default.yaml')
 
 def get_config(fn):
     ret = yaml.load(open(DEFAULT_CONFIG_PATH, 'r'), Loader=yaml.FullLoader)
-    config_data = yaml.load(open(fn, 'r'), Loader=yaml.FullLoader)
+    config_data = yaml.load(open(fn, 'rt', encoding='utf-8'), Loader=yaml.FullLoader)
     ret.update(config_data)
 
     return ret
