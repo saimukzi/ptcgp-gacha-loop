@@ -59,6 +59,7 @@ def main():
     # logger.debug(f'SEED_EMU_BACKUP_PATH={SEED_EMU_BACKUP_PATH}')
 
     backup = backuppy.SeedBackup(config_data)
+    force_restore = False
 
     INSTANCE_VAR_FOLDER = os.path.join(const.MY_PATH, 'var', 'instances', INSTANCE_ID)
     logger.debug(f'INSTANCE_VAR_FOLDER={INSTANCE_VAR_FOLDER}')
@@ -90,16 +91,26 @@ def main():
             update_logger(config_data)
             logger.debug('MMNRYHUKFQ tick')
 
+            if force_restore:
+                logger.debug(f'SRDWQJYJIR force_restore')
+                ldagent.kill()
+                backup.restore()
+                force_restore = False
+                emu_ok = False
+                continue
+
             if time.time() - check_cycle_last_reset > config_data['CHECK_CYCLE_SECONDS']:
                 logger.debug(f'PNOCLZOWIW cycle timeout')
                 ldagent.kill()
                 emu_ok = False
+                continue
 
             if not emu_ok:
                 logger.debug(f'URNYXLHHXQ recover emu')
                 ldagent.recover()
                 emu_ok = True
                 flag_set = set()
+                continue
 
             if state != 'UNKNOWN':
                 state_history.append(state)
@@ -160,6 +171,27 @@ def main():
 
             logger.debug(f'IWFCYLNYDB state={state}')
             logger.debug(f'IWFCYLNYDB flag_set={flag_set}')
+
+            if state == 'err-launch-00':
+                if backup.is_backup_available():
+                    force_restore = True
+                    continue
+                ldagent.tap(150, 247)
+                time.sleep(0.5)
+                continue
+            if state == 'err-launch-01':
+                if backup.is_backup_available():
+                    force_restore = True
+                    continue
+                ldagent.tap(200, 277)
+                time.sleep(0.5)
+                continue
+
+            if state == 'err-nostoredata':
+                if backup.is_backup_available():
+                    force_restore = True
+                    continue
+                sys.exit(0)
 
             if state == 's00-cover':
                 if 's12-end-03-confirm' in flag_set:
