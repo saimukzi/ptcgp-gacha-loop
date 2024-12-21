@@ -298,6 +298,7 @@ def main():
                 username = USERNAME.replace('{hh}', yyyymmddhhmmss[8:10])
                 username = USERNAME.replace('{mm}', yyyymmddhhmmss[10:12])
                 username = USERNAME.replace('{ss}', yyyymmddhhmmss[12:14])
+                logger.debug(f'DCMMMGVEHA username={username}')
                 ldagent.input_text(username)
                 user_idx += 1
                 user_idx %= 10000
