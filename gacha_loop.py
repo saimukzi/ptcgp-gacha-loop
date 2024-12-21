@@ -235,7 +235,7 @@ def main():
                 user_idx %= 1000
                 with open('var/user_idx.txt', 'w') as f:
                     f.write(str(user_idx))
-                time.sleep(0.1)
+                time.sleep(0.5)
                 ldagent.tap(250, 364)
                 time.sleep(0.5)
                 continue
