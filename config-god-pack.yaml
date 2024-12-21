@@ -1,19 +1,21 @@
-# TARGET_PACK: charizard, mewtwo, pikachu, mew
+# 這是單純抽神包的設定檔示範
+
+# TARGET_PACK: 抽甚麼包: charizard, mewtwo, pikachu, mew
 TARGET_PACK: "mew"
 
-# !!! IMPORTANT !!!
-# put empty list to TARGET_CARD_LIST
+# !!! 重要 !!!
+# 在 TARGET_CARD_LIST 放入空陣列 []
 TARGET_CARD_LIST: []
 
-# !!! IMPORTANT !!!
-# set true to STOP_AT_RARE_PACK so it will stop at rare pack
+# !!! 重要 !!!
+# 在 STOP_AT_RARE_PACK 放入 true 以停止在神包
 STOP_AT_RARE_PACK: true
 
-# user name in game, add {IDX} for 3 digi index, reset after 1000
+# USERNAME: 新帳號的名字
 USERNAME: "abc{IDX}"
 
+# LD_EMU_NAME: 模擬器名稱
 LD_EMU_NAME: "PTCGP-Gacha-00"
-LDPLAYER_PATH: "D:\\LDPlayer\\LDPlayer9"
 
-# Enable debug mode to log, default is true
-# DEBUG_MODE: false
+# LDPLAYER_PATH: 雷電模擬器的安裝資料夾，「\」符號要寫成「\\」
+LDPLAYER_PATH: "D:\\LDPlayer\\LDPlayer9"

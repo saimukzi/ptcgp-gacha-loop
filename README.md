@@ -20,28 +20,16 @@
 
 ## 使用
 
-1. 打開雷電多開器。建立新模擬器，例如名為"PTCGP-Gacha-00"。畫面橫 300 直 400 DPI 120，中文。打開 ADB 到本地。
-2. 啟動新模擬器。
-3. 安裝 PTCGP，亦確保沒有登入任何帳號。
-4. 手動刷一次首抽。包括第一包自選，第二包制超夢，第三四包自選，第五包 12 沙漏。確認下載更新完成，也略過 Google Play 的問卷。完成後刪帳，回到標題畫面。
+1. [下載刷包器](https://mega.nz/file/ddkyUABR#q2B_tD6hHPgmm02PtliL8_HSgfKhrYSeOcVt4bSf9_o)
+2. 打開雷電多開器。建立新模擬器，例如名為"PTCGP-Gacha-00"。畫面橫 300 直 400 DPI 120，中文。打開 ADB 到本地。
+3. 啟動新模擬器。
+4. 在模擬器安裝 PTCGP，亦確保沒有登入任何帳號。
 5. 修改 config.yaml
-6. 第一次執行，打開命令提示字元並 cd 到本資料夾。
-<pre>
-python -m venv venv
-.\venv\Scripts\activate.bat
-python -m pip install --upgrade pip wheel setuptools
-python -m pip install -r requirements.txt
-python gacha_loop.py config.yaml
-</pre>
-7. 以後執行，打開命令提示字元並 cd 到本資料夾。
-<pre>
-.\venv\Scripts\activate.bat
-python gacha_loop.py config.yaml
-</pre>
+6. 執行 gacha_loop.exe
 
 ## 示範
 
-https://www.youtube.com/watch?v=_-laRxczYmo
+https://www.youtube.com/watch?v=_-laRxczYmo (舊版本)
 
 ## config.yaml
 

@@ -59,6 +59,3 @@ LD_EMU_NAME: "PTCGP-Gacha-00"
 
 # LDPLAYER_PATH: 雷電模擬器的安裝資料夾，「\」符號要寫成「\\」
 LDPLAYER_PATH: "D:\\LDPlayer\\LDPlayer9"
-
-# DEBUG_MODE: 除錯資訊輸出到 log
-# DEBUG_MODE: false
