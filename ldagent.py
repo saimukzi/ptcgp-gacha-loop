@@ -1,10 +1,12 @@
 import os
+import shutil
 import time
 import cv2
 import subprocess
 from my_logger import logger
 import charset_normalizer
 import const
+import json
 
 # LDPLAYER_PATH = r'D:\LDPlayer\LDPlayer9'
 # EMU_INDEX = 0
@@ -110,6 +112,13 @@ def recover():
     logger.debug('YTQEMXRINZ recover START')
 
     try:
+        # check if emulator is running
+        is_running = ldconsole_exec(['isrunning']).strip()
+        is_running = (is_running == 'running')
+        logger.debug(f'VBSBGEWIOX isrunning = {is_running}')
+
+        force_kill = False
+
         # if bad screen size, force quit
         process_ret = subprocess.run([LDCONSOLE_PATH, 'list2'], capture_output=True, timeout=10)
         logger.debug(f'NPGOIQWVWC list2 returncode = {process_ret.returncode}')
@@ -121,12 +130,36 @@ def recover():
             linee = line.split(',')
             if linee[0] != EMU_IDX: continue
             if linee[7] != '300' or linee[8] != '400' or linee[9] != '120':
-                kill()
+                force_kill = True
+                break
+
+        # check adb enabled
+        emu_config_data_rewrite = False
+        emu_config_path = os.path.join(LDPLAYER_PATH, 'vms', 'config', f'leidian{EMU_IDX}.config')
+        assert(os.path.exists(emu_config_path))
+        emu_config_data = json.load(open(emu_config_path, 'r'))
+        assert(emu_config_data['statusSettings.playerName']==LD_EMU_NAME)
+        if emu_config_data['basicSettings.adbDebug'] == 0:
+            logger.debug(f'GANSNXERZV adbDebug is not enabled')
+            emu_config_data['basicSettings.adbDebug'] = 1
+            emu_config_data_rewrite = True
+            force_kill = True
+
+        # force kill
+        if force_kill:
+            logger.debug(f'UHMMGPTQTH force kill')
+            kill()
 
         # force screen size
         process_ret = subprocess.run([LDCONSOLE_PATH, "modify", '--index', str(EMU_IDX), "--resolution", "300,400,120"], capture_output=True, timeout=10)
         logger.debug(f'VNQSKTTRFC modify returncode = {process_ret.returncode}')
         assert(process_ret.returncode == 0)
+
+        # update adb enabled
+        if emu_config_data_rewrite:
+            logger.debug(f'SRDWQJYJIR rewrite emu_config_data to {emu_config_path}')
+            shutil.copyfile(emu_config_path, emu_config_path+'.bak')
+            json.dump(emu_config_data, open(emu_config_path, 'w'), indent=4)
 
         # launch emu with app
         while True:
@@ -237,6 +270,14 @@ def decode_console(bb):
     ret = charset_normalizer.from_bytes(bb).best().output().decode('utf-8')
     # print(ret)
     return ret
+
+def ldconsole_exec(cmd, timeout=5):
+    process_ret = subprocess.run([LDCONSOLE_PATH, cmd[0], '--index', str(EMU_IDX)]+cmd[1:], capture_output=True, timeout=timeout)
+    logger.debug(f'NYUTUZCBMC isrunning returncode = {process_ret.returncode}')
+    assert(process_ret.returncode == 0)
+    process_stdout = decode_console(process_ret.stdout).strip()
+    logger.debug(f'ADUVHMHEZL isrunning stdout = {process_stdout}')
+    return process_stdout
 
 class LdAgentException(Exception):
     pass
