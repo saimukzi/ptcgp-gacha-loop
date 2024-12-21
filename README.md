@@ -25,13 +25,17 @@
 3. 安裝 PTCGP，亦確保沒有登入任何帳號。
 4. 手動刷一次首抽。包括第一包自選，第二包制超夢，第三四包自選，第五包 12 沙漏。確認下載更新完成，也略過 Google Play 的問卷。完成後刪帳，回到標題畫面。
 5. 修改 config.yaml
-6. 打開命令提示字元並 cd 到本資料夾。
+6. 第一次執行，打開命令提示字元並 cd 到本資料夾。
 <pre>
 python -m venv venv
 .\venv\Scripts\activate.bat
 python -m pip install --upgrade pip wheel setuptools
 python -m pip install -r requirements.txt
-
+python gacha_loop.py config.yaml
+</pre>
+7. 以後執行，打開命令提示字元並 cd 到本資料夾。
+<pre>
+.\venv\Scripts\activate.bat
 python gacha_loop.py config.yaml
 </pre>
 
