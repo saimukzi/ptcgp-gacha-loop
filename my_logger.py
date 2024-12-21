@@ -17,6 +17,7 @@ logger_file_handler_yyyymmddhh = None
 def update_logger(config_data):
     global logger_file_handler, logger_file_handler_yyyymmddhh
     if not config_data['DEBUG_MODE']: return
+    INSTANCE_ID = config_data['INSTANCE_ID']
     yyyymmddhh = time.strftime('%Y%m%d%H', time.localtime(time.time()))
     yyyy = yyyymmddhh[:4]
     mm = yyyymmddhh[4:6]
@@ -27,7 +28,7 @@ def update_logger(config_data):
     if logger_file_handler is not None:
         logger.removeHandler(logger_file_handler)
         logger_file_handler = None
-    fn = os.path.join(MY_PATH,'log', yyyy, mm, dd, f'{yyyy}{mm}{dd}-{hh}.log')
+    fn = os.path.join(MY_PATH,'log', yyyy, mm, dd, f'{yyyy}{mm}{dd}-{hh}-{INSTANCE_ID}.log')
     # print(fn)
     os.makedirs(os.path.dirname(fn), exist_ok=True)
     logger_file_handler = logging.FileHandler(fn)

@@ -50,8 +50,10 @@ def main():
 
     config.check(config_data)
 
-    os.makedirs(os.path.join(const.MY_PATH, 'var', INSTANCE_ID), exist_ok=True)
-    USER_IDX_PATH = os.path.join(const.MY_PATH, 'var', INSTANCE_ID, 'user_idx.txt')
+    INSTANCE_VAR_FOLDER = os.path.join(const.MY_PATH, 'var', 'instances', INSTANCE_ID)
+    logger.debug(f'INSTANCE_VAR_FOLDER={INSTANCE_VAR_FOLDER}')
+    os.makedirs(os.path.join(INSTANCE_VAR_FOLDER, INSTANCE_ID), exist_ok=True)
+    USER_IDX_PATH = os.path.join(INSTANCE_VAR_FOLDER, INSTANCE_ID, 'user_idx.txt')
     user_idx = 0
     if os.path.exists(USER_IDX_PATH):
         with open(USER_IDX_PATH, 'r') as f:
