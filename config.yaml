@@ -46,7 +46,7 @@ TARGET_CARD_LIST:
 # STOP_AT_RARE_PACK: 抽到神包停下來
 STOP_AT_RARE_PACK: true
 
-# USERNAME: 新賬號的名字，{IDX}是三位數流水號
+# USERNAME: 新帳號的名字，{IDX}是三位數流水號
 USERNAME: "abc{IDX}"
 
 # LD_EMU_NAME: 模擬器名稱
