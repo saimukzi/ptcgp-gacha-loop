@@ -72,7 +72,7 @@ DEBUG_MODE: 除錯資訊輸出到 log
 ## 支援
 
 - [西木子DC](https://discord.gg/kdZ5fQxP)
-- 電郵 saimukzi@hiauntie.com ，請附上 log 資料夾 zip 及 tmp-screencap.png 。
+- 電郵 saimukzi@hiauntie.com ，請附上 log 資料夾 zip 及 var\\instances\\default\\tmp-screencap.png 。
 
 ## 感謝
 
