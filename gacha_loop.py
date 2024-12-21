@@ -62,12 +62,25 @@ def main():
 
     emu_ok = False
 
+    # check if the state go pass these states in order
+    # - s02-toc-00
+    # - s03-start-00
+    # - s12-end-00
+    check_cycle_loop_state = None
+    check_cycle_last_reset = time.time()
+
     while True:
         try:
             update_logger(config_data)
             logger.debug('MMNRYHUKFQ tick')
 
+            if time.time() - check_cycle_last_reset > config_data['CHECK_CYCLE_SECONDS']:
+                logger.debug(f'PNOCLZOWIW cycle timeout')
+                ldagent.kill()
+                emu_ok = False
+
             if not emu_ok:
+                logger.debug(f'URNYXLHHXQ recover emu')
                 ldagent.recover()
                 emu_ok = True
                 flag_set = set()
@@ -157,6 +170,9 @@ def main():
                 time.sleep(0.5)
                 continue
             if state == 's02-toc-00':
+                if check_cycle_loop_state in [None, 's12-end-00']:
+                    check_cycle_loop_state = state
+                    check_cycle_last_reset = time.time()
                 if state_history[-1] != 's02-toc-01':
                     ldagent.tap(149, 207)
                     time.sleep(1)
@@ -187,6 +203,8 @@ def main():
                 time.sleep(0.5)
                 continue
             if state == 's03-start-00':
+                if check_cycle_loop_state in [None, 's02-toc-00']:
+                    check_cycle_loop_state = state
                 ldagent.tap(150, 248)
                 time.sleep(0.5)
                 continue
@@ -345,6 +363,8 @@ def main():
                 continue
 
             if state == 's12-end-00':
+                if check_cycle_loop_state in [None, 's03-start-00']:
+                    check_cycle_loop_state = state
                 ldagent.tap(263,385)
                 time.sleep(0.5)
                 continue
