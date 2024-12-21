@@ -4,11 +4,14 @@ import cv2
 import subprocess
 from my_logger import logger
 import charset_normalizer
+import const
 
 # LDPLAYER_PATH = r'D:\LDPlayer\LDPlayer9'
 # EMU_INDEX = 0
 
 PACKAGE_NAME = 'jp.pokemon.pokemontcgp'
+
+INSTANCE_ID = None
 
 LDPLAYER_PATH = None
 LDCONSOLE_PATH = None
@@ -18,11 +21,17 @@ LD_EMU_NAME = 'LDPlayer'
 EMU_IDX = None
 ADB_IDX = None
 
+SCREENCAP_PATH = None
+
 def config(config_data):
     # set_LDPLAYER_PATH(config_data['LDPLAYER_PATH'])
     # set_LD_EMU_NAME(config_data['LD_EMU_NAME'])
 
-    global LDPLAYER_PATH, LDCONSOLE_PATH, ADB_PATH, LD_EMU_NAME, EMU_IDX, ADB_IDX
+    global INSTANCE_ID, LDPLAYER_PATH, LDCONSOLE_PATH, ADB_PATH, LD_EMU_NAME, EMU_IDX, ADB_IDX, SCREENCAP_PATH
+
+    INSTANCE_ID = config_data['INSTANCE_ID']
+    logger.debug(f'INSTANCE_ID = {INSTANCE_ID}')
+
     LDPLAYER_PATH = config_data['LDPLAYER_PATH']
     LDCONSOLE_PATH = os.path.join(LDPLAYER_PATH, 'ldconsole.exe')
     ADB_PATH = os.path.join(LDPLAYER_PATH, 'adb.exe')
@@ -73,10 +82,12 @@ def config(config_data):
     # pout = pout.strip()
     # assert(pout == 'ODSLKYUGNV')
 
+    SCREENCAP_PATH = os.path.join(const.MY_PATH, 'var', INSTANCE_ID, 'tmp-screencap.png')
+
 def screencap():
     adb_exec(['shell', 'screencap', '-p', '/sdcard/tmp-screencap.png'])
-    adb_exec(['pull', '/sdcard/tmp-screencap.png'])
-    img = cv2.imread('tmp-screencap.png')
+    adb_exec(['pull', '/sdcard/tmp-screencap.png', SCREENCAP_PATH])
+    img = cv2.imread(SCREENCAP_PATH)
     return img
 
 def tap(x, y):

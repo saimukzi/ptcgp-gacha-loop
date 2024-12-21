@@ -38,6 +38,9 @@ def main():
     logger.debug(f'KLZUCSPIFK config path={args.config}')
     logger.debug(f'JSOFIXCPAG config_data={config_data}')
 
+    INSTANCE_ID = config_data['INSTANCE_ID']
+    logger.debug(f'INSTANCE_ID={INSTANCE_ID}')
+
     TARGET_PACK = config_data['TARGET_PACK']
     TARGET_CARD_SET = set(config_data['TARGET_CARD_LIST'])
     USERNAME = config_data['USERNAME']
@@ -47,10 +50,11 @@ def main():
 
     config.check(config_data)
 
-    os.makedirs('var', exist_ok=True)
+    os.makedirs(os.path.join(const.MY_PATH, 'var', INSTANCE_ID), exist_ok=True)
+    USER_IDX_PATH = os.path.join(const.MY_PATH, 'var', INSTANCE_ID, 'user_idx.txt')
     user_idx = 0
-    if os.path.exists('var/user_idx.txt'):
-        with open('var/user_idx.txt', 'r') as f:
+    if os.path.exists(USER_IDX_PATH):
+        with open(USER_IDX_PATH, 'r') as f:
             user_idx = int(f.read())
 
     ldagent.config(config_data)
@@ -233,7 +237,7 @@ def main():
                 ldagent.input_text(username)
                 user_idx += 1
                 user_idx %= 1000
-                with open('var/user_idx.txt', 'w') as f:
+                with open(USER_IDX_PATH, 'w') as f:
                     f.write(str(user_idx))
                 time.sleep(0.5)
                 ldagent.tap(250, 364)
