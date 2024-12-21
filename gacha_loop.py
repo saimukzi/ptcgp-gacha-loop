@@ -211,12 +211,13 @@ def main():
                 # just after del account
                 if 's12-end-03-confirm' in flag_set:
                     # backup seed
-                    if not backup.is_backup_available():
-                        ldagent.kill()
-                        emu_ok = False
-                        backup.backup()
-                        flag_set = set()
-                        continue
+                    if config_data['ENABLE_BACKUP_SEED']:
+                        if not backup.is_backup_available():
+                            ldagent.kill()
+                            emu_ok = False
+                            backup.backup()
+                            flag_set = set()
+                            continue
                     flag_set = set()
 
                 # [ZRTRNAFFLV] restart emu to free memory
