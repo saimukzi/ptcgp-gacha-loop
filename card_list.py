@@ -20,7 +20,7 @@ def load_card_img():
     card_list = map(lambda x: x[:-4], card_list)
     card_list = list(card_list)
     for card in card_list:
-        img_path = os.path.join('res', 'card', f'{card}.png')
+        img_path = os.path.join(const.MY_PATH, 'res', 'card', f'{card}.png')
         img = cv2.imread(img_path)
         img = cv2.resize(img, GACHA_RESULT_SIZE)
         CARD_LIST.append({

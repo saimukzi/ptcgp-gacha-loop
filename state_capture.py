@@ -1,7 +1,7 @@
 import os
 import shutil
 import time
-
+import const
 import cv2
 import yaml
 import ldagent
@@ -25,10 +25,10 @@ def main():
     img_svmin = None
     img_svmax = None
 
-    img_min_fn = os.path.join('res', 'state', f'{args.state}.min.png')
-    img_max_fn = os.path.join('res', 'state', f'{args.state}.max.png')
-    img_svmin_fn = os.path.join('res', 'state', f'{args.state}.svmin.png')
-    img_svmax_fn = os.path.join('res', 'state', f'{args.state}.svmax.png')
+    img_min_fn = os.path.join(const.MY_PATH, 'res', 'state', f'{args.state}.min.png')
+    img_max_fn = os.path.join(const.MY_PATH, 'res', 'state', f'{args.state}.max.png')
+    img_svmin_fn = os.path.join(const.MY_PATH, 'res', 'state', f'{args.state}.svmin.png')
+    img_svmax_fn = os.path.join(const.MY_PATH, 'res', 'state', f'{args.state}.svmax.png')
 
     if not args.append:
         if os.path.exists(img_min_fn):
@@ -68,7 +68,7 @@ def main():
         img_svmax = cv2_max(img_svmax, imgsv)
         time.sleep(0.05)
     
-    os.makedirs(os.path.join('res', 'state'), exist_ok=True)
+    os.makedirs(os.path.join(const.MY_PATH, 'res', 'state'), exist_ok=True)
 
     cv2.imwrite(img_max_fn, img_max)
     cv2.imwrite(img_min_fn, img_min)

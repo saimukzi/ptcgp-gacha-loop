@@ -61,7 +61,7 @@ def main():
     backup = backuppy.SeedBackup(config_data)
     force_restore = False
 
-    INSTANCE_VAR_FOLDER = os.path.join(const.MY_PATH, 'var', 'instances', INSTANCE_ID)
+    INSTANCE_VAR_FOLDER = os.path.join(APP_VAR_FOLDER, 'instances', INSTANCE_ID)
     logger.debug(f'INSTANCE_VAR_FOLDER={INSTANCE_VAR_FOLDER}')
     os.makedirs(INSTANCE_VAR_FOLDER, exist_ok=True)
     USER_IDX_PATH = os.path.join(INSTANCE_VAR_FOLDER, 'user_idx.txt')
