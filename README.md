@@ -71,4 +71,4 @@ ENABLE_BACKUP_SEED: 備份遊戲在沒有帳號時的狀態，以在卡死時回
 ## 感謝
 
 - [Game asset source](https://x.com/ElChicoEevee/status/1839298287012294867)
-- [哲盟BiiMiu](https://www.youtube.com/@BiiMiu)
+- [哲盟BiiMiu頻道](https://www.youtube.com/@BiiMiu) 及其 [DC](https://discord.com/invite/rvKaBr2skR)
