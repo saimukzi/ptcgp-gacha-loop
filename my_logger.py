@@ -1,6 +1,7 @@
-import logging
 import const
+import logging
 import os
+import sys
 import time
 
 MY_PATH = os.path.dirname(os.path.abspath(__file__))
@@ -11,6 +12,14 @@ logging.basicConfig(
     datefmt='%Y-%m-%d %H:%M:%S',
     level=logging.DEBUG,
 )
+
+def handle_exception(exc_type, exc_value, exc_traceback):
+    if issubclass(exc_type, KeyboardInterrupt):
+        sys.__excepthook__(exc_type, exc_value, exc_traceback)
+        return
+    logger.error("WCEUIDZYXD Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
+
+sys.excepthook = handle_exception
 
 logger_file_handler = None
 logger_file_handler_yyyymmddhh = None
@@ -31,7 +40,7 @@ def update_logger(config_data):
     fn = os.path.join(const.APP_PATH,'log', yyyy, mm, dd, f'{yyyy}{mm}{dd}-{hh}-{INSTANCE_ID}.log')
     # print(fn)
     os.makedirs(os.path.dirname(fn), exist_ok=True)
-    logger_file_handler = logging.FileHandler(fn)
+    logger_file_handler = logging.FileHandler(fn, encoding='utf-8')
     logger_file_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
     logger_file_handler.setLevel(logging.DEBUG)
     logger.addHandler(logger_file_handler)

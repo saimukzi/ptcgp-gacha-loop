@@ -1,3 +1,4 @@
+import filelock
 import os
 import sys
 import time
@@ -28,15 +29,20 @@ import seed_backup as backuppy
 
 def main():
     parser = argparse.ArgumentParser(description='Gacha loop')
-    parser.add_argument('config', type=str, default='config.yaml', nargs='?')
+    parser.add_argument('config', type=str, default=None, nargs='?')
     args = parser.parse_args()
 
-    config_data = config.get_config(args.config)
+    args_config = args.config
+    if args_config is None:
+        args_config = os.path.join(const.APP_PATH, 'config.yaml')
+    args_config = os.path.abspath(args_config)
+
+    config_data = config.get_config(args_config)
     update_logger(config_data)
 
     logger.debug('NLHFIUUXBS PTCPG-GL start')
     logger.debug(f'EOWVSWOTMF MY_PATH={const.MY_PATH}')
-    logger.debug(f'KLZUCSPIFK config path={args.config}')
+    logger.debug(f'KLZUCSPIFK config path={args_config}')
     logger.debug(f'JSOFIXCPAG config_data={config_data}')
 
     INSTANCE_ID = config_data['INSTANCE_ID']
@@ -45,6 +51,16 @@ def main():
     TARGET_PACK = config_data['TARGET_PACK']
     TARGET_CARD_SET = set(config_data['TARGET_CARD_LIST'])
     USERNAME = config_data['USERNAME']
+
+    START_YYYYMMDDHHMMSS = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
+    MY_PID = os.getpid()
+
+    config_fn_lock_path = get_config_fn_lock_path(args_config)
+    logger.debug(f'UKKDANILYL config_fn_lock_path={config_fn_lock_path}')
+    config_fn_lock = filelock.lock(config_fn_lock_path, f'{START_YYYYMMDDHHMMSS},{MY_PID}')
+    if config_fn_lock is None:
+        logger.error(f'config file is locked: {args_config}')
+        sys.exit(1)
 
     state_list.load_state()
     card_list.load_card_img()
@@ -73,6 +89,13 @@ def main():
             user_idx = int(f.read())
 
     ldagent.config(config_data)
+
+    emu_lock_path = get_emu_lock_path(config_data['LDPLAYER_PATH'], str(ldagent.EMU_IDX))
+    logger.debug(f'XFLZMQZROH emu_lock_path={emu_lock_path}')
+    emu_lock = filelock.lock(emu_lock_path, f'{START_YYYYMMDDHHMMSS},{MY_PID}')
+    if emu_lock is None:
+        logger.error(f'emu is locked: {ldagent.EMU_IDX}')
+        sys.exit(1)
 
     flag_set = set()
     
@@ -766,6 +789,12 @@ def is_rare(card_id):
 #     diff = np.abs(img[y:y+h, x:x+w] - imgg)
 #     diff = diff.mean()
 #     return diff
+
+def get_config_fn_lock_path(config_fn):
+    return f'{config_fn}.lock'
+
+def get_emu_lock_path(ldplayer_path, emu_name):
+    return os.path.join(ldplayer_path, 'ptcgp-gl', 'emus', emu_name, 'lock')
 
 if __name__ == '__main__':
     main()

@@ -1,4 +1,5 @@
 charset-normalizer
 numpy
 opencv-python
+portalocker
 pyyaml
