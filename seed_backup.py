@@ -20,6 +20,7 @@ class SeedBackup:
     def backup(self):
         logger.debug('NYUTUZCBMC backup')
         shutil.rmtree(self._get_folder_path(), ignore_errors=True)
+        self._clear_old_backup()
         os.makedirs(self._get_folder_path(), exist_ok=True)
         ldagent.backup(self._get_file_path())
 
