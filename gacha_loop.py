@@ -30,7 +30,16 @@ import seed_backup as backuppy
 def main():
     parser = argparse.ArgumentParser(description='Gacha loop')
     parser.add_argument('config', type=str, default=None, nargs='?')
+    parser.add_argument('--version', action='store_true')
     args = parser.parse_args()
+
+    if args.version:
+        if os.path.exists(const.VERSION_FN):
+            with open(const.VERSION_FN, 'r') as f:
+                print(f.read())
+        else:
+            print('dev')
+        sys.exit(0)
 
     args_config = args.config
     if args_config is None:

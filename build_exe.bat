@@ -17,6 +17,7 @@ if exist dist\ (
 
 pyinstaller --add-data="res;res" --add-data="default.yaml;." gacha_loop.py
 
+echo %YYYYMMDD%-%HHMMSS% > dist\gacha_loop\_internal\version.txt
 copy config.yaml dist\gacha_loop\config.yaml
 copy config-god-pack.yaml dist\gacha_loop\config-god-pack.yaml
 

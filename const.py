@@ -11,3 +11,5 @@ else:
 LOGGER_NAME = 'PTCGP_GACHA_LOOP'
 
 TARGET_PACK_LIST = ['charizard', 'mewtwo', 'pikachu', 'mew']
+
+VERSION_FN = os.path.join(MY_PATH, 'version.txt')
