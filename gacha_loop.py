@@ -121,13 +121,15 @@ def main():
             update_logger(config_data)
             logger.debug('MMNRYHUKFQ tick')
 
+            if not emu_ok:
+                freemem_last_reset = time.time()
+
             if force_restore:
                 logger.debug(f'SRDWQJYJIR force_restore')
                 ldagent.kill()
                 backup.restore()
                 force_restore = False
                 emu_ok = False
-                check_cycle_last_reset = time.time()
                 continue
 
             if force_restart:
@@ -135,17 +137,15 @@ def main():
                 ldagent.kill()
                 emu_ok = False
                 force_restart = False
-                check_cycle_last_reset = time.time()
                 continue
 
             if time.time() - check_cycle_last_reset > config_data['CHECK_CYCLE_SECONDS']:
                 logger.debug(f'PNOCLZOWIW cycle timeout')
                 ldagent.kill()
                 emu_ok = False
+                check_cycle_last_reset = time.time()
                 if backup.is_backup_available():
                     force_restore = True
-                else:
-                    force_restart = True
                 continue
 
             if not emu_ok:
