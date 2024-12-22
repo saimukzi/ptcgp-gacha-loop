@@ -30,7 +30,8 @@ class SeedBackup:
 
     def _get_folder_path(self):
         if self.__folder_path == None:
-            self.__folder_path = os.path.join(const.APP_PATH, 'var', 'backup')
+            BACKUP_SEED_ID = self.config_data['BACKUP_SEED_ID']
+            self.__folder_path = os.path.join(const.APP_PATH, 'var', 'backup', BACKUP_SEED_ID)
         return self.__folder_path
 
     def _get_file_path(self):
@@ -43,3 +44,10 @@ class SeedBackup:
         if self.__app_ver == None:
             self.__app_ver = ldagent.get_app_version()
         return self.__app_ver
+
+    # some old ver create backup file in var/backup folder
+    # need to clean up
+    def _clear_old_backup(self):
+        for file in os.listdir(self._get_folder_path()):
+            if file.endswith('.ldbk'):
+                os.remove(os.path.join(self._get_folder_path(), file))

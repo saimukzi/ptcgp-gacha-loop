@@ -12,3 +12,5 @@ CHECK_CYCLE_SECONDS: 900 # 15 minutes
 FREEMEM_SECONDS: 21600 # 6 hours
 
 INSTANCE_ID: "default"
+
+BACKUP_SEED_ID: "default"
