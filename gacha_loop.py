@@ -78,8 +78,8 @@ def main():
 
     backup = backuppy.SeedBackup(config_data)
     force_restore = False
-
     force_restart = False
+    force_killapp = False
 
     INSTANCE_VAR_FOLDER = os.path.join(APP_VAR_FOLDER, 'instances', INSTANCE_ID)
     logger.debug(f'INSTANCE_VAR_FOLDER={INSTANCE_VAR_FOLDER}')
@@ -121,31 +121,45 @@ def main():
             update_logger(config_data)
             logger.debug('MMNRYHUKFQ tick')
 
-            if not emu_ok:
-                freemem_last_reset = time.time()
+            # if not emu_ok:
+            #     freemem_last_reset = time.time()
 
             if force_restore:
                 logger.debug(f'SRDWQJYJIR force_restore')
                 ldagent.kill()
+                freemem_last_reset = time.time()
+                emu_ok = False
                 backup.restore()
                 force_restore = False
-                emu_ok = False
+                force_restart = False
+                force_killapp = False
                 continue
 
             if force_restart:
                 logger.debug(f'KKTWULVBBG force_restart')
                 ldagent.kill()
+                freemem_last_reset = time.time()
                 emu_ok = False
                 force_restart = False
+                force_killapp = False
+                continue
+
+            if force_killapp:
+                logger.debug(f'NFTCLCTTHC force_killapp')
+                ldagent.killapp()
+                emu_ok = False
+                force_killapp = False
                 continue
 
             if (config_data['CHECK_CYCLE_SECONDS'] is not None) and (time.time() - check_cycle_last_reset > config_data['CHECK_CYCLE_SECONDS']):
                 logger.debug(f'PNOCLZOWIW cycle timeout')
-                ldagent.kill()
-                emu_ok = False
                 check_cycle_last_reset = time.time()
-                if backup.is_backup_available():
+                if not config_data['ENABLE_REBOOT']:
+                    force_killapp = True
+                elif backup.is_backup_available():
                     force_restore = True
+                else:
+                    force_restart = True
                 continue
 
             if not emu_ok:
@@ -220,14 +234,14 @@ def main():
             logger.debug(f'IWFCYLNYDB flag_set={flag_set}')
 
             if state == 'err-launch-00':
-                if backup.is_backup_available():
+                if (config_data['ENABLE_REBOOT']) and backup.is_backup_available():
                     force_restore = True
                     continue
                 ldagent.tap(150, 247)
                 time.sleep(TIME_SLEEP)
                 continue
             if state == 'err-launch-01':
-                if backup.is_backup_available():
+                if (config_data['ENABLE_REBOOT']) and backup.is_backup_available():
                     force_restore = True
                     continue
                 ldagent.tap(200, 277)
@@ -235,7 +249,7 @@ def main():
                 continue
 
             if state == 'err-nostoredata':
-                if backup.is_backup_available():
+                if (config_data['ENABLE_REBOOT']) and backup.is_backup_available():
                     force_restore = True
                     continue
                 sys.exit(0)
@@ -244,9 +258,10 @@ def main():
                 # just after del account
                 if 's12-end-03-confirm' in flag_set:
                     # backup seed
-                    if config_data['ENABLE_BACKUP_SEED']:
+                    if config_data['ENABLE_BACKUP_SEED'] and config_data['ENABLE_REBOOT']:
                         if not backup.is_backup_available():
                             ldagent.kill()
+                            freemem_last_reset = time.time()
                             emu_ok = False
                             backup.backup()
                             flag_set = set()
@@ -254,7 +269,9 @@ def main():
                     flag_set = set()
 
                 # [ZRTRNAFFLV] restart emu to free memory
-                if (config_data['FREEMEM_SECONDS'] is not None) and (time.time() - freemem_last_reset > config_data['FREEMEM_SECONDS']):
+                if      config_data['ENABLE_REBOOT'] \
+                    and (config_data['FREEMEM_SECONDS'] is not None) \
+                    and (time.time() - freemem_last_reset > config_data['FREEMEM_SECONDS']):
                     logger.debug(f'OOHKRSARJM freemem')
                     force_restart = True
                     continue
@@ -695,8 +712,10 @@ def main():
 
         except ldagent.LdAgentException as e:
             logger.error(f'MYBPMBYDXK LdAgentException: {e}')
-            emu_ok = False
-            ldagent.kill()
+            if not config_data['ENABLE_REBOOT']:
+                force_killapp = True
+            else:
+                force_restart = True
         
 
 RARE_SUFFIX_LIST = ['_UR', '_IM', '_SR', '_SAR', '_AR']
