@@ -58,6 +58,7 @@ ENABLE_BACKUP_SEED: 備份遊戲在沒有帳號時的狀態，以在卡死時回
 
 - [FAQ](FAQ.md)
 - [Not FAQ](NotFAQ.md)
+- [Dev FAQ](DevFAQ.md)
 - [FAQ is LOVE](https://www.youtube.com/watch?v=kSr5bjoKU9I)
 
 ## Links
