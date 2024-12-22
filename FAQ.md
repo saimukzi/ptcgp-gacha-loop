@@ -49,7 +49,7 @@ C:\Users\User\AppData\Local\Microsoft\WindowsApps\python.exe -m venv venv
 
 參考 config-god-pack.yaml 的設定。
 - TARGET_CARD_LIST 設為空列 []
-- STOP_AT_RARE_PACK 設為 true
+- STOP_AT_WONDER_RARE_PACK 設為 true
 
 ## 如何多開？
 

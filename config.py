@@ -10,6 +10,11 @@ DEFAULT_CONFIG_PATH = os.path.join(MY_PATH, 'default.yaml')
 def get_config(fn):
     ret = yaml.load(open(DEFAULT_CONFIG_PATH, 'r'), Loader=yaml.FullLoader)
     config_data = yaml.load(open(fn, 'rt', encoding='utf-8'), Loader=yaml.FullLoader)
+
+    # old value key
+    if ('STOP_AT_WONDER_RARE_PACK' not in config_data) and ('STOP_AT_RARE_PACK' in config_data):
+        config_data['STOP_AT_WONDER_RARE_PACK'] = config_data['STOP_AT_RARE_PACK']
+
     ret.update(config_data)
 
     return ret

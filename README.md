@@ -42,7 +42,7 @@ TARGET_PACK: 抽甚麼包
 
 TARGET_CARD_LIST: 抽到甚麼卡的時候會停下來，卡片代號請參考 res\card 資料夾
 
-STOP_AT_RARE_PACK: 抽到神包停下來
+STOP_AT_WONDER_RARE_PACK: 抽到得卡神包停下來
 
 USERNAME: 新帳號的名字，{IDX}是三位數流水號
 

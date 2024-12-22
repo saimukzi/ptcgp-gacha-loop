@@ -646,11 +646,19 @@ def main():
                 gacha_result = card_list.read_gacha_result(img)
                 if set(gacha_result) & TARGET_CARD_SET:
                     sys.exit(0)
-                if config_data['STOP_AT_RARE_PACK']:
-                    all_rare = gacha_result
-                    all_rare = map(is_rare, all_rare)
-                    all_rare = all(all_rare)
-                    if all_rare:
+                all_wonder = gacha_result
+                all_wonder = map(is_wonder, all_wonder)
+                all_wonder = all(all_wonder)
+                if all_wonder:
+                    logger.debug(f'KGGOWYOTZH WONDER_RARE_PACK: {t}')
+                    if config_data['STOP_AT_WONDER_RARE_PACK']:
+                        sys.exit(0)
+                all_rare = gacha_result
+                all_rare = map(is_rare, all_rare)
+                all_rare = all(all_rare)
+                if all_rare:
+                    logger.debug(f'DESRVSSAZQ NONWONDER_RARE_PACK: {t}')
+                    if config.data['STOP_AT_NONWONDER_RARE_PACK']:
                         sys.exit(0)
                 ldagent.tap(150,377)
                 time.sleep(TIME_SLEEP)
@@ -694,6 +702,13 @@ def main():
 RARE_SUFFIX_LIST = ['_UR', '_IM', '_SR', '_SAR', '_AR']
 def is_rare(card_id):
     for suffix in RARE_SUFFIX_LIST:
+        if card_id.endswith(suffix):
+            return True
+    return False
+
+WONDER_SUFFIX_LIST = ['_SR', '_SAR', '_AR']
+def is_wonder(card_id):
+    for suffix in WONDER_SUFFIX_LIST:
         if card_id.endswith(suffix):
             return True
     return False
