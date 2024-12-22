@@ -15,6 +15,14 @@ if exist dist\ (
   exit 1
 )
 
+git diff --exit-code
+if %ERRORLEVEL% NEQ 0 (
+  echo "GIT DIFF ERROR"
+  exit 1
+)
+
+git tag v%YYYYMMDD%-%HHMMSS%
+
 pyinstaller --add-data="res;res" --add-data="default.yaml;." gacha_loop.py
 
 echo %YYYYMMDD%-%HHMMSS% > dist\gacha_loop\_internal\version.txt
