@@ -14,6 +14,8 @@ def get_config(fn):
     # old value key
     if ('STOP_AT_WONDER_RARE_PACK' not in config_data) and ('STOP_AT_RARE_PACK' in config_data):
         config_data['STOP_AT_WONDER_RARE_PACK'] = config_data['STOP_AT_RARE_PACK']
+    if ('STOP_AT_NONWONDER_RARE_PACK' not in config_data) and ('STOP_AT_RARE_PACK' in config_data):
+        config_data['STOP_AT_NONWONDER_RARE_PACK'] = config_data['STOP_AT_RARE_PACK']
 
     ret.update(config_data)
 
