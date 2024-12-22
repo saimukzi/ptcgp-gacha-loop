@@ -139,7 +139,7 @@ def main():
                 force_restart = False
                 continue
 
-            if time.time() - check_cycle_last_reset > config_data['CHECK_CYCLE_SECONDS']:
+            if (config_data['CHECK_CYCLE_SECONDS'] is not None) and (time.time() - check_cycle_last_reset > config_data['CHECK_CYCLE_SECONDS']):
                 logger.debug(f'PNOCLZOWIW cycle timeout')
                 ldagent.kill()
                 emu_ok = False
@@ -254,7 +254,7 @@ def main():
                     flag_set = set()
 
                 # [ZRTRNAFFLV] restart emu to free memory
-                if time.time() - freemem_last_reset > config_data['FREEMEM_SECONDS']:
+                if (config_data['FREEMEM_SECONDS'] is not None) and (time.time() - freemem_last_reset > config_data['FREEMEM_SECONDS']):
                     logger.debug(f'OOHKRSARJM freemem')
                     force_restart = True
                     continue
