@@ -55,7 +55,7 @@ def main():
     START_YYYYMMDDHHMMSS = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
     MY_PID = os.getpid()
 
-    TIME_SLEEP = 0.5
+    TIME_SLEEP = 0.5 * config_data['SPEED_FACTOR']
 
     config_fn_lock_path = get_config_fn_lock_path(args_config)
     logger.debug(f'UKKDANILYL config_fn_lock_path={config_fn_lock_path}')
@@ -127,6 +127,7 @@ def main():
                 backup.restore()
                 force_restore = False
                 emu_ok = False
+                check_cycle_last_reset = time.time()
                 continue
 
             if force_restart:
@@ -134,6 +135,7 @@ def main():
                 ldagent.kill()
                 emu_ok = False
                 force_restart = False
+                check_cycle_last_reset = time.time()
                 continue
 
             if time.time() - check_cycle_last_reset > config_data['CHECK_CYCLE_SECONDS']:
@@ -142,6 +144,8 @@ def main():
                 emu_ok = False
                 if backup.is_backup_available():
                     force_restore = True
+                else:
+                    force_restart = True
                 continue
 
             if not emu_ok:
@@ -174,6 +178,7 @@ def main():
             if 's03-start-01' in flag_set:
                 # playing fking opening animation
                 if state not in ['xxx-dialog-swc', 'xxx-dialog-sc', 'xxx-dialog-lw']:
+                    ldagent.tap(275,378)
                     ldagent.tap(275,378)
                     time.sleep(TIME_SLEEP/2)
                     continue
@@ -378,7 +383,7 @@ def main():
                 time.sleep(TIME_SLEEP)
                 continue
             if state == 's06-gacha1-04':
-                ldagent.swipe(150,300,150,100,50)
+                ldagent.swipe(150,300,150,100,int(50*config_data['SPEED_FACTOR']))
                 time.sleep(TIME_SLEEP)
                 continue
             # if state == 's06-gacha1-05':
@@ -614,7 +619,7 @@ def main():
                 continue
 
             if state.startswith('xxx-gacha-03-'):
-                ldagent.swipe(45,231,253,231,1000)
+                ldagent.swipe(45,231,253,231,(int(1000*config_data['SPEED_FACTOR'])))
                 flag_set.add('xxx-gacha-03')
                 time.sleep(TIME_SLEEP)
                 continue

@@ -51,7 +51,7 @@ def config(config_data):
     
     LD_EMU_NAME = config_data['LD_EMU_NAME']
     logger.debug(f'AFCTNYVSXS LD_EMU_NAME = {LD_EMU_NAME}')
-    process_ret = subprocess.run([LDCONSOLE_PATH, "list2"], capture_output=True, timeout=10)
+    process_ret = subprocess.run([LDCONSOLE_PATH, "list2"], capture_output=True, timeout=30)
     logger.debug(f'LFAYVDBGMH ldconsole list2 returncode = {process_ret.returncode}')
     assert(process_ret.returncode == 0)
     logger.debug(f'LWSKFFCJQD ldconsole list2 stdout = {process_ret.stdout}')
@@ -75,7 +75,7 @@ def config(config_data):
     logger.debug(f'LCBJLLYUJK ADB_IDX = {ADB_IDX}')
 
     # process_ret = subprocess.run([ADB_PATH, "-s", f"emulator-{ADB_IDX}", "shell", "echo", "ODSLKYUGNV"], capture_output=True, timeout=1)
-    process_ret = subprocess.run([ADB_PATH, "version"], capture_output=True, timeout=1)
+    process_ret = subprocess.run([ADB_PATH, "version"], capture_output=True, timeout=10)
     logger.debug(f'VYCXJPKXSJ ADB version returncode = {process_ret.returncode}')
     assert(process_ret.returncode == 0) 
     logger.debug(f'GQINGWZXKN ADB version = {process_ret.stdout}')
@@ -120,7 +120,7 @@ def recover():
         force_kill = False
 
         # if bad screen size, force quit
-        process_ret = subprocess.run([LDCONSOLE_PATH, 'list2'], capture_output=True, timeout=10)
+        process_ret = subprocess.run([LDCONSOLE_PATH, 'list2'], capture_output=True, timeout=30)
         logger.debug(f'NPGOIQWVWC list2 returncode = {process_ret.returncode}')
         assert(process_ret.returncode == 0)
         logger.debug(f'LWSKFFCJQD list2 stdout = {process_ret.stdout}')
@@ -151,7 +151,7 @@ def recover():
             kill()
 
         # force screen size
-        process_ret = subprocess.run([LDCONSOLE_PATH, "modify", '--index', str(EMU_IDX), "--resolution", "300,400,120"], capture_output=True, timeout=10)
+        process_ret = subprocess.run([LDCONSOLE_PATH, "modify", '--index', str(EMU_IDX), "--resolution", "300,400,120"], capture_output=True, timeout=30)
         logger.debug(f'VNQSKTTRFC modify returncode = {process_ret.returncode}')
         assert(process_ret.returncode == 0)
 
@@ -163,7 +163,7 @@ def recover():
 
         # launch emu with app
         while True:
-            process_ret = subprocess.run([LDCONSOLE_PATH, "isrunning", '--index', str(EMU_IDX)], capture_output=True, timeout=10)
+            process_ret = subprocess.run([LDCONSOLE_PATH, "isrunning", '--index', str(EMU_IDX)], capture_output=True, timeout=30)
             logger.debug(f'VNQSKTTRFC isrunning returncode = {process_ret.returncode}')
             assert(process_ret.returncode == 0)
             process_stdout = process_ret.stdout.decode('utf-8').strip()
@@ -171,7 +171,7 @@ def recover():
             if process_stdout == 'running':
                 break
             elif process_stdout == 'stop':
-                process_ret = subprocess.run([LDCONSOLE_PATH, 'launchex', '--index', str(EMU_IDX), '--packagename', PACKAGE_NAME], capture_output=True, timeout=10)
+                process_ret = subprocess.run([LDCONSOLE_PATH, 'launchex', '--index', str(EMU_IDX), '--packagename', PACKAGE_NAME], capture_output=True, timeout=30)
                 logger.debug(f'PMHUALUBNQ launch returncode = {process_ret.returncode}')
                 assert(process_ret.returncode == 0)
                 # logger.debug(process_ret.stdout)
@@ -186,7 +186,7 @@ def recover():
             logger.debug(f'OIADLYZHXI pidof returncode = {process_ret.returncode}')
             if process_ret.returncode == 0:
                 break
-            process_ret = subprocess.run([LDCONSOLE_PATH, "runapp", '--index', str(EMU_IDX), '--packagename', PACKAGE_NAME], capture_output=True, timeout=10)
+            process_ret = subprocess.run([LDCONSOLE_PATH, "runapp", '--index', str(EMU_IDX), '--packagename', PACKAGE_NAME], capture_output=True, timeout=30)
             logger.debug(f'OLEATIUZMY runapp returncode = {process_ret.returncode}')
             assert(process_ret.returncode == 0)
             time.sleep(5)
@@ -196,7 +196,7 @@ def recover():
 
 def kill():
     while True:
-        process_ret = subprocess.run([LDCONSOLE_PATH, "isrunning", '--index', str(EMU_IDX)], capture_output=True, timeout=10)
+        process_ret = subprocess.run([LDCONSOLE_PATH, "isrunning", '--index', str(EMU_IDX)], capture_output=True, timeout=30)
         logger.debug(f'VNQSKTTRFC isrunning returncode = {process_ret.returncode}')
         assert(process_ret.returncode == 0)
         # process_stdout = process_ret.stdout.decode('utf-8').strip()
@@ -205,7 +205,7 @@ def kill():
         if process_stdout == 'stop':
             break
         elif process_stdout == 'running':
-            process_ret = subprocess.run([LDCONSOLE_PATH, 'quit', '--index', str(EMU_IDX)], capture_output=True, timeout=10)
+            process_ret = subprocess.run([LDCONSOLE_PATH, 'quit', '--index', str(EMU_IDX)], capture_output=True, timeout=30)
             logger.debug(f'PMHUALUBNQ quit returncode = {process_ret.returncode}')
             assert(process_ret.returncode == 0)
             time.sleep(5)
@@ -215,7 +215,7 @@ def kill():
 
 
 def killapp():
-    process_ret = subprocess.run([LDCONSOLE_PATH, "killapp", '--index', str(EMU_IDX), '--packagename', PACKAGE_NAME], capture_output=True, timeout=20)
+    process_ret = subprocess.run([LDCONSOLE_PATH, "killapp", '--index', str(EMU_IDX), '--packagename', PACKAGE_NAME], capture_output=True, timeout=30)
     logger.debug(f'BRYURULFDU killapp returncode = {process_ret.returncode}')
     assert(process_ret.returncode == 0)
 
@@ -271,7 +271,7 @@ def decode_console(bb):
     # print(ret)
     return ret
 
-def ldconsole_exec(cmd, timeout=10):
+def ldconsole_exec(cmd, timeout=30):
     process_ret = subprocess.run([LDCONSOLE_PATH, cmd[0], '--index', str(EMU_IDX)]+cmd[1:], capture_output=True, timeout=timeout)
     logger.debug(f'NYUTUZCBMC isrunning returncode = {process_ret.returncode}')
     assert(process_ret.returncode == 0)

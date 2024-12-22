@@ -49,6 +49,9 @@ class SeedBackup:
     # some old ver create backup file in var/backup folder
     # need to clean up
     def _clear_old_backup(self):
-        for file in os.listdir(self._get_folder_path()):
+        old_backup_folder = os.path.join(const.APP_PATH, 'var', 'backup')
+        if not os.path.exists(old_backup_folder):
+            return
+        for file in os.listdir(old_backup_folder):
             if file.endswith('.ldbk'):
-                os.remove(os.path.join(self._get_folder_path(), file))
+                os.remove(os.path.join(old_backup_folder, file))
