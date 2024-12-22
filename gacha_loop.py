@@ -64,7 +64,7 @@ def main():
     START_YYYYMMDDHHMMSS = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
     MY_PID = os.getpid()
 
-    TIME_SLEEP = 0.5 * config_data['SPEED_FACTOR']
+    TIME_SLEEP = 0.5 / config_data['SPEED_FACTOR']
 
     config_fn_lock_path = get_config_fn_lock_path(args_config)
     logger.debug(f'UKKDANILYL config_fn_lock_path={config_fn_lock_path}')
@@ -409,7 +409,7 @@ def main():
                 time.sleep(TIME_SLEEP)
                 continue
             if state == 's06-gacha1-04':
-                ldagent.swipe(150,300,150,100,int(50*config_data['SPEED_FACTOR']))
+                ldagent.swipe(150,300,150,100,int(50/config_data['SPEED_FACTOR']))
                 time.sleep(TIME_SLEEP)
                 continue
             # if state == 's06-gacha1-05':
@@ -645,7 +645,7 @@ def main():
                 continue
 
             if state.startswith('xxx-gacha-03-'):
-                ldagent.swipe(45,231,253,231,(int(1000*config_data['SPEED_FACTOR'])))
+                ldagent.swipe(45,231,253,231,(int(1000/config_data['SPEED_FACTOR'])))
                 flag_set.add('xxx-gacha-03')
                 time.sleep(TIME_SLEEP)
                 continue
