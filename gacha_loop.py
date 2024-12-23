@@ -68,10 +68,12 @@ def main():
     MY_PID = os.getpid()
 
     TIME_SLEEP = 0.5 / config_data['SPEED_FACTOR']
+    logger.debug(f'IMLIDECFNW TIME_SLEEP={TIME_SLEEP}')
     if config_data['SWIPE_PACK_SEC'] is not None:
         SWIPE_PACK_MS = int(config_data['SWIPE_PACK_SEC'] * 1000)
     else:
         SWIPE_PACK_MS = int(1000/config_data['SPEED_FACTOR'])
+    logger.debug(f'KQOHOWKNBY SWIPE_PACK_MS={SWIPE_PACK_MS}')
 
     config_fn_lock_path = get_config_fn_lock_path(args_config)
     logger.debug(f'UKKDANILYL config_fn_lock_path={config_fn_lock_path}')
