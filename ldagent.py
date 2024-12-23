@@ -185,6 +185,7 @@ def recover():
             process_ret = subprocess.run([ADB_PATH, "-s", f"emulator-{ADB_IDX}",'shell', 'pidof', PACKAGE_NAME], capture_output=True, timeout=10)
             logger.debug(f'OIADLYZHXI pidof returncode = {process_ret.returncode}')
             if process_ret.returncode == 0:
+                logger.debug(f'PJESCSKYDC pidof stdout = {process_ret.stdout}')
                 break
             process_ret = subprocess.run([LDCONSOLE_PATH, "runapp", '--index', str(EMU_IDX), '--packagename', PACKAGE_NAME], capture_output=True, timeout=30)
             logger.debug(f'OLEATIUZMY runapp returncode = {process_ret.returncode}')
