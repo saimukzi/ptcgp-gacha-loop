@@ -34,14 +34,15 @@ def update_logger(config_data):
     hh = yyyymmddhh[8:10]
     if yyyymmddhh == logger_file_handler_yyyymmddhh:
         return
-    if logger_file_handler is not None:
-        logger.removeHandler(logger_file_handler)
-        logger_file_handler = None
     fn = os.path.join(const.APP_PATH,'log', yyyy, mm, dd, f'{yyyy}{mm}{dd}-{hh}-{INSTANCE_ID}.log')
     # print(fn)
     os.makedirs(os.path.dirname(fn), exist_ok=True)
-    logger_file_handler = logging.FileHandler(fn, encoding='utf-8')
-    logger_file_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
-    logger_file_handler.setLevel(logging.DEBUG)
-    logger.addHandler(logger_file_handler)
+    new_logger_file_handler = logging.FileHandler(fn, encoding='utf-8')
+    new_logger_file_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
+    new_logger_file_handler.setLevel(logging.DEBUG)
+    logger.addHandler(new_logger_file_handler)
+    if logger_file_handler is not None:
+        logger.removeHandler(logger_file_handler)
+        logger_file_handler = None
+    logger_file_handler = new_logger_file_handler
     logger_file_handler_yyyymmddhh = yyyymmddhh
