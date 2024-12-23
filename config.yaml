@@ -2,6 +2,7 @@
 LDPLAYER_PATH: "D:\\LDPlayer\\LDPlayer9"
 
 # LD_EMU_NAME: 模擬器名稱
+# 請使用英文，中文可能會有問題
 LD_EMU_NAME: "PTCGP-Gacha-00"
 
 # TARGET_PACK: 抽甚麼包: charizard, mewtwo, pikachu, mew
