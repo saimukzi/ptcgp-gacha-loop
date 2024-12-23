@@ -48,8 +48,8 @@ C:\Users\User\AppData\Local\Microsoft\WindowsApps\python.exe -m venv venv
 ## 如何令程式只停在神包上？
 
 參考 config-god-pack.yaml 的設定。
-- TARGET_CARD_LIST 設為空列 []
-- STOP_AT_WONDER_RARE_PACK 設為 true
+- HANDLE_WONDER_TARGET_PACK, HANDLE_NONWONDER_TARGET_PACK 設為 "IGNORE"
+- HANDLE_WONDER_RARE_PACK, HANDLE_NONWONDER_RARE_PACK, HANDLE_WONDER_TARGET_RARE_PACK, HANDLE_NONWONDER_TARGET_RARE_PACK 設為 "STOP"
 
 ## 如何多開？
 

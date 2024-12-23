@@ -93,6 +93,8 @@ def main():
     force_resetapp = False
     force_rebootemu = False
     force_killapp = False
+    force_copyemu_resetapp = False
+    force_copyemu_name = None
 
     INSTANCE_VAR_FOLDER = os.path.join(APP_VAR_FOLDER, 'instances', INSTANCE_ID)
     logger.debug(f'INSTANCE_VAR_FOLDER={INSTANCE_VAR_FOLDER}')
@@ -134,8 +136,19 @@ def main():
             update_logger(config_data)
             logger.debug('MMNRYHUKFQ tick')
 
-            # if not emu_ok:
-            #     freemem_last_reset = time.time()
+            if force_copyemu_resetapp:
+                logger.debug(f'KQZSYHRWME force_copyemu')
+                assert(force_copyemu_name!=None)
+                ldagent.killemu()
+                freemem_last_reset = time.time()
+                emu_ok = False
+                ldagent.copyemu(force_copyemu_name)
+                force_copyemu_name = None
+                force_resetapp = True
+                force_rebootemu = False
+                force_killapp = False
+                force_copyemu_resetapp = False
+                continue
 
             if force_rebootemu:
                 logger.debug(f'KKTWULVBBG force_restart')
@@ -666,22 +679,52 @@ def main():
                 ret_fn = os.path.join(gacha_result_folder, f'{t}.png')
                 cv2.imwrite(ret_fn, img)
                 gacha_result = card_list.read_gacha_result(img)
-                if set(gacha_result) & TARGET_CARD_SET:
-                    sys.exit(0)
+                is_target = len(set(gacha_result) & TARGET_CARD_SET)>0
+                logger.debug(f'OKTLVAGTGC is_target: {is_target}')
+                # if set(gacha_result) & TARGET_CARD_SET:
+                #     sys.exit(0)
                 all_wonder = gacha_result
                 all_wonder = map(is_wonder, all_wonder)
                 all_wonder = all(all_wonder)
-                if all_wonder:
-                    logger.debug(f'KGGOWYOTZH WONDER_RARE_PACK: {t}')
-                    if config_data['STOP_AT_WONDER_RARE_PACK']:
-                        sys.exit(0)
+                logger.debug(f'ZQFNRKRJXO all_wonder: {all_wonder}')
+                # if all_wonder:
+                #     logger.debug(f'KGGOWYOTZH WONDER_RARE_PACK: {t}')
+                #     if config_data['STOP_AT_WONDER_RARE_PACK']:
+                #         sys.exit(0)
                 all_rare = gacha_result
                 all_rare = map(is_rare, all_rare)
                 all_rare = all(all_rare)
-                if all_rare:
-                    logger.debug(f'DESRVSSAZQ NONWONDER_RARE_PACK: {t}')
-                    if config.data['STOP_AT_NONWONDER_RARE_PACK']:
-                        sys.exit(0)
+                logger.debug(f'CJAIBNJRCL all_rare: {all_rare}')
+                # if all_rare:
+                #     logger.debug(f'DESRVSSAZQ NONWONDER_RARE_PACK: {t}')
+                #     if config.data['STOP_AT_NONWONDER_RARE_PACK']:
+                #         sys.exit(0)
+
+                handle_way = 'IGNORE'
+                if (not all_rare) and is_target and all_wonder:
+                    handle_way = config_data['HANDLE_WONDER_TARGET_PACK']
+                if (not all_rare) and is_target and (not all_wonder):
+                    handle_way = config_data['HANDLE_NONWONDER_TARGET_PACK']
+                if all_rare and (not is_target) and all_wonder:
+                    handle_way = config_data['HANDLE_WONDER_RARE_PACK']
+                if all_rare and (not is_target) and (not all_wonder):
+                    handle_way = config_data['HANDLE_NONWONDER_RARE_PACK']
+                if all_rare and is_target and all_wonder:
+                    handle_way = config_data['HANDLE_WONDER_TARGET_RARE_PACK']
+                if all_rare and is_target and (not all_wonder):
+                    handle_way = config_data['HANDLE_NONWONDER_TARGET_RARE_PACK']
+
+                logger.debug(f'HYJJPGIZRN handle_way: {handle_way}')
+
+                if handle_way == 'STOP':
+                    logger.debug(f'YXJNLZDDAN STOP')
+                    sys.exit(0)
+                if handle_way == 'BACKUP':
+                    logger.debug(f'PUOWNPVFXS BACKUP')
+                    force_copyemu_name = config_data['LD_EMU_NAME'] + '-' + str(t)
+                    force_copyemu_resetapp = True
+                    continue
+
                 ldagent.tap(150,377)
                 time.sleep(TIME_SLEEP)
                 continue
@@ -730,7 +773,7 @@ def is_rare(card_id):
             return True
     return False
 
-WONDER_SUFFIX_LIST = ['_SR', '_SAR', '_AR']
+WONDER_SUFFIX_LIST = ['_SR', '_SAR', '_AR', '_RR', '_R', '_U', '_C']
 def is_wonder(card_id):
     for suffix in WONDER_SUFFIX_LIST:
         if card_id.endswith(suffix):
