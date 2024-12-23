@@ -228,11 +228,11 @@ def copyemu(new_name):
     logger.debug(f'VJZYCSTPMO copy returncode = {process_ret.returncode}')
     # assert(process_ret.returncode == 0)
 
-    # check if new_name already exists
+    # check new emu created
     list2_ret = ldconsole_list2()
     list2_ret = list(filter(lambda x: x['NAME']==new_name, list2_ret))
     logger.debug(f'PXSQPZBCVP list2_ret = {list2_ret}')
-    assert(len(list2_ret) == 0)
+    assert(len(list2_ret) == 1)
 
 def killapp():
     process_ret = subprocess.run([LDCONSOLE_PATH, "killapp", '--index', str(EMU_IDX), '--packagename', PACKAGE_NAME], capture_output=True, timeout=30)
