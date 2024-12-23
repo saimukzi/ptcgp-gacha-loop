@@ -139,7 +139,7 @@ def main():
 
             if force_rebootemu:
                 logger.debug(f'KKTWULVBBG force_restart')
-                ldagent.kill()
+                ldagent.killemu()
                 freemem_last_reset = time.time()
                 emu_ok = False
                 force_rebootemu = False
@@ -148,7 +148,7 @@ def main():
 
             if force_resetapp:
                 logger.debug(f'SRDWQJYJIR force_resetapp')
-                ldagent.kill()
+                ldagent.killemu()
                 freemem_last_reset = time.time()
                 emu_ok = False
                 ldagent.reset()

@@ -148,7 +148,7 @@ def recover():
         # force kill
         if force_kill:
             logger.debug(f'UHMMGPTQTH force kill')
-            kill()
+            killemu()
 
         # force screen size
         process_ret = subprocess.run([LDCONSOLE_PATH, "modify", '--index', str(EMU_IDX), "--resolution", "300,400,120"], capture_output=True, timeout=30)
@@ -194,7 +194,7 @@ def recover():
         logger.error(f'CRSVCSYWPX recover timeout')
         raise LdAgentException('recover timeout')
 
-def kill():
+def killemu():
     while True:
         process_ret = subprocess.run([LDCONSOLE_PATH, "isrunning", '--index', str(EMU_IDX)], capture_output=True, timeout=30)
         logger.debug(f'VNQSKTTRFC isrunning returncode = {process_ret.returncode}')
