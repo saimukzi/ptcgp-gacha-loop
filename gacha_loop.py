@@ -516,6 +516,9 @@ def main():
                 continue
 
             if state == 's11-hourglass-00':
+                if state_history[-1] != state:
+                    time.sleep(TIME_SLEEP/2)
+                    continue
                 ldagent.tap(200,311)
                 time.sleep(TIME_SLEEP)
                 continue
