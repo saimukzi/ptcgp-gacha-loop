@@ -216,10 +216,23 @@ def killemu():
 
 def copyemu(new_name):
     logger.debug(f'ASCYGHOHGH copyemu START new_name = {new_name}')
+
+    # check if new_name already exists
+    list2_ret = ldconsole_list2()
+    list2_ret = list(filter(lambda x: x['NAME']==new_name, list2_ret))
+    logger.debug(f'ICYZPBNKEQ list2_ret = {list2_ret}')
+    assert(len(list2_ret) == 0)
+
+    # copy emu
     process_ret = subprocess.run([LDCONSOLE_PATH, "copy", '--name', new_name, '--from', str(EMU_IDX)], capture_output=True, timeout=30)
     logger.debug(f'VJZYCSTPMO copy returncode = {process_ret.returncode}')
-    assert(process_ret.returncode == 0)
+    # assert(process_ret.returncode == 0)
 
+    # check if new_name already exists
+    list2_ret = ldconsole_list2()
+    list2_ret = list(filter(lambda x: x['NAME']==new_name, list2_ret))
+    logger.debug(f'PXSQPZBCVP list2_ret = {list2_ret}')
+    assert(len(list2_ret) == 0)
 
 def killapp():
     process_ret = subprocess.run([LDCONSOLE_PATH, "killapp", '--index', str(EMU_IDX), '--packagename', PACKAGE_NAME], capture_output=True, timeout=30)
@@ -236,6 +249,30 @@ def is_emu_running():
     ret = (ret == 'running')
     logger.debug(f'QTNGYOPNKY isrunning = {ret}')
     return ret
+
+def ldconsole_list2():
+    logger.debug(f'JOASNOUJVA list2 START')
+    process_ret = subprocess.run([LDCONSOLE_PATH, "list2"], capture_output=True, timeout=30)
+    logger.debug(f'MFWLYOHPSZ list2 returncode = {process_ret.returncode}')
+    assert(process_ret.returncode == 0)
+    process_stdout = decode_console(process_ret.stdout)
+    logger.debug(f'XYFXCQTLYX list2 stdout = {process_stdout}')
+    # return process_stdout
+    process_stdout = process_stdout.split('\r\n')
+    ret = []
+    for line in process_stdout:
+        line = line.strip()
+        if len(line) <= 0: continue
+        line = line.split(',')
+        ret.append({
+            'IDX': line[0],
+            'NAME': line[1],
+            'WIDTH': line[7],
+            'HEIGHT': line[8],
+            'DPI': line[9],
+        })
+    return ret
+
 
 # ldconsole backup is not working, fk it
 # def backup(path):
