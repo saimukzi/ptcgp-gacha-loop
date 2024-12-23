@@ -208,6 +208,9 @@ def main():
             logger.debug(f'WJPUTEHGOE state={state}')
             logger.debug(f'YAISJIINTI flag_set={flag_set}')
 
+            if state == 'xxx-gacha-05-U':
+                state = 'UNKNOWN'
+
             if 's03-start-01' in flag_set:
                 # playing fking opening animation
                 if state not in ['xxx-dialog-swc', 'xxx-dialog-sc', 'xxx-dialog-lw']:
@@ -222,6 +225,7 @@ def main():
                 # after gacha, may play fking animation
                 if state not in ['xxx-gacha-05','s06-gacha1-03','s06-gacha1-04'] and (not state.startswith('xxx-gacha-03')):
                     ldagent.tap(150,304)
+                    ldagent.tap(281,381)
                     ldagent.tap(281,381)
                     time.sleep(TIME_SLEEP/2)
                     continue
