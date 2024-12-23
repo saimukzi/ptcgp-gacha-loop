@@ -215,7 +215,8 @@ def killemu():
 
 
 def copyemu(new_name):
-    process_ret = subprocess.run([LDCONSOLE_PATH, "copy", '--newname', new_name, '--from', str(EMU_IDX)], capture_output=True, timeout=30)
+    logger.debug(f'ASCYGHOHGH copyemu START new_name = {new_name}')
+    process_ret = subprocess.run([LDCONSOLE_PATH, "copy", '--name', new_name, '--from', str(EMU_IDX)], capture_output=True, timeout=30)
     logger.debug(f'VJZYCSTPMO copy returncode = {process_ret.returncode}')
     assert(process_ret.returncode == 0)
 
