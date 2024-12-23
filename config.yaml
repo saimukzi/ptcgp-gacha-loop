@@ -1,3 +1,9 @@
+# LDPLAYER_PATH: 雷電模擬器的安裝資料夾，「\」符號要寫成「\\」
+LDPLAYER_PATH: "D:\\LDPlayer\\LDPlayer9"
+
+# LD_EMU_NAME: 模擬器名稱
+LD_EMU_NAME: "PTCGP-Gacha-00"
+
 # TARGET_PACK: 抽甚麼包: charizard, mewtwo, pikachu, mew
 TARGET_PACK: "mew"
 
@@ -64,12 +70,6 @@ HANDLE_WONDER_TARGET_RARE_PACK: "STOP"
 # HANDLE_NONWONDER_TARGET_PACK: 處理不可得卡目標神包
 HANDLE_NONWONDER_TARGET_RARE_PACK: "STOP"
 
-# # STOP_AT_WONDER_RARE_PACK: 抽到可得卡神包停下來
-# STOP_AT_WONDER_RARE_PACK: true
-
-# # STOP_AT_NONWONDER_RARE_PACK: 抽到不可得卡神包停下來
-# STOP_AT_NONWONDER_RARE_PACK: false
-
 # USERNAME: 新帳號的名字
 #  {IDX}: 三位數流水號
 #  {IDX1}/{IDX2}/{IDX3}/{IDX4}: N位數流水號
@@ -78,14 +78,8 @@ HANDLE_NONWONDER_TARGET_RARE_PACK: "STOP"
 #  {hh}/{mm}/{ss}: 2位數小時/分鐘/秒
 USERNAME: "abc{IDX}"
 
-# LD_EMU_NAME: 模擬器名稱
-LD_EMU_NAME: "PTCGP-Gacha-00"
-
-# LDPLAYER_PATH: 雷電模擬器的安裝資料夾，「\」符號要寫成「\\」
-LDPLAYER_PATH: "D:\\LDPlayer\\LDPlayer9"
+# SPEED_FACTOR: 執行速度倍率
+SPEED_FACTOR: 1.0
 
 # ENABLE_REBOOT: 容許重開模擬器
 ENABLE_REBOOT: true
-
-# SPEED_FACTOR: 執行速度倍率
-SPEED_FACTOR: 1.0

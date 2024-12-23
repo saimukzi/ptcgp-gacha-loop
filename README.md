@@ -32,26 +32,6 @@
 
 https://www.youtube.com/watch?v=_-laRxczYmo (舊版本)
 
-## config.yaml
-
-TARGET_PACK: 抽甚麼包
-- charizard: A1 噴火龍
-- mewtwo: A1 超夢
-- pikachu: A1 皮卡丘
-- mew: A1a 夢幻
-
-TARGET_CARD_LIST: 抽到甚麼卡的時候會停下來，卡片代號請參考 res\card 資料夾
-
-STOP_AT_WONDER_RARE_PACK: 抽到得卡神包停下來
-
-USERNAME: 新帳號的名字，{IDX}是三位數流水號
-
-LD_EMU_NAME: 模擬器名稱
-
-LDPLAYER_PATH: 雷電模擬器的安裝資料夾，「\\」符號要寫成「\\\\」
-
-DEBUG_MODE: 除錯資訊輸出到 log
-
 ## FAQ
 
 - [FAQ](FAQ.md)

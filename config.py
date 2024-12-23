@@ -17,6 +17,15 @@ def get_config(fn):
     if ('STOP_AT_NONWONDER_RARE_PACK' not in config_data) and ('STOP_AT_RARE_PACK' in config_data):
         config_data['STOP_AT_NONWONDER_RARE_PACK'] = config_data['STOP_AT_RARE_PACK']
 
+    if ('HANDLE_WONDER_RARE_PACK' not in config_data) and ('STOP_AT_WONDER_RARE_PACK' in config_data):
+        config_data['HANDLE_WONDER_RARE_PACK'] = 'STOP' if config_data['STOP_AT_WONDER_RARE_PACK'] else 'IGNORE'
+    if ('HANDLE_NONWONDER_RARE_PACK' not in config_data) and ('STOP_AT_NONWONDER_RARE_PACK' in config_data):
+        config_data['HANDLE_NONWONDER_RARE_PACK'] = 'STOP' if config_data['STOP_AT_NONWONDER_RARE_PACK'] else 'IGNORE'
+    if ('HANDLE_WONDER_TARGET_PACK' not in config_data) and ('STOP_AT_WONDER_RARE_PACK' in config_data):
+        config_data['HANDLE_WONDER_TARGET_PACK'] = 'STOP' if config_data['STOP_AT_WONDER_RARE_PACK'] else 'IGNORE'
+    if ('HANDLE_NONWONDER_TARGET_PACK' not in config_data) and ('STOP_AT_NONWONDER_RARE_PACK' in config_data):
+        config_data['HANDLE_NONWONDER_TARGET_PACK'] = 'STOP' if config_data['STOP_AT_NONWONDER_RARE_PACK'] else 'IGNORE'
+
     ret.update(config_data)
 
     return ret
