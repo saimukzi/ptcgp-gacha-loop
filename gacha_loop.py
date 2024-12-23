@@ -68,12 +68,23 @@ def main():
     MY_PID = os.getpid()
 
     TIME_SLEEP = 0.5 / config_data['SPEED_FACTOR']
+    if config_data['SWIPE_PACK_SEC'] is not None:
+        SWIPE_PACK_MS = int(config_data['SWIPE_PACK_SEC'] * 1000)
+    else:
+        SWIPE_PACK_MS = int(1000/config_data['SPEED_FACTOR'])
 
     config_fn_lock_path = get_config_fn_lock_path(args_config)
     logger.debug(f'UKKDANILYL config_fn_lock_path={config_fn_lock_path}')
     config_fn_lock = filelock.lock(config_fn_lock_path, f'{START_YYYYMMDDHHMMSS},{MY_PID}')
     if config_fn_lock is None:
         logger.error(f'config file is locked: {args_config}')
+        sys.exit(1)
+
+    instance_lock_path = get_instance_lock_path(INSTANCE_ID)
+    logger.debug(f'JEDVXLDIZW instance_lock_path={instance_lock_path}')
+    instance_lock = filelock.lock(instance_lock_path, f'{START_YYYYMMDDHHMMSS},{MY_PID}')
+    if instance_lock is None:
+        logger.error(f'instance is locked: {INSTANCE_ID}')
         sys.exit(1)
 
     state_list.load_state()
@@ -661,7 +672,7 @@ def main():
                 continue
 
             if state.startswith('xxx-gacha-03-'):
-                ldagent.swipe(45,231,253,231,(int(1000/config_data['SPEED_FACTOR'])))
+                ldagent.swipe(45,231,253,231,SWIPE_PACK_MS)
                 flag_set.add('xxx-gacha-03')
                 time.sleep(TIME_SLEEP)
                 continue
@@ -890,6 +901,9 @@ def get_config_fn_lock_path(config_fn):
 
 def get_emu_lock_path(ldplayer_path, emu_name):
     return os.path.join(ldplayer_path, 'ptcgp-gl', 'emus', emu_name, 'lock')
+
+def get_instance_lock_path(instance_id):
+    return os.path.join(const.APP_PATH, 'var', 'instances', instance_id, 'lock')
 
 def get_version():
     if os.path.exists(const.VERSION_FN):
