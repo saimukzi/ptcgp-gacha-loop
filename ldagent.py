@@ -7,6 +7,7 @@ from my_logger import logger
 import charset_normalizer
 import const
 import json
+import winreg
 
 # LDPLAYER_PATH = r'D:\LDPlayer\LDPlayer9'
 # EMU_INDEX = 0
@@ -32,9 +33,15 @@ def config(config_data):
     global INSTANCE_ID, LDPLAYER_PATH, LDCONSOLE_PATH, ADB_PATH, LD_EMU_NAME, EMU_IDX, ADB_IDX, SCREENCAP_PATH
 
     INSTANCE_ID = config_data['INSTANCE_ID']
-    logger.debug(f'INSTANCE_ID = {INSTANCE_ID}')
+    logger.debug(f'BNKUPKKAZX INSTANCE_ID = {INSTANCE_ID}')
 
-    LDPLAYER_PATH = config_data['LDPLAYER_PATH']
+    if config_data['LDPLAYER_PATH'] is not None:
+        LDPLAYER_PATH = config_data['LDPLAYER_PATH']
+    else:
+        with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r'SOFTWARE\XuanZhi\LDPlayer9', access=winreg.KEY_READ) as key:
+            logger.debug(f'QPNLQJGUGA get LDPLAYER_PATH from registry')
+            LDPLAYER_PATH = winreg.QueryValueEx(key, 'InstallDir')[0]
+    logger.debug(f'DREJKEKUZL LDPLAYER_PATH = {LDPLAYER_PATH}')
     LDCONSOLE_PATH = os.path.join(LDPLAYER_PATH, 'ldconsole.exe')
     ADB_PATH = os.path.join(LDPLAYER_PATH, 'adb.exe')
 

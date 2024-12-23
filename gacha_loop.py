@@ -120,7 +120,7 @@ def main():
 
     ldagent.config(config_data)
 
-    emu_lock_path = get_emu_lock_path(config_data['LDPLAYER_PATH'], str(ldagent.EMU_IDX))
+    emu_lock_path = get_emu_lock_path(ldagent.LDPLAYER_PATH, str(ldagent.EMU_IDX))
     logger.debug(f'XFLZMQZROH emu_lock_path={emu_lock_path}')
     emu_lock = filelock.lock(emu_lock_path, f'{START_YYYYMMDDHHMMSS},{MY_PID}')
     if emu_lock is None:

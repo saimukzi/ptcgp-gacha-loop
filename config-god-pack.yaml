@@ -1,5 +1,8 @@
 # 這是單純抽神包的設定檔示範
 
+# LD_EMU_NAME: 模擬器名稱
+LD_EMU_NAME: "PTCGP-Gacha-00"
+
 # TARGET_PACK: 抽甚麼包: charizard, mewtwo, pikachu, mew
 TARGET_PACK: "mew"
 
@@ -19,9 +22,3 @@ STOP_AT_NONWONDER_RARE_PACK: false
 
 # USERNAME: 新帳號的名字
 USERNAME: "abc{IDX}"
-
-# LD_EMU_NAME: 模擬器名稱
-LD_EMU_NAME: "PTCGP-Gacha-00"
-
-# LDPLAYER_PATH: 雷電模擬器的安裝資料夾，「\」符號要寫成「\\」
-LDPLAYER_PATH: "D:\\LDPlayer\\LDPlayer9"

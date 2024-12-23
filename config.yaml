@@ -1,5 +1,6 @@
 # LDPLAYER_PATH: 雷電模擬器的安裝資料夾，「\」符號要寫成「\\」
-LDPLAYER_PATH: "D:\\LDPlayer\\LDPlayer9"
+# 若不設定，則會由系統自動尋找
+# LDPLAYER_PATH: "D:\\LDPlayer\\LDPlayer9"
 
 # LD_EMU_NAME: 模擬器名稱
 # 請使用英文，中文可能會有問題
