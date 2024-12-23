@@ -214,6 +214,12 @@ def killemu():
             assert(False)
 
 
+def copyemu(new_name):
+    process_ret = subprocess.run([LDCONSOLE_PATH, "copy", '--newname', new_name, '--from', str(EMU_IDX)], capture_output=True, timeout=30)
+    logger.debug(f'VJZYCSTPMO copy returncode = {process_ret.returncode}')
+    assert(process_ret.returncode == 0)
+
+
 def killapp():
     process_ret = subprocess.run([LDCONSOLE_PATH, "killapp", '--index', str(EMU_IDX), '--packagename', PACKAGE_NAME], capture_output=True, timeout=30)
     logger.debug(f'BRYURULFDU killapp returncode = {process_ret.returncode}')
