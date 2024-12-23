@@ -220,16 +220,20 @@ def killapp():
     assert(process_ret.returncode == 0)
 
 
-def backup(path):
-    process_ret = subprocess.run([LDCONSOLE_PATH, "backup", '--index', str(EMU_IDX), '--file', path], capture_output=True, timeout=120)
-    logger.debug(f'WNEGIMQAYH backup returncode = {process_ret.returncode}')
-    assert(process_ret.returncode == 0)
+def reset():
+    adb_exec(['shell', 'pm', 'clear', PACKAGE_NAME], timeout=30)
 
-
-def restore(path):
-    process_ret = subprocess.run([LDCONSOLE_PATH, "restore", '--index', str(EMU_IDX), '--file', path], capture_output=True, timeout=120)
-    logger.debug(f'WVOLRLKHAF restore returncode = {process_ret.returncode}')
-    assert(process_ret.returncode == 0)
+# ldconsole backup is not working, fk it
+# def backup(path):
+#     process_ret = subprocess.run([LDCONSOLE_PATH, "backup", '--index', str(EMU_IDX), '--file', path], capture_output=True, timeout=120)
+#     logger.debug(f'WNEGIMQAYH backup returncode = {process_ret.returncode}')
+#     assert(process_ret.returncode == 0)
+#
+#
+# def restore(path):
+#     process_ret = subprocess.run([LDCONSOLE_PATH, "restore", '--index', str(EMU_IDX), '--file', path], capture_output=True, timeout=120)
+#     logger.debug(f'WVOLRLKHAF restore returncode = {process_ret.returncode}')
+#     assert(process_ret.returncode == 0)
 
 
 def get_app_version():

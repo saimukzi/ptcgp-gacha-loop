@@ -52,8 +52,6 @@ LDPLAYER_PATH: 雷電模擬器的安裝資料夾，「\\」符號要寫成「\\\
 
 DEBUG_MODE: 除錯資訊輸出到 log
 
-ENABLE_BACKUP_SEED: 備份遊戲在沒有帳號時的狀態，以在卡死時回朔到遊戲初始狀態，預設為開啟(true)
-
 ## FAQ
 
 - [FAQ](FAQ.md)

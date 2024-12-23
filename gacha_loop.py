@@ -34,11 +34,12 @@ def main():
     args = parser.parse_args()
 
     if args.version:
-        if os.path.exists(const.VERSION_FN):
-            with open(const.VERSION_FN, 'r') as f:
-                print(f.read())
-        else:
-            print('dev')
+        # if os.path.exists(const.VERSION_FN):
+        #     with open(const.VERSION_FN, 'r') as f:
+        #         print(f.read())
+        # else:
+        #     print('dev')
+        print(get_version())
         sys.exit(0)
 
     args_config = args.config
@@ -49,7 +50,9 @@ def main():
     config_data = config.get_config(args_config)
     update_logger(config_data)
 
-    logger.debug('NLHFIUUXBS PTCPG-GL start')
+    version = get_version()
+
+    logger.debug(f'NLHFIUUXBS PTCPG-GL start version={version}')
     logger.debug(f'EOWVSWOTMF MY_PATH={const.MY_PATH}')
     logger.debug(f'KLZUCSPIFK config path={args_config}')
     logger.debug(f'JSOFIXCPAG config_data={config_data}')
@@ -86,8 +89,9 @@ def main():
     # logger.debug(f'SEED_EMU_BACKUP_PATH={SEED_EMU_BACKUP_PATH}')
 
     backup = backuppy.SeedBackup(config_data)
-    force_restore = False
-    force_restart = False
+    backup.clear_old_backup()
+    force_resetapp = False
+    force_rebootemu = False
     force_killapp = False
 
     INSTANCE_VAR_FOLDER = os.path.join(APP_VAR_FOLDER, 'instances', INSTANCE_ID)
@@ -133,23 +137,22 @@ def main():
             # if not emu_ok:
             #     freemem_last_reset = time.time()
 
-            if force_restore:
-                logger.debug(f'SRDWQJYJIR force_restore')
-                ldagent.kill()
-                freemem_last_reset = time.time()
-                emu_ok = False
-                backup.restore()
-                force_restore = False
-                force_restart = False
-                force_killapp = False
-                continue
-
-            if force_restart:
+            if force_rebootemu:
                 logger.debug(f'KKTWULVBBG force_restart')
                 ldagent.kill()
                 freemem_last_reset = time.time()
                 emu_ok = False
-                force_restart = False
+                force_rebootemu = False
+                force_killapp = False
+                continue
+
+            if force_resetapp:
+                logger.debug(f'SRDWQJYJIR force_resetapp')
+                ldagent.kill()
+                freemem_last_reset = time.time()
+                emu_ok = False
+                ldagent.reset()
+                force_resetapp = False
                 force_killapp = False
                 continue
 
@@ -163,12 +166,7 @@ def main():
             if (config_data['CHECK_CYCLE_SECONDS'] is not None) and (time.time() - check_cycle_last_reset > config_data['CHECK_CYCLE_SECONDS']):
                 logger.debug(f'PNOCLZOWIW cycle timeout')
                 check_cycle_last_reset = time.time()
-                if not config_data['ENABLE_REBOOT']:
-                    force_killapp = True
-                elif backup.is_backup_available():
-                    force_restore = True
-                else:
-                    force_restart = True
+                force_resetapp = True
                 continue
 
             if not emu_ok:
@@ -243,38 +241,25 @@ def main():
             logger.debug(f'IWFCYLNYDB flag_set={flag_set}')
 
             if state == 'err-launch-00':
-                if (config_data['ENABLE_REBOOT']) and backup.is_backup_available():
-                    force_restore = True
-                    continue
-                ldagent.tap(150, 247)
-                time.sleep(TIME_SLEEP)
+                force_resetapp = True
                 continue
+                # ldagent.tap(150, 247)
+                # time.sleep(TIME_SLEEP)
+                # continue
             if state == 'err-launch-01':
-                if (config_data['ENABLE_REBOOT']) and backup.is_backup_available():
-                    force_restore = True
-                    continue
-                ldagent.tap(200, 277)
-                time.sleep(TIME_SLEEP)
+                force_resetapp = True
                 continue
+                # ldagent.tap(200, 277)
+                # time.sleep(TIME_SLEEP)
+                # continue
 
             if state == 'err-nostoredata':
-                if (config_data['ENABLE_REBOOT']) and backup.is_backup_available():
-                    force_restore = True
-                    continue
-                sys.exit(0)
+                force_resetapp = True
+                continue
 
             if state == 's00-cover':
                 # just after del account
                 if 's12-end-03-confirm' in flag_set:
-                    # backup seed
-                    if config_data['ENABLE_BACKUP_SEED'] and config_data['ENABLE_REBOOT']:
-                        if not backup.is_backup_available():
-                            ldagent.kill()
-                            freemem_last_reset = time.time()
-                            emu_ok = False
-                            backup.backup()
-                            flag_set = set()
-                            continue
                     flag_set = set()
 
                 # [ZRTRNAFFLV] restart emu to free memory
@@ -282,7 +267,7 @@ def main():
                     and (config_data['FREEMEM_SECONDS'] is not None) \
                     and (time.time() - freemem_last_reset > config_data['FREEMEM_SECONDS']):
                     logger.debug(f'OOHKRSARJM freemem')
-                    force_restart = True
+                    force_rebootemu = True
                     continue
 
                 ldagent.tap(150, 200)
@@ -353,6 +338,10 @@ def main():
                 time.sleep(TIME_SLEEP)
                 continue
             if state == 's05-name-00':
+                # need double check
+                if state_history[-1] != state:
+                    time.sleep(TIME_SLEEP/2)
+                    continue
                 ldagent.tap(150, 171)
                 time.sleep(TIME_SLEEP)
                 continue
@@ -361,6 +350,10 @@ def main():
                 time.sleep(TIME_SLEEP)
                 continue
             if state == 's05-name-02':
+                # need double check
+                if state_history[-1] != state:
+                    time.sleep(TIME_SLEEP/2)
+                    continue
                 for _ in range(10):
                     ldagent.keyevent(67)
                     time.sleep(0.2) # speed of typing
@@ -368,6 +361,10 @@ def main():
                     flag_set.remove('err-badname')
                 continue
             if state == 's05-name-02-empty':
+                # need double check
+                if state_history[-1] != state:
+                    time.sleep(TIME_SLEEP/2)
+                    continue
                 yyyymmddhhmmss = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
                 username = USERNAME
                 username = username.replace('{IDX}', '%03d' % (user_idx%1000))
@@ -721,10 +718,10 @@ def main():
 
         except ldagent.LdAgentException as e:
             logger.error(f'MYBPMBYDXK LdAgentException: {e}')
-            if not config_data['ENABLE_REBOOT']:
-                force_killapp = True
+            if config_data['ENABLE_REBOOT']:
+                force_rebootemu = True
             else:
-                force_restart = True
+                force_killapp = True
         
 
 RARE_SUFFIX_LIST = ['_UR', '_IM', '_SR', '_SAR', '_AR']
@@ -844,6 +841,14 @@ def get_config_fn_lock_path(config_fn):
 
 def get_emu_lock_path(ldplayer_path, emu_name):
     return os.path.join(ldplayer_path, 'ptcgp-gl', 'emus', emu_name, 'lock')
+
+def get_version():
+    if os.path.exists(const.VERSION_FN):
+        with open(const.VERSION_FN, 'rt') as f:
+            return f.read().strip()
+    else:
+        return 'dev'
+    
 
 if __name__ == '__main__':
     main()
