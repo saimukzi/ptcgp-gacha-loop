@@ -146,10 +146,9 @@ def main():
                 force_killapp = False
                 continue
 
-            if force_resetapp:
+            if force_resetapp and ldagent.is_emu_running():
                 logger.debug(f'SRDWQJYJIR force_resetapp')
-                ldagent.killemu()
-                freemem_last_reset = time.time()
+                ldagent.killapp()
                 emu_ok = False
                 ldagent.reset()
                 force_resetapp = False

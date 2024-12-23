@@ -223,6 +223,13 @@ def killapp():
 def reset():
     adb_exec(['shell', 'pm', 'clear', PACKAGE_NAME], timeout=30)
 
+def is_emu_running():
+    ret = ldconsole_exec(['isrunning']).strip()
+    assert(ret in ['running', 'stop'])
+    ret = (ret == 'running')
+    logger.debug(f'QTNGYOPNKY isrunning = {ret}')
+    return ret
+
 # ldconsole backup is not working, fk it
 # def backup(path):
 #     process_ret = subprocess.run([LDCONSOLE_PATH, "backup", '--index', str(EMU_IDX), '--file', path], capture_output=True, timeout=120)
