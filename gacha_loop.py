@@ -34,11 +34,12 @@ def main():
     args = parser.parse_args()
 
     if args.version:
-        if os.path.exists(const.VERSION_FN):
-            with open(const.VERSION_FN, 'r') as f:
-                print(f.read())
-        else:
-            print('dev')
+        # if os.path.exists(const.VERSION_FN):
+        #     with open(const.VERSION_FN, 'r') as f:
+        #         print(f.read())
+        # else:
+        #     print('dev')
+        print(get_version())
         sys.exit(0)
 
     args_config = args.config
@@ -826,6 +827,14 @@ def get_config_fn_lock_path(config_fn):
 
 def get_emu_lock_path(ldplayer_path, emu_name):
     return os.path.join(ldplayer_path, 'ptcgp-gl', 'emus', emu_name, 'lock')
+
+def get_version():
+    if os.path.exists(const.VERSION_FN):
+        with open(const.VERSION_FN, 'rt') as f:
+            return f.read().strip()
+    else:
+        return 'dev'
+    
 
 if __name__ == '__main__':
     main()
