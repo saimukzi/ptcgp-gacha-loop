@@ -50,7 +50,9 @@ def main():
     config_data = config.get_config(args_config)
     update_logger(config_data)
 
-    logger.debug('NLHFIUUXBS PTCPG-GL start')
+    version = get_version()
+
+    logger.debug(f'NLHFIUUXBS PTCPG-GL start version={version}')
     logger.debug(f'EOWVSWOTMF MY_PATH={const.MY_PATH}')
     logger.debug(f'KLZUCSPIFK config path={args_config}')
     logger.debug(f'JSOFIXCPAG config_data={config_data}')
