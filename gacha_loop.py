@@ -338,6 +338,10 @@ def main():
                 time.sleep(TIME_SLEEP)
                 continue
             if state == 's05-name-00':
+                # need double check
+                if state_history[-1] != state:
+                    time.sleep(TIME_SLEEP/2)
+                    continue
                 ldagent.tap(150, 171)
                 time.sleep(TIME_SLEEP)
                 continue
@@ -346,6 +350,10 @@ def main():
                 time.sleep(TIME_SLEEP)
                 continue
             if state == 's05-name-02':
+                # need double check
+                if state_history[-1] != state:
+                    time.sleep(TIME_SLEEP/2)
+                    continue
                 for _ in range(10):
                     ldagent.keyevent(67)
                     time.sleep(0.2) # speed of typing
@@ -353,6 +361,10 @@ def main():
                     flag_set.remove('err-badname')
                 continue
             if state == 's05-name-02-empty':
+                # need double check
+                if state_history[-1] != state:
+                    time.sleep(TIME_SLEEP/2)
+                    continue
                 yyyymmddhhmmss = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
                 username = USERNAME
                 username = username.replace('{IDX}', '%03d' % (user_idx%1000))
