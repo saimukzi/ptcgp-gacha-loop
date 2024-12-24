@@ -72,6 +72,10 @@ HANDLE_WONDER_TARGET_RARE_PACK: "STOP"
 # HANDLE_NONWONDER_TARGET_PACK: 處理不可得卡目標神包
 HANDLE_NONWONDER_TARGET_RARE_PACK: "STOP"
 
+# WONDER_SAINT: 得卡聖人: 如果不是目標包，但同時是可得卡二星包，就不刪帳重刷，增加其他玩家在得卡挑戰中遇到二星包的機會
+# 做好事，積功德，抽神包
+WONDER_SAINT: true
+
 # USERNAME: 新帳號的名字
 #  {IDX}: 三位數流水號
 #  {IDX1}/{IDX2}/{IDX3}/{IDX4}: N位數流水號

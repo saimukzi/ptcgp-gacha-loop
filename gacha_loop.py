@@ -188,6 +188,9 @@ def main():
                 force_killapp = False
                 continue
 
+            # the bot did not finish the cycle of "create account" -> "gacha" -> "remove account"
+            # there must be something wrong
+            # force reset app to avoid infinite loop
             if (config_data['CHECK_CYCLE_SECONDS'] is not None) and (time.time() - check_cycle_last_reset > config_data['CHECK_CYCLE_SECONDS']):
                 logger.debug(f'PNOCLZOWIW cycle timeout')
                 check_cycle_last_reset = time.time()
@@ -745,6 +748,15 @@ def main():
                     force_copyemu_resetapp = True
                     continue
 
+                exist_cost4 = any(map(is_cost4, gacha_result))
+
+                # when it is cost-4 pack, reset app without remove account
+                # let other player to get the wonder pack
+                if config_data['WONDER_SAINT'] and exist_cost4 and all_wonder:
+                    logger.debug(f'KRVQOASGCP WONDER_SAINT')
+                    force_resetapp = True
+                    continue
+
                 ldagent.tap(150,377)
                 time.sleep(TIME_SLEEP)
                 continue
@@ -796,6 +808,13 @@ def is_rare(card_id):
 WONDER_SUFFIX_LIST = ['_SR', '_SAR', '_AR', '_RR', '_R', '_U', '_C']
 def is_wonder(card_id):
     for suffix in WONDER_SUFFIX_LIST:
+        if card_id.endswith(suffix):
+            return True
+    return False
+
+COST4_SUFFIX_LIST = ['_SR', '_SAR']
+def is_cost4(card_id):
+    for suffix in COST4_SUFFIX_LIST:
         if card_id.endswith(suffix):
             return True
     return False
