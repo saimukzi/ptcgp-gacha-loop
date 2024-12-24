@@ -677,7 +677,7 @@ def main():
                 continue
 
             if state.startswith('xxx-gacha-03-'):
-                ldagent.swipe(45,231,253,231,SWIPE_PACK_MS)
+                ldagent.swipe(20,231,280,231,SWIPE_PACK_MS)
                 flag_set.add('xxx-gacha-03')
                 time.sleep(TIME_SLEEP)
                 continue
