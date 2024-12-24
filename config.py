@@ -26,6 +26,17 @@ def get_config(fn):
     if ('HANDLE_NONWONDER_TARGET_PACK' not in config_data) and ('STOP_AT_NONWONDER_RARE_PACK' in config_data):
         config_data['HANDLE_NONWONDER_TARGET_PACK'] = 'STOP' if config_data['STOP_AT_NONWONDER_RARE_PACK'] else 'IGNORE'
 
+    # check disk space only if needed
+    check_disk_space = False
+    check_disk_space = check_disk_space or (config_data['HANDLE_WONDER_TARGET_PACK'] not in ['STOP','IGNORE'])
+    check_disk_space = check_disk_space or (config_data['HANDLE_NONWONDER_TARGET_PACK'] not in ['STOP','IGNORE'])
+    check_disk_space = check_disk_space or (config_data['HANDLE_WONDER_RARE_PACK'] not in ['STOP','IGNORE'])
+    check_disk_space = check_disk_space or (config_data['HANDLE_NONWONDER_RARE_PACK'] not in ['STOP','IGNORE'])
+    check_disk_space = check_disk_space or (config_data['HANDLE_WONDER_TARGET_RARE_PACK'] not in ['STOP','IGNORE'])
+    check_disk_space = check_disk_space or (config_data['HANDLE_NONWONDER_TARGET_RARE_PACK'] not in ['STOP','IGNORE'])
+    if not check_disk_space:
+        config_data['MIN_FREE_DISK_SPACE'] = 0
+
     ret.update(config_data)
 
     return ret
