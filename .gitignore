@@ -10,3 +10,4 @@ dist
 *.spec
 *.bak
 smz-*
+*.lock
