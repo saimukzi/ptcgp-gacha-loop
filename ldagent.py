@@ -249,7 +249,8 @@ def killapp():
     assert(process_ret.returncode == 0)
 
 
-def reset():
+def resetapp():
+    logger.debug('HGYSKOBAMV resetapp START')
     adb_exec(['shell', 'pm', 'clear', PACKAGE_NAME], timeout=30)
 
 def is_emu_running():

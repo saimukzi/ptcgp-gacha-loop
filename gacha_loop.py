@@ -179,7 +179,7 @@ def main():
                 logger.debug(f'SRDWQJYJIR force_resetapp')
                 ldagent.killapp()
                 emu_ok = False
-                ldagent.reset()
+                ldagent.resetapp()
                 force_resetapp = False
                 force_killapp = False
                 continue
