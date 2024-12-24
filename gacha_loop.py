@@ -755,6 +755,7 @@ def main():
                     continue
 
                 exist_cost4 = any(map(is_cost4, gacha_result))
+                logger.debug(f'DBGPBUKKWV exist_cost4: {exist_cost4}')
 
                 # when it is cost-4 pack, reset app without remove account
                 # let other player to get the wonder pack
