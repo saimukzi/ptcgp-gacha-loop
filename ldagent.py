@@ -92,6 +92,7 @@ def config(config_data):
     # assert(pout == 'ODSLKYUGNV')
 
     SCREENCAP_PATH = os.path.join(const.APP_PATH, 'var', 'instances', INSTANCE_ID, 'tmp-screencap.png')
+    os.makedirs(os.path.dirname(SCREENCAP_PATH), exist_ok=True)
 
 def screencap():
     adb_exec(['shell', 'screencap', '-p', '/sdcard/tmp-screencap.png'])
