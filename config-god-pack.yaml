@@ -11,14 +11,22 @@ TARGET_PACK: "mew"
 TARGET_CARD_LIST: []
 
 # !!! 重要 !!!
-# 在 STOP_AT_WONDER_RARE_PACK 放入 true ，遇到能得卡的神包就會停止
-STOP_AT_WONDER_RARE_PACK: true
+# HANDLE_WONDER_RARE_PACK: 處理可得卡神包
+HANDLE_WONDER_RARE_PACK: "STOP"
 
 # !!! 重要 !!!
-# 在 STOP_AT_NONWONDER_RARE_PACK 放入 true ，遇到不能得卡的神包也會停止
-# 要不要開啟，視乎你的需求
-# 溫提，販賣帳號違反遊戲條款
-STOP_AT_NONWONDER_RARE_PACK: false
+# HANDLE_NONWONDER_RARE_PACK: 處理不可得卡神包
+HANDLE_NONWONDER_RARE_PACK: "STOP"
 
 # USERNAME: 新帳號的名字
 USERNAME: "abc{IDX}"
+
+# SPEED_FACTOR: 執行速度倍率
+SPEED_FACTOR: 1.0
+
+# 刷包動作秒數
+# 若不設定，則為 (1/SPEED_FACTOR) 秒
+# SWIPE_PACK_SEC: 1.0
+
+# ENABLE_REBOOT: 容許重開模擬器
+ENABLE_REBOOT: true
