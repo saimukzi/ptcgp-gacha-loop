@@ -120,75 +120,79 @@ def recover():
     logger.debug('YTQEMXRINZ recover START')
 
     try:
-        # check if emulator is running
-        is_running = ldconsole_exec(['isrunning']).strip()
-        is_running = (is_running == 'running')
-        logger.debug(f'VBSBGEWIOX isrunning = {is_running}')
+        # loop until setting is good
+        while True:
+            good = True
+            force_kill = False
 
-        force_kill = False
-
-        # if bad screen size, force quit
-        process_ret = subprocess.run([LDCONSOLE_PATH, 'list2'], capture_output=True, timeout=30)
-        logger.debug(f'NPGOIQWVWC list2 returncode = {process_ret.returncode}')
-        assert(process_ret.returncode == 0)
-        logger.debug(f'LWSKFFCJQD list2 stdout = {process_ret.stdout}')
-        list2_out = decode_console(process_ret.stdout).split('\r\n')
-        for line in list2_out:
-            if len(line) <= 0: continue
-            linee = line.split(',')
-            if linee[0] != EMU_IDX: continue
-            if linee[7] != '300' or linee[8] != '400' or linee[9] != '120':
+            # if bad screen size, force quit
+            need_update_screen = False
+            list2_ret = ldconsole_list2()
+            list2_ret = list(filter(lambda x: x['IDX']==EMU_IDX, list2_ret))
+            assert(len(list2_ret) == 1)
+            list2_ret = list2_ret[0]
+            if list2_ret['WIDTH'] != '300' or list2_ret['HEIGHT'] != '400' or list2_ret['DPI'] != '120':
                 force_kill = True
+                need_update_screen = True
+                good = False
+            logger.debug(f'YDATUKTBYD need_update_screen={need_update_screen}')
+
+            # check adb enabled
+            emu_config_data_rewrite = False
+            emu_config_path = os.path.join(LDPLAYER_PATH, 'vms', 'config', f'leidian{EMU_IDX}.config')
+            assert(os.path.exists(emu_config_path))
+            emu_config_data = json.load(open(emu_config_path, 'r'))
+            assert(emu_config_data['statusSettings.playerName']==LD_EMU_NAME)
+            if ('basicSettings.adbDebug' not in emu_config_data) or (emu_config_data['basicSettings.adbDebug'] == 0):
+                logger.debug(f'GANSNXERZV adbDebug is not enabled')
+                emu_config_data['basicSettings.adbDebug'] = 1
+                emu_config_data_rewrite = True
+                force_kill = True
+                good = False
+
+            # force kill
+            if force_kill:
+                logger.debug(f'UHMMGPTQTH force kill')
+                killemu()
+                time.sleep(1)
+
+            # force screen size
+            if need_update_screen:
+                logger.debug(f'HCRWUUOGPE update_screen')
+                process_ret = subprocess.run([LDCONSOLE_PATH, "modify", '--index', str(EMU_IDX), "--resolution", "300,400,120"], capture_output=True, timeout=30)
+                logger.debug(f'VNQSKTTRFC modify returncode = {process_ret.returncode}')
+                assert(process_ret.returncode == 0)
+
+            # update adb enabled
+            if emu_config_data_rewrite:
+                logger.debug(f'SRDWQJYJIR rewrite emu_config_data to {emu_config_path}')
+                shutil.copyfile(emu_config_path, emu_config_path+'.bak')
+                json.dump(emu_config_data, open(emu_config_path, 'w'), indent=4)
+            
+            if good:
                 break
-
-        # check adb enabled
-        emu_config_data_rewrite = False
-        emu_config_path = os.path.join(LDPLAYER_PATH, 'vms', 'config', f'leidian{EMU_IDX}.config')
-        assert(os.path.exists(emu_config_path))
-        emu_config_data = json.load(open(emu_config_path, 'r'))
-        assert(emu_config_data['statusSettings.playerName']==LD_EMU_NAME)
-        if emu_config_data['basicSettings.adbDebug'] == 0:
-            logger.debug(f'GANSNXERZV adbDebug is not enabled')
-            emu_config_data['basicSettings.adbDebug'] = 1
-            emu_config_data_rewrite = True
-            force_kill = True
-
-        # force kill
-        if force_kill:
-            logger.debug(f'UHMMGPTQTH force kill')
-            killemu()
-
-        # force screen size
-        process_ret = subprocess.run([LDCONSOLE_PATH, "modify", '--index', str(EMU_IDX), "--resolution", "300,400,120"], capture_output=True, timeout=30)
-        logger.debug(f'VNQSKTTRFC modify returncode = {process_ret.returncode}')
-        assert(process_ret.returncode == 0)
-
-        # update adb enabled
-        if emu_config_data_rewrite:
-            logger.debug(f'SRDWQJYJIR rewrite emu_config_data to {emu_config_path}')
-            shutil.copyfile(emu_config_path, emu_config_path+'.bak')
-            json.dump(emu_config_data, open(emu_config_path, 'w'), indent=4)
 
         # launch emu with app
         while True:
-            process_ret = subprocess.run([LDCONSOLE_PATH, "isrunning", '--index', str(EMU_IDX)], capture_output=True, timeout=30)
-            logger.debug(f'VNQSKTTRFC isrunning returncode = {process_ret.returncode}')
-            assert(process_ret.returncode == 0)
-            process_stdout = process_ret.stdout.decode('utf-8').strip()
-            logger.debug(f'ZSQKAYSNNX isrunning stdout = {process_stdout}')
-            if process_stdout == 'running':
+            # process_ret = subprocess.run([LDCONSOLE_PATH, "isrunning", '--index', str(EMU_IDX)], capture_output=True, timeout=30)
+            # logger.debug(f'YCLNGOFQAP isrunning returncode = {process_ret.returncode}')
+            # assert(process_ret.returncode == 0)
+            # process_stdout = process_ret.stdout.decode('utf-8').strip()
+            # logger.debug(f'ZSQKAYSNNX isrunning stdout = {process_stdout}')
+
+            is_running = is_emu_running()
+
+            if is_running:
                 break
-            elif process_stdout == 'stop':
+            else:
                 process_ret = subprocess.run([LDCONSOLE_PATH, 'launchex', '--index', str(EMU_IDX), '--packagename', PACKAGE_NAME], capture_output=True, timeout=30)
                 logger.debug(f'PMHUALUBNQ launch returncode = {process_ret.returncode}')
                 assert(process_ret.returncode == 0)
                 # logger.debug(process_ret.stdout)
                 # logger.debug(process_ret.stderr)
                 time.sleep(5)
-            else:
-                logger.error(f'KRLUSFIKDV unknown ldconsole isrunning state: {process_stdout}')
-                assert(False)
 
+        # launch app
         while True:
             process_ret = subprocess.run([ADB_PATH, "-s", f"emulator-{ADB_IDX}",'shell', 'pidof', PACKAGE_NAME], capture_output=True, timeout=10)
             logger.debug(f'OIADLYZHXI pidof returncode = {process_ret.returncode}')
@@ -199,14 +203,16 @@ def recover():
             logger.debug(f'OLEATIUZMY runapp returncode = {process_ret.returncode}')
             assert(process_ret.returncode == 0)
             time.sleep(5)
+
     except subprocess.TimeoutExpired:
         logger.error(f'CRSVCSYWPX recover timeout')
         raise LdAgentException('recover timeout')
 
 def killemu():
+    logger.debug('ROSHSALFRW killemu START')
     while True:
         process_ret = subprocess.run([LDCONSOLE_PATH, "isrunning", '--index', str(EMU_IDX)], capture_output=True, timeout=30)
-        logger.debug(f'VNQSKTTRFC isrunning returncode = {process_ret.returncode}')
+        logger.debug(f'NQLNNVTTOX isrunning returncode = {process_ret.returncode}')
         assert(process_ret.returncode == 0)
         # process_stdout = process_ret.stdout.decode('utf-8').strip()
         process_stdout = decode_console(process_ret.stdout).strip()
@@ -244,6 +250,7 @@ def copyemu(new_name):
     assert(len(list2_ret) == 1)
 
 def killapp():
+    logger.debug('CEAFWOYUCJ killapp START')
     process_ret = subprocess.run([LDCONSOLE_PATH, "killapp", '--index', str(EMU_IDX), '--packagename', PACKAGE_NAME], capture_output=True, timeout=30)
     logger.debug(f'BRYURULFDU killapp returncode = {process_ret.returncode}')
     assert(process_ret.returncode == 0)
