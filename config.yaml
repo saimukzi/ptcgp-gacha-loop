@@ -76,6 +76,10 @@ HANDLE_NONWONDER_TARGET_RARE_PACK: "STOP"
 # 做好事，積功德，抽神包
 WONDER_SAINT: true
 
+# MIN_FREE_DISK_SPACE: 硬碟空間不足時停止抽包，單位為位元組 (byte)，預設為 10GB
+# 如果所有以上 HANDLE_*_PACK 都是 "STOP" 或 "IGNORE"，則不會檢查
+MIN_FREE_DISK_SPACE: 10737418240
+
 # USERNAME: 新帳號的名字
 #  {IDX}: 三位數流水號
 #  {IDX1}/{IDX2}/{IDX3}/{IDX4}: N位數流水號

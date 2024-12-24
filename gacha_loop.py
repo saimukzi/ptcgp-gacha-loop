@@ -13,6 +13,7 @@ import config
 from my_logger import logger, update_logger
 import const
 import seed_backup as backuppy
+import shutil
 
 # YYYYMMDDHH = time.strftime('%Y%m%d%H', time.localtime(time.time()))
 
@@ -119,6 +120,8 @@ def main():
             user_idx = int(f.read())
 
     ldagent.config(config_data)
+
+    check_disk_space(config_data)
 
     emu_lock_path = get_emu_lock_path(ldagent.LDPLAYER_PATH, str(ldagent.EMU_IDX))
     logger.debug(f'XFLZMQZROH emu_lock_path={emu_lock_path}')
@@ -290,6 +293,8 @@ def main():
                 continue
 
             if state == 's00-cover':
+                check_disk_space(config_data)
+
                 # just after del account
                 if 's12-end-03-confirm' in flag_set:
                     flag_set = set()
@@ -695,6 +700,7 @@ def main():
 
             # gacha result
             if state == 'xxx-gacha-05':
+                check_disk_space(config_data)
                 t = int(time.time())
                 logger.debug(f'ZNHRHBHGMT GACHA_RESULT: {t}')
                 gacha_result_folder = os.path.join(const.APP_PATH, 'gacha_result')
@@ -796,7 +802,15 @@ def main():
                 force_rebootemu = True
             else:
                 force_killapp = True
-        
+
+
+def check_disk_space(config_data):
+    if config_data['MIN_FREE_DISK_SPACE'] <= 0:
+        return
+    free_space = shutil.disk_usage(ldagent.LDPLAYER_PATH).free
+    if free_space < config_data['MIN_FREE_DISK_SPACE']:
+        logger.error(f'XOCKTBIWKG not enough disk space: {free_space}')
+        sys.exit(1)
 
 RARE_SUFFIX_LIST = ['_UR', '_IM', '_SR', '_SAR', '_AR']
 def is_rare(card_id):
