@@ -30,5 +30,6 @@ copy config.yaml dist\gacha_loop\config.yaml
 copy config-god-pack.yaml dist\gacha_loop\config-god-pack.yaml
 copy help.txt dist\gacha_loop\help.txt
 
-cd dist
+pushd dist
 "D:\Program Files\7-Zip\7z.exe" a -tzip gacha_loop-%YYYYMMDD%-%HHMMSS%.zip gacha_loop
+popd
