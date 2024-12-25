@@ -507,10 +507,6 @@ def main():
                 ldagent.tap(100,289)
                 time.sleep(TIME_SLEEP)
                 continue
-            if state == 's09-wonder-10':
-                ldagent.tap(150,373)
-                time.sleep(TIME_SLEEP)
-                continue
             if state == 's09-wonder-11':
                 ldagent.tap(150,200)
                 time.sleep(TIME_SLEEP)
