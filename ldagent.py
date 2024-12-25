@@ -169,7 +169,7 @@ def recover():
             if emu_config_data_rewrite:
                 logger.debug(f'SRDWQJYJIR rewrite emu_config_data to {emu_config_path}')
                 shutil.copyfile(emu_config_path, emu_config_path+'.bak')
-                json.dump(emu_config_data, open(emu_config_path, 'w'), indent=4)
+                json.dump(emu_config_data, open(emu_config_path, 'w', encoding='utf8'), indent=4)
             
             if good:
                 break
