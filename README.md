@@ -19,7 +19,7 @@
 
 ## 使用
 
-1. [下載 gacha_loop-20241225-002743.zip](https://mega.nz/file/sMtBRSiQ#J7cvV-9YkuT0IMXTmioHcyuhwSl3Mb8R9xJpQcTB_mI)
+1. [下載 gacha_loop-20241225-224140.zip](https://mega.nz/file/sIVmhRDR#XrhXXUOjt97UDvISxzxwlnNP8F4ET4hhIBFa6F5dOpA)
 2. 打開雷電多開器。建立新模擬器，例如名為"PTCGP-Gacha-00"。
 3. 在模擬器安裝 PTCGP，亦確保沒有登入任何帳號。
 4. 修改 config.yaml
