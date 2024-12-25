@@ -175,6 +175,8 @@ def recover():
                     shutil.copyfile(emu_config_path, emu_config_bak_path)
                     with open(emu_config_path, 'w', encoding='utf8') as f:
                         json.dump(emu_config_data, f, indent=4)
+                else:
+                    logger.debug(f'GSDWPYUXEQ bak file already exists')
             
             if good:
                 break
