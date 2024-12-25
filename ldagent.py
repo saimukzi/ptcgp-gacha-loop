@@ -167,9 +167,13 @@ def recover():
 
             # update adb enabled
             if emu_config_data_rewrite:
+                yyyymmddhhmmss = time.strftime('%Y%m%d%H%M%S', time.localtime())
+                emu_config_bak_path = f'{emu_config_path}.{yyyymmddhhmmss}.bak'
                 logger.debug(f'SRDWQJYJIR rewrite emu_config_data to {emu_config_path}')
-                shutil.copyfile(emu_config_path, emu_config_path+'.bak')
-                json.dump(emu_config_data, open(emu_config_path, 'w', encoding='utf8'), indent=4)
+                logger.debug(f'WVDRYNCBIF backup emu_config_data to {emu_config_bak_path}')
+                if not os.path.exists(f'{emu_config_path}.{yyyymmddhhmmss}.bak'):
+                    shutil.copyfile(emu_config_path, '{emu_config_path}.{yyyymmddhhmmss}.bak')
+                    json.dump(emu_config_data, open(emu_config_path, 'w', encoding='utf8'), indent=4)
             
             if good:
                 break
