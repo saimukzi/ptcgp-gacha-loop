@@ -1,4 +1,4 @@
-# PTCGP 刷包挖壙
+# PTCGP 刷包挖礦
 
 ## 警告
 
@@ -6,12 +6,12 @@
 
 ## 功能
 
-- 不斷地自動開新帳號刷包，直到中了想要的卡為止。
+- 不斷地自動開新帳號刷包，直到中了想要的卡或神包為止。
 
 ## 需求
 
 - Windows 作業系統
-- [LDPlayer 9.1.32.0(64)](https://www.ldplayer.tw/)
+- [LDPlayer](https://www.ldplayer.tw/) 測試環境版本為 9.1.34.0(64)
 
 ## 限制
 
@@ -19,18 +19,17 @@
 
 ## 使用
 
-1. [下載 gacha_loop-20241223-000007.zip](https://mega.nz/file/gJ0nyaZR#ilKY9tlvf8eyZHHBOMT_yPPBT-1HKwF67Sxuh_QIM2E)
-2. 打開雷電多開器。建立新模擬器，例如名為"PTCGP-Gacha-00"。畫面橫 300 直 400 DPI 120，中文。打開 ADB 到本地。
-3. 啟動新模擬器。
-4. 在模擬器安裝 PTCGP，亦確保沒有登入任何帳號。
-5. 修改 config.yaml
-6. 執行 gacha_loop.exe
-7. 第一次執行時，遊戲可能會卡在 Google Play 問卷畫面，需自行清理。
-8. 完成第一週目後，模擬器會關閉一下，然後短時間內恢復，此乃正常現象。目的是備份遊戲沒有帳號的狀態，將來恢復用。這個重啟只會在第一週目完成後發生。
+1. [下載 gacha_loop-20241225-002743.zip](https://mega.nz/file/sMtBRSiQ#J7cvV-9YkuT0IMXTmioHcyuhwSl3Mb8R9xJpQcTB_mI)
+2. 打開雷電多開器。建立新模擬器，例如名為"PTCGP-Gacha-00"。
+3. 在模擬器安裝 PTCGP，亦確保沒有登入任何帳號。
+4. 修改 config.yaml
+5. 執行 gacha_loop.exe
+6. 第一次執行時，遊戲可能會卡在 Google Play 問卷畫面，需自行清理。
+7. 完成第一週目後，模擬器會關閉一下，然後短時間內恢復，此乃正常現象。目的是備份遊戲沒有帳號的狀態，將來恢復用。這個重啟只會在第一週目完成後發生。
 
 ## 示範
 
-https://www.youtube.com/watch?v=_-laRxczYmo (舊版本)
+https://youtu.be/eVZvWM8qQDU
 
 ## FAQ
 
