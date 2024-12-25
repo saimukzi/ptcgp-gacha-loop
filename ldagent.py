@@ -140,8 +140,10 @@ def recover():
             # check adb enabled
             emu_config_data_rewrite = False
             emu_config_path = os.path.join(LDPLAYER_PATH, 'vms', 'config', f'leidian{EMU_IDX}.config')
+            logger.debug(f'KQYKPQISUS emu_config_path = {emu_config_path}')
             assert(os.path.exists(emu_config_path))
-            emu_config_data = json.load(open(emu_config_path, 'r'))
+            with open(emu_config_path, 'r', encoding='utf-8') as f:
+                emu_config_data = json.load(f)
             assert(emu_config_data['statusSettings.playerName']==LD_EMU_NAME)
             if ('basicSettings.adbDebug' not in emu_config_data) or (emu_config_data['basicSettings.adbDebug'] == 0):
                 logger.debug(f'GANSNXERZV adbDebug is not enabled')
