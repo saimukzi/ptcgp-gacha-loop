@@ -4,6 +4,14 @@
 
 程式的 main 在 gacha_loop.py
 
+## git branch
+
+以下是西木子在 saimukzi/ptcgp-gacha-loop 中 branch 的意義。其他人不需要跟從，但理解了的話能知道西木子在想甚麼。
+
+- main: 穩定的版本，可當作 release 版。新手進場也推薦試這個。
+- testing: 準備進入 main 的版本。西木子會先把代碼送到 testing，建了 exe 包，再放進測試電腦跑大半天。沒太大問題的話，才送到 main，然後那個 exe 當成發行版推出去。
+- dev: 走在 Roadmap 發展的大道。想嘗鮮的可以試這個，但有點危險。
+
 ## 程式運作原理 loop
 
 1. 從模擬器獲取畫面 ldagent.screencap()
