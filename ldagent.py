@@ -171,8 +171,8 @@ def recover():
                 emu_config_bak_path = f'{emu_config_path}.{yyyymmddhhmmss}.bak'
                 logger.debug(f'SRDWQJYJIR rewrite emu_config_data to {emu_config_path}')
                 logger.debug(f'WVDRYNCBIF backup emu_config_data to {emu_config_bak_path}')
-                if not os.path.exists(f'{emu_config_path}.{yyyymmddhhmmss}.bak'):
-                    shutil.copyfile(emu_config_path, '{emu_config_path}.{yyyymmddhhmmss}.bak')
+                if not os.path.exists(emu_config_bak_path):
+                    shutil.copyfile(emu_config_path, emu_config_bak_path)
                     with open(emu_config_path, 'w', encoding='utf8') as f:
                         json.dump(emu_config_data, f, indent=4)
             
