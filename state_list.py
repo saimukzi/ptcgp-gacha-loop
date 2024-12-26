@@ -7,6 +7,7 @@ from my_logger import logger
 
 state_data_list = []
 state_fix_dict = {}
+state_to_action_dist = {}
 
 def load_state():
     state_list = os.listdir(os.path.join(const.MY_PATH, 'res', 'state'))
@@ -81,6 +82,46 @@ def load_state():
             'img_mask': img_mask,
         })
 
+    for img_fn in os.listdir(os.path.join(const.MY_PATH, 'res', 'state')):
+        if not img_fn.endswith('.png'):
+            continue
+        token = img_fn.split('.')[:-1]
+        state = token[0]
+        img = cv2.imread(os.path.join(const.MY_PATH, 'res', 'state', img_fn)).astype(np.float32)
+        if token[1] == 'click':
+            assert(state not in state_to_action_dist)
+            state_to_action_dist[state] = {
+                'action': token[1],
+                'xy_list': _to_xy_list(img, 'RGB'),
+            }
+        elif token[1] == 'swipe':
+            assert(state not in state_to_action_dist)
+            duration = token[2:]
+            duration = filter(lambda x: x.startswith('d'), duration)
+            duration = list(duration)
+            assert(len(duration) == 1)
+            duration = duration[0][1:]
+            duration = int(duration)
+            state_to_action_dist[state] = {
+                'action': token[1],
+                'duration': duration,
+                'from_xy_list': _to_xy_list(img, 'R'),
+                'to_xy_list': _to_xy_list(img, 'G'),
+            }
+        elif token[1] == 'select':
+            assert(state not in state_to_action_dist)
+            state_to_action_dist[state] = {
+                'action': token[1],
+                'R_xy_list': _to_xy_list(img, 'R'),
+                'G_xy_list': _to_xy_list(img, 'G'),
+                'B_xy_list': _to_xy_list(img, 'B'),
+                'RG_xy_list': _to_xy_list(img, 'RG'),
+                'RB_xy_list': _to_xy_list(img, 'BB'),
+                'BG_xy_list': _to_xy_list(img, 'BG'),
+                'RGB_xy_list': _to_xy_list(img, 'RGB'),
+            }
+
+
 def get_state(img, debug=False):
     imgmx = img.max(axis=2)
     imgmn = img.min(axis=2)
@@ -150,3 +191,24 @@ def _get_state_diff(img, img_min, img_max, img_mask, debug=False):
         diff = diff.mean()
 
     return diff
+
+def _to_xy_list(img, color):
+    img = (img/255) > 0.5
+
+    imgb = img[:,:,0]
+    imgg = img[:,:,1]
+    imgr = img[:,:,2]
+
+    if 'R' not in color: imgr = (imgr != True)
+    if 'G' not in color: imgg = (imgg != True)
+    if 'B' not in color: imgb = (imgb != True)
+
+    img = imgb & imgg & imgr
+    yx_list = np.argwhere(img)
+
+    ret = []
+    for yx in yx_list:
+        ret.append((int(yx[1]), int(yx[0])))
+
+    return ret
+

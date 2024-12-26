@@ -1,5 +1,6 @@
 import filelock
 import os
+import random
 import sys
 import time
 import cv2
@@ -260,10 +261,10 @@ def main():
                 flag_set.remove('xxx-swipeup')
 
             if state == 'err-badname':
-                ldagent.tap(150, 280)
                 flag_set.add(state)
-                time.sleep(TIME_SLEEP)
-                continue
+                # ldagent.tap(150, 280)
+                # time.sleep(TIME_SLEEP)
+                # continue
             if 'err-badname' in flag_set:
                 if state == 'xxx-dialog-sc':
                     state = 's05-name-00'
@@ -307,29 +308,29 @@ def main():
                     force_rebootemu = True
                     continue
 
-                ldagent.tap(150, 200)
-                time.sleep(TIME_SLEEP)
-                continue
-            if state == 's01-info-00':
-                ldagent.tap(100, 292)
-                time.sleep(TIME_SLEEP)
-                continue
-            if state == 's01-info-01':
-                ldagent.tap(100, 196)
-                time.sleep(TIME_SLEEP)
-                continue
-            if state == 's01-info-02':
-                ldagent.tap(200, 292)
-                time.sleep(TIME_SLEEP)
-                continue
-            if state == 's01-info-03':
-                ldagent.tap(198, 204)
-                time.sleep(TIME_SLEEP)
-                continue
-            if state == 's01-info-04':
-                ldagent.tap(153, 361)
-                time.sleep(TIME_SLEEP)
-                continue
+                # ldagent.tap(150, 200)
+                # time.sleep(TIME_SLEEP)
+                # continue
+            # if state == 's01-info-00':
+            #     ldagent.tap(100, 292)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
+            # if state == 's01-info-01':
+            #     ldagent.tap(100, 196)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
+            # if state == 's01-info-02':
+            #     ldagent.tap(200, 292)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
+            # if state == 's01-info-03':
+            #     ldagent.tap(198, 204)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
+            # if state == 's01-info-04':
+            #     ldagent.tap(153, 361)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
             if state == 's02-toc-00':
                 if check_cycle_loop_state in [None, 's12-end-00']:
                     check_cycle_loop_state = state
@@ -342,10 +343,10 @@ def main():
                     ldagent.tap(74, 268)
                     time.sleep(TIME_SLEEP)
                     continue
-            if state == 's02-toc-01':
-                ldagent.tap(150, 360)
-                time.sleep(TIME_SLEEP)
-                continue
+            # if state == 's02-toc-01':
+            #     ldagent.tap(150, 360)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
             if state == 's02-toc-02':
                 if state_history[-1] != 's02-toc-01':
                     ldagent.tap(150, 240)
@@ -359,33 +360,33 @@ def main():
             #     ldagent.tap(150, 360)
             #     time.sleep(TIME_SLEEP)
             #     continue
-            if state == 's02-toc-04':
-                ldagent.tap(150, 360)
-                time.sleep(TIME_SLEEP)
-                continue
+            # if state == 's02-toc-04':
+            #     ldagent.tap(150, 360)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
             if state == 's03-start-00':
                 if check_cycle_loop_state in [None, 's02-toc-00']:
                     check_cycle_loop_state = state
-                ldagent.tap(150, 248)
-                time.sleep(TIME_SLEEP)
-                continue
+                # ldagent.tap(150, 248)
+                # time.sleep(TIME_SLEEP)
+                # continue
             if state == 's03-start-01':
-                ldagent.tap(150, 340)
                 flag_set.add(state)
-                time.sleep(TIME_SLEEP)
-                continue
+                # ldagent.tap(150, 340)
+                # time.sleep(TIME_SLEEP)
+                # continue
             if state == 's05-name-00':
                 # need double check
                 if state_history[-1] != state:
                     time.sleep(TIME_SLEEP/2)
                     continue
-                ldagent.tap(150, 171)
-                time.sleep(TIME_SLEEP)
-                continue
-            if state == 's05-name-01':
-                ldagent.tap(150, 179)
-                time.sleep(TIME_SLEEP)
-                continue
+            #     ldagent.tap(150, 171)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
+            # if state == 's05-name-01':
+            #     ldagent.tap(150, 179)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
             if state == 's05-name-02':
                 # need double check
                 if state_history[-1] != state:
@@ -426,185 +427,185 @@ def main():
                 ldagent.tap(250, 364)
                 time.sleep(TIME_SLEEP)
                 continue
-            if state == 's06-gacha1-00':
-                ldagent.tap(150,200)
-                time.sleep(TIME_SLEEP)
-                continue
-            if state == 's06-gacha1-01':
-                ldagent.tap(150,312)
-                time.sleep(TIME_SLEEP)
-                continue
+            # if state == 's06-gacha1-00':
+            #     ldagent.tap(150,200)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
+            # if state == 's06-gacha1-01':
+            #     ldagent.tap(150,312)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
             # if state == 's06-gacha1-02':
             #     ldagent.tap()
             #     time.sleep(TIME_SLEEP)
             #     continue
-            if state == 's06-gacha1-03':
-                ldagent.tap(150,200)
-                time.sleep(TIME_SLEEP)
-                continue
-            if state == 's06-gacha1-04':
-                ldagent.swipe(150,300,150,100,int(50/config_data['SPEED_FACTOR']))
-                time.sleep(TIME_SLEEP)
-                continue
+            # if state == 's06-gacha1-03':
+            #     ldagent.tap(150,200)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
+            # if state == 's06-gacha1-04':
+            #     ldagent.swipe(150,300,150,100,int(50/config_data['SPEED_FACTOR']))
+            #     time.sleep(TIME_SLEEP)
+            #     continue
             # if state == 's06-gacha1-05':
             #     ldagent.tap(150,268)
             #     time.sleep(10)
             #     continue
-            if state == 's06-gacha1-06':
-                ldagent.tap(150,268)
-                time.sleep(TIME_SLEEP)
-                continue
-            if state == 's06-gacha1-07':
-                ldagent.tap(150,360)
-                time.sleep(TIME_SLEEP)
-                continue
+            # if state == 's06-gacha1-06':
+            #     ldagent.tap(150,268)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
+            # if state == 's06-gacha1-07':
+            #     ldagent.tap(150,360)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
             # if state == 's06-gacha1-08':
             #     ldagent.tap()
             #     time.sleep(TIME_SLEEP)
             #     continue
-            if state == 's07-mission-00':
-                ldagent.tap(273,347)
-                time.sleep(TIME_SLEEP)
-                continue
-            # if state == 's07-mission-01':
+            # if state == 's07-mission-00':
+            #     ldagent.tap(273,347)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
+            # # if state == 's07-mission-01':
+            # #     ldagent.tap(150,194)
+            # #     time.sleep(3)
+            # #     continue
+            # if state == 's07-mission-02':
             #     ldagent.tap(150,194)
-            #     time.sleep(3)
+            #     time.sleep(TIME_SLEEP)
             #     continue
-            if state == 's07-mission-02':
-                ldagent.tap(150,194)
-                time.sleep(TIME_SLEEP)
-                continue
-            if state == 's07-mission-03':
-                ldagent.tap(150,375)
-                time.sleep(TIME_SLEEP)
-                continue
-            if state == 's07-mission-04':
-                ldagent.tap(150,257)
-                time.sleep(TIME_SLEEP)
-                continue
-            if state == 's08-gacha2-02':
-                ldagent.tap(150,155)
-                time.sleep(TIME_SLEEP)
-                continue
-            # if state == 's08-gacha2-03':
+            # if state == 's07-mission-03':
+            #     ldagent.tap(150,375)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
+            # if state == 's07-mission-04':
+            #     ldagent.tap(150,257)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
+            # if state == 's08-gacha2-02':
+            #     ldagent.tap(150,155)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
+            # # if state == 's08-gacha2-03':
+            # #     ldagent.tap(150,313)
+            # #     time.sleep(5)
+            # #     continue
+            # if state == 's08-gacha2-04':
             #     ldagent.tap(150,313)
-            #     time.sleep(5)
+            #     time.sleep(TIME_SLEEP)
             #     continue
-            if state == 's08-gacha2-04':
-                ldagent.tap(150,313)
-                time.sleep(TIME_SLEEP)
-                continue
 
-            if state == 's09-wonder-00':
-                ldagent.tap(150,256)
-                time.sleep(TIME_SLEEP)
-                continue
-            if state == 's09-wonder-01':
-                ldagent.tap(150,373)
-                time.sleep(TIME_SLEEP)
-                continue
-            if state == 's09-wonder-04':
-                ldagent.tap(100,289)
-                time.sleep(TIME_SLEEP)
-                continue
-            if state == 's09-wonder-11':
-                ldagent.tap(150,200)
-                time.sleep(TIME_SLEEP)
-                continue
-            if state == 's09-wonder-12':
-                ldagent.tap(184,257)
-                time.sleep(TIME_SLEEP)
-                continue
-            if state == 's09-wonder-13':
-                ldagent.tap(200,341)
-                time.sleep(TIME_SLEEP)
-                continue
-            if state == 's09-wonder-14':
-                ldagent.tap(184,250)
-                time.sleep(TIME_SLEEP)
-                continue
-            if state == 's09-wonder-15':
-                ldagent.tap(150,380)
-                time.sleep(TIME_SLEEP)
-                continue
-            if state == 's09-wonder-16':
-                ldagent.tap(150,373)
-                time.sleep(TIME_SLEEP)
-                continue
+            # if state == 's09-wonder-00':
+            #     ldagent.tap(150,256)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
+            # if state == 's09-wonder-01':
+            #     ldagent.tap(150,373)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
+            # if state == 's09-wonder-04':
+            #     ldagent.tap(100,289)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
+            # if state == 's09-wonder-11':
+            #     ldagent.tap(150,200)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
+            # if state == 's09-wonder-12':
+            #     ldagent.tap(184,257)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
+            # if state == 's09-wonder-13':
+            #     ldagent.tap(200,341)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
+            # if state == 's09-wonder-14':
+            #     ldagent.tap(184,250)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
+            # if state == 's09-wonder-15':
+            #     ldagent.tap(150,380)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
+            # if state == 's09-wonder-16':
+            #     ldagent.tap(150,373)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
 
             if state == 's11-hourglass-00':
                 if state_history[-1] != state:
                     time.sleep(TIME_SLEEP/2)
                     continue
-                ldagent.tap(200,311)
-                time.sleep(TIME_SLEEP)
-                continue
-            if state == 's11-hourglass-01':
-                ldagent.tap(200,340)
-                time.sleep(TIME_SLEEP)
-                continue
+            #     ldagent.tap(200,311)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
+            # if state == 's11-hourglass-01':
+            #     ldagent.tap(200,340)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
 
             if state == 's12-end-00':
                 if check_cycle_loop_state in [None, 's03-start-00']:
                     check_cycle_loop_state = state
-                ldagent.tap(263,385)
-                time.sleep(TIME_SLEEP)
-                continue
-            if state == 's12-end-01':
-                ldagent.tap(161,325)
-                time.sleep(TIME_SLEEP)
-                continue
-            if state == 's12-end-02':
-                ldagent.tap(150,173)
-                time.sleep(TIME_SLEEP)
-                continue
+            #     ldagent.tap(263,385)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
+            # if state == 's12-end-01':
+            #     ldagent.tap(161,325)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
+            # if state == 's12-end-02':
+            #     ldagent.tap(150,173)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
             if state == 's12-end-03':
                 flag_set.add(state)
-                ldagent.tap(150,327)
-                time.sleep(TIME_SLEEP)
-                continue
+                # ldagent.tap(150,327)
+                # time.sleep(TIME_SLEEP)
+                # continue
 
 
-            if state == 'xxx-cont':
-                ldagent.tap(150, 360)
-                time.sleep(TIME_SLEEP)
-                continue
+            # if state == 'xxx-cont':
+            #     ldagent.tap(150, 360)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
 
-            if state == 'xxx-dialog-lc':
-                ldagent.tap(150, 318)
-                time.sleep(TIME_SLEEP)
-                continue
-            if state == 'xxx-dialog-lw':
-                ldagent.tap(150, 318)
-                time.sleep(TIME_SLEEP)
-                continue
-            if state == 'xxx-dialog-lwc':
-                ldagent.tap(200, 318)
-                time.sleep(TIME_SLEEP)
-                continue
-            if state == 'xxx-dialog-lwr':
-                ldagent.tap(200, 318)
-                time.sleep(TIME_SLEEP)
-                continue
-            if state == 'xxx-dialog-lww':
-                ldagent.tap(200, 318)
-                time.sleep(TIME_SLEEP)
-                continue
+            # if state == 'xxx-dialog-lc':
+            #     ldagent.tap(150, 318)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
+            # if state == 'xxx-dialog-lw':
+            #     ldagent.tap(150, 318)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
+            # if state == 'xxx-dialog-lwc':
+            #     ldagent.tap(200, 318)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
+            # if state == 'xxx-dialog-lwr':
+            #     ldagent.tap(200, 318)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
+            # if state == 'xxx-dialog-lww':
+            #     ldagent.tap(200, 318)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
 
-            if state == 'xxx-dialog-sc':
-                ldagent.tap(150, 266)
-                time.sleep(TIME_SLEEP)
-                continue
-            if state == 'xxx-dialog-swc':
-                ldagent.tap(200, 266)
-                time.sleep(TIME_SLEEP)
-                continue
+            # if state == 'xxx-dialog-sc':
+            #     ldagent.tap(150, 266)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
+            # if state == 'xxx-dialog-swc':
+            #     ldagent.tap(200, 266)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
             if state == 'xxx-dialog-swr':
                 if 's12-end-03' in flag_set:
                     flag_set.add('s12-end-03-confirm')
-                ldagent.tap(200, 266)
-                time.sleep(TIME_SLEEP)
-                continue
+                # ldagent.tap(200, 266)
+                # time.sleep(TIME_SLEEP)
+                # continue
 
             if state == 'xxx-gacha-00-charizard':
                 if TARGET_PACK == 'pikachu':
@@ -672,27 +673,28 @@ def main():
                 time.sleep(TIME_SLEEP)
                 continue
 
-            if state.startswith('xxx-gacha-02-'):
-                ldagent.tap(275,378)
-                time.sleep(TIME_SLEEP)
-                continue
+            # if state.startswith('xxx-gacha-02-'):
+            #     ldagent.tap(275,378)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
 
             if state.startswith('xxx-gacha-03-'):
-                ldagent.swipe(20,231,280,231,SWIPE_PACK_MS)
+                # ldagent.swipe(20,231,280,231,SWIPE_PACK_MS)
                 flag_set.add('xxx-gacha-03')
-                time.sleep(TIME_SLEEP)
-                continue
+                # time.sleep(TIME_SLEEP)
+                # continue
 
             if state == 'xxx-gacha-04':
-                ldagent.tap(275,378)
+                # ldagent.tap(275,378)
                 flag_set.add('xxx-gacha-03')
-                time.sleep(TIME_SLEEP)
-                continue
+                # time.sleep(TIME_SLEEP)
+                # continue
+
             if state == 'xxx-gacha-04-x':
-                ldagent.tap(275,378)
+                # ldagent.tap(275,378)
                 flag_set.add('xxx-gacha-03')
-                time.sleep(TIME_SLEEP)
-                continue
+                # time.sleep(TIME_SLEEP)
+                # continue
 
             # gacha result
             if state == 'xxx-gacha-05':
@@ -772,26 +774,41 @@ def main():
                 time.sleep(TIME_SLEEP)
                 continue
 
-            if state == 'xxx-msg':
-                ldagent.tap(150,200)
-                time.sleep(TIME_SLEEP)
-                continue
+            # if state == 'xxx-msg':
+            #     ldagent.tap(150,200)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
 
-            if state == 'xxx-noitem':
-                ldagent.tap(100,280)
-                time.sleep(TIME_SLEEP)
-                continue
+            # if state == 'xxx-noitem':
+            #     ldagent.tap(100,280)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
 
             if state == 'xxx-swipeup':
-                ldagent.tap(275,378)
+            #     ldagent.tap(275,378)
                 flag_set.add(state)
-                time.sleep(TIME_SLEEP)
-                continue
+            #     time.sleep(TIME_SLEEP)
+            #     continue
 
-            if state.startswith('xxx-tips'):
-                ldagent.tap(150,377)
-                time.sleep(TIME_SLEEP)
-                continue
+            # if state.startswith('xxx-tips'):
+            #     ldagent.tap(150,377)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
+
+            if state in state_list.state_to_action_dist:
+                action = state_list.state_to_action_dist[state]
+                if action['action'] == 'click':
+                    xy = _get_xy(action['xy_list'])
+                    ldagent.tap(*xy)
+                    time.sleep(TIME_SLEEP)
+                    continue
+                if action['action'] == 'swipe':
+                    from_xy = _get_xy(action['from_xy_list'])
+                    to_xy = _get_xy(action['to_xy_list'])
+                    duration = int(action['duration'] / config_data['SPEED_FACTOR'])
+                    ldagent.swipe(*from_xy, *to_xy, duration)
+                    time.sleep(TIME_SLEEP)
+                    continue
 
         except ldagent.LdAgentException as e:
             logger.error(f'MYBPMBYDXK LdAgentException: {e}')
@@ -944,6 +961,10 @@ def get_version():
     else:
         return 'dev'
     
+
+def _get_xy(xy_list):
+    idx = random.randint(0, len(xy_list)-1)
+    return xy_list[idx]
 
 if __name__ == '__main__':
     main()
