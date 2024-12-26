@@ -1,3 +1,4 @@
+import common
 import os
 import shutil
 import time
@@ -97,7 +98,7 @@ def config(config_data):
 def screencap():
     adb_exec(['shell', 'screencap', '-p', '/sdcard/tmp-screencap.png'])
     adb_exec(['pull', '/sdcard/tmp-screencap.png', SCREENCAP_PATH])
-    img = cv2.imread(SCREENCAP_PATH)
+    img = common.cv2_imread(SCREENCAP_PATH)
     return img
 
 def tap(x, y):

@@ -1,7 +1,5 @@
 import argparse
-
-import cv2
-
+import common
 import state_list
 
 def main():
@@ -9,7 +7,7 @@ def main():
     parser.add_argument('filename', type=str)
     args = parser.parse_args()
     
-    img = cv2.imread(args.filename)
+    img = common.cv2_imread(args.filename)
 
     state_list.load_state()
     state_list.get_state(img, debug=True)
