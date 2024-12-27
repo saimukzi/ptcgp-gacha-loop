@@ -1,3 +1,4 @@
+import common
 import os
 import shutil
 import time
@@ -42,16 +43,16 @@ def main():
     else:
         if os.path.exists(img_min_fn):
             shutil.copyfile(img_min_fn, img_min_fn + '.bak')
-            img_min = cv2.imread(img_min_fn)
+            img_min = common.cv2_imread(img_min_fn)
         if os.path.exists(img_max_fn):
             shutil.copyfile(img_max_fn, img_max_fn + '.bak')
-            img_max = cv2.imread(img_max_fn)
+            img_max = common.cv2_imread(img_max_fn)
         if os.path.exists(img_svmin_fn):
             shutil.copyfile(img_svmin_fn, img_svmin_fn + '.bak')
-            img_svmin = cv2.imread(img_svmin_fn)
+            img_svmin = common.cv2_imread(img_svmin_fn)
         if os.path.exists(img_svmax_fn):
             shutil.copyfile(img_svmax_fn, img_svmax_fn + '.bak')
-            img_svmax = cv2.imread(img_svmax_fn)
+            img_svmax = common.cv2_imread(img_svmax_fn)
 
 
     for _ in range(100):

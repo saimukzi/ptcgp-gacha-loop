@@ -1,3 +1,4 @@
+import common
 import os
 import const
 import cv2
@@ -21,19 +22,19 @@ def load_state():
         img_svmax_fn = os.path.join(const.MY_PATH, 'res', 'state', f'{state}.svmax.png')
         img_mask_fn = os.path.join(const.MY_PATH, 'res', 'state', f'{state}.mask.png')
 
-        img_min = cv2.imread(img_min_fn).astype(np.float32)
-        img_max = cv2.imread(img_max_fn).astype(np.float32)
+        img_min = common.cv2_imread(img_min_fn).astype(np.float32)
+        img_max = common.cv2_imread(img_max_fn).astype(np.float32)
         if os.path.exists(img_svmin_fn):
             assert(os.path.exists(img_svmax_fn))
-            img_svmin = cv2.imread(img_svmin_fn).astype(np.float32)
+            img_svmin = common.cv2_imread(img_svmin_fn).astype(np.float32)
             img_svmin = img_svmin[:,:,0:2]
-            img_svmax = cv2.imread(img_svmax_fn).astype(np.float32)
+            img_svmax = common.cv2_imread(img_svmax_fn).astype(np.float32)
             img_svmax = img_svmax[:,:,0:2]
             img_min = np.append(img_min, img_svmin, axis=2)
             img_max = np.append(img_max, img_svmax, axis=2)
 
         if os.path.exists(img_mask_fn):
-            img_mask = cv2.imread(img_mask_fn, cv2.IMREAD_UNCHANGED).astype(np.float32)
+            img_mask = common.cv2_imread(img_mask_fn, flags=cv2.IMREAD_UNCHANGED).astype(np.float32)
             assert(img_mask.shape[2] == 4)
         else:
             img_mask = None
@@ -57,19 +58,19 @@ def load_state():
         img_svmax_fn = os.path.join(const.MY_PATH, 'res', 'state', 'fix', f'{state_fix}.svmax.png')
         img_mask_fn = os.path.join(const.MY_PATH, 'res', 'state', 'fix', f'{state_fix}.mask.png')
 
-        img_min = cv2.imread(img_min_fn).astype(np.float32)
-        img_max = cv2.imread(img_max_fn).astype(np.float32)
+        img_min = common.cv2_imread(img_min_fn).astype(np.float32)
+        img_max = common.cv2_imread(img_max_fn).astype(np.float32)
         if os.path.exists(img_svmin_fn):
             assert(os.path.exists(img_svmax_fn))
-            img_svmin = cv2.imread(img_svmin_fn).astype(np.float32)
+            img_svmin = common.cv2_imread(img_svmin_fn).astype(np.float32)
             img_svmin = img_svmin[:,:,0:2]
-            img_svmax = cv2.imread(img_svmax_fn).astype(np.float32)
+            img_svmax = common.cv2_imread(img_svmax_fn).astype(np.float32)
             img_svmax = img_svmax[:,:,0:2]
             img_min = np.append(img_min, img_svmin, axis=2)
             img_max = np.append(img_max, img_svmax, axis=2)
 
         if os.path.exists(img_mask_fn):
-            img_mask = cv2.imread(img_mask_fn, cv2.IMREAD_UNCHANGED).astype(np.float32)
+            img_mask = common.cv2_imread(img_mask_fn, flags=cv2.IMREAD_UNCHANGED).astype(np.float32)
             assert(img_mask.shape[2] == 4)
         else:
             img_mask = None

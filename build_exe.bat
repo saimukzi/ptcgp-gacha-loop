@@ -21,7 +21,7 @@ if %ERRORLEVEL% NEQ 0 (
   exit 1
 )
 
-git tag zb-%YYYYMMDD%-%HHMMSS%
+git tag zb-%YYYYMMDD%-%HHMMSS% -m "release %YYYYMMDD%-%HHMMSS%"
 
 pyinstaller --add-data="res;res" --add-data="default.yaml;." gacha_loop.py
 
