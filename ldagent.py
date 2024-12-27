@@ -100,15 +100,16 @@ def screencap():
     # adb_exec(['shell', 'echo -n;screencap -p /sdcard/tmp-screencap.png'])
     # adb_exec(['pull', '/sdcard/tmp-screencap.png', SCREENCAP_PATH])
     try:
-        process_ret = subprocess.run([ADB_PATH, "-s", f"emulator-{ADB_IDX}", 'exec-out', 'screencap -p'], capture_output=True, timeout=5)
-        if process_ret.returncode != 0:
-            logger.error(f'RZBQUXKBHP adb_exec returncode = {process_ret.returncode}')
-            raise LdAgentException('adb_exec returncode!=0')
-        stdout = process_ret.stdout
-        if len(stdout) <= 0:
+        for _ in range(10):
+            process_ret = subprocess.run([ADB_PATH, "-s", f"emulator-{ADB_IDX}", 'exec-out', 'screencap -p'], capture_output=True, timeout=5)
+            if process_ret.returncode != 0:
+                logger.error(f'RZBQUXKBHP adb_exec returncode = {process_ret.returncode}')
+                raise LdAgentException('adb_exec returncode!=0')
+            stdout = process_ret.stdout
+            if len(stdout) > 0:
+                return cv2.imdecode(np.frombuffer(process_ret.stdout, np.uint8), cv2.IMREAD_COLOR)
             logger.error(f'HPHJGWWXOR screencap stdout too short')
-            raise LdAgentException('screencap stdout too short')
-        return cv2.imdecode(np.frombuffer(process_ret.stdout, np.uint8), cv2.IMREAD_COLOR)
+        raise LdAgentException('adb screencap no data')
     except subprocess.TimeoutExpired:
         logger.error(f'SZLGCPJJAD adb_exec timeout')
         raise LdAgentException('adb_exec timeout')
