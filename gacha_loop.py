@@ -223,13 +223,13 @@ def main():
             #     time.sleep(0.1)
             state = state_list.get_state(img)
 
+            if state == 'xxx-gacha-05-U':
+                state = 'UNKNOWN'
+
             # print(state_history, state)
             logger.debug(f'PSDLSJCDBB state_history={state_history}')
             logger.debug(f'WJPUTEHGOE state={state}')
             logger.debug(f'YAISJIINTI flag_set={flag_set}')
-
-            if state == 'xxx-gacha-05-U':
-                state = 'UNKNOWN'
 
             if 's03-start-01' in flag_set:
                 # playing fking opening animation
@@ -335,25 +335,31 @@ def main():
                 if check_cycle_loop_state in [None, 's12-end-00']:
                     check_cycle_loop_state = state
                     check_cycle_last_reset = time.time()
+
                 if state_history[-1] != 's02-toc-01':
-                    ldagent.tap(149, 207)
+                    # ldagent.tap(149, 207)
+                    ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['R_xy_list']))
                     time.sleep(TIME_SLEEP)
                     continue
                 else:
-                    ldagent.tap(74, 268)
+                    # ldagent.tap(74, 268)
+                    ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['G_xy_list']))
                     time.sleep(TIME_SLEEP)
                     continue
+
             # if state == 's02-toc-01':
             #     ldagent.tap(150, 360)
             #     time.sleep(TIME_SLEEP)
             #     continue
             if state == 's02-toc-02':
                 if state_history[-1] != 's02-toc-01':
-                    ldagent.tap(150, 240)
+                    # ldagent.tap(150, 240)
+                    ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['R_xy_list']))
                     time.sleep(TIME_SLEEP)
                     continue
                 else:
-                    ldagent.tap(73, 294)
+                    # ldagent.tap(73, 294)
+                    ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['G_xy_list']))
                     time.sleep(TIME_SLEEP)
                     continue
             # if state == 's02-toc-03':
@@ -607,69 +613,78 @@ def main():
                 # time.sleep(TIME_SLEEP)
                 # continue
 
-            if state == 'xxx-gacha-00-charizard':
-                if TARGET_PACK == 'pikachu':
-                    ldagent.tap(85,214)
-                    time.sleep(TIME_SLEEP)
-                    continue
-                if TARGET_PACK == 'mewtwo':
-                    ldagent.tap(218,221)
-                    time.sleep(TIME_SLEEP)
-                    continue
-                if TARGET_PACK == 'mew':
-                    ldagent.tap(150,347)
-                    time.sleep(TIME_SLEEP)
-                    continue
-                ldagent.tap(150,200)
-                time.sleep(TIME_SLEEP)
-                continue
-            if state == 'xxx-gacha-00-mew':
-                if TARGET_PACK != 'mew':
-                    ldagent.tap(150,347)
-                    time.sleep(TIME_SLEEP)
-                    continue
-                ldagent.tap(150,200)
-                time.sleep(TIME_SLEEP)
-                continue
-            if state == 'xxx-gacha-00-mewtwo':
-                if TARGET_PACK == 'charizard':
-                    ldagent.tap(85,214)
-                    time.sleep(TIME_SLEEP)
-                    continue
-                if TARGET_PACK == 'pikachu':
-                    ldagent.tap(218,221)
-                    time.sleep(TIME_SLEEP)
-                    continue
-                if TARGET_PACK == 'mew':
-                    ldagent.tap(150,347)
-                    time.sleep(TIME_SLEEP)
-                    continue
-                ldagent.tap(150,200)
-                time.sleep(TIME_SLEEP)
-                continue
-            if state == 'xxx-gacha-00-pikachu':
-                if TARGET_PACK == 'mewtwo':
-                    ldagent.tap(85,214)
-                    time.sleep(TIME_SLEEP)
-                    continue
-                if TARGET_PACK == 'charizard':
-                    ldagent.tap(218,221)
-                    time.sleep(TIME_SLEEP)
-                    continue
-                if TARGET_PACK == 'mew':
-                    ldagent.tap(150,347)
-                    time.sleep(TIME_SLEEP)
-                    continue
-                ldagent.tap(150,200)
+            # if state == 'xxx-gacha-00-charizard':
+            #     if TARGET_PACK == 'pikachu':
+            #         ldagent.tap(85,214)
+            #         time.sleep(TIME_SLEEP)
+            #         continue
+            #     if TARGET_PACK == 'mewtwo':
+            #         ldagent.tap(218,221)
+            #         time.sleep(TIME_SLEEP)
+            #         continue
+            #     if TARGET_PACK == 'mew':
+            #         ldagent.tap(150,347)
+            #         time.sleep(TIME_SLEEP)
+            #         continue
+            #     ldagent.tap(150,200)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
+            # if state == 'xxx-gacha-00-mew':
+            #     if TARGET_PACK != 'mew':
+            #         ldagent.tap(150,347)
+            #         time.sleep(TIME_SLEEP)
+            #         continue
+            #     ldagent.tap(150,200)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
+            # if state == 'xxx-gacha-00-mewtwo':
+            #     if TARGET_PACK == 'charizard':
+            #         ldagent.tap(85,214)
+            #         time.sleep(TIME_SLEEP)
+            #         continue
+            #     if TARGET_PACK == 'pikachu':
+            #         ldagent.tap(218,221)
+            #         time.sleep(TIME_SLEEP)
+            #         continue
+            #     if TARGET_PACK == 'mew':
+            #         ldagent.tap(150,347)
+            #         time.sleep(TIME_SLEEP)
+            #         continue
+            #     ldagent.tap(150,200)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
+            # if state == 'xxx-gacha-00-pikachu':
+            #     if TARGET_PACK == 'mewtwo':
+            #         ldagent.tap(85,214)
+            #         time.sleep(TIME_SLEEP)
+            #         continue
+            #     if TARGET_PACK == 'charizard':
+            #         ldagent.tap(218,221)
+            #         time.sleep(TIME_SLEEP)
+            #         continue
+            #     if TARGET_PACK == 'mew':
+            #         ldagent.tap(150,347)
+            #         time.sleep(TIME_SLEEP)
+            #         continue
+            #     ldagent.tap(150,200)
+            #     time.sleep(TIME_SLEEP)
+            #     continue
+
+            if state.startswith('xxx-gacha-00-'):
+                state_pack = state[13:]
+                color = XXX_GACHA_00_STATE_TARGET_TO_COLOR_DICT[(state_pack, TARGET_PACK)]
+                ldagent.tap(*_get_xy(state_list.state_to_action_dist[state][f'{color}_xy_list']))
                 time.sleep(TIME_SLEEP)
                 continue
 
             if state.startswith('xxx-gacha-01-'):
                 if TARGET_PACK != state[13:]:
-                    ldagent.tap(150,348)
+                    # ldagent.tap(150,348)
+                    ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['R_xy_list']))
                     time.sleep(TIME_SLEEP)
                     continue
-                ldagent.tap(150,313)
+                # ldagent.tap(150,313)
+                ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['G_xy_list']))
                 time.sleep(TIME_SLEEP)
                 continue
 
@@ -762,15 +777,18 @@ def main():
                     force_resetapp = True
                     continue
 
-                ldagent.tap(150,377)
+                # ldagent.tap(150,377)
+                ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
                 time.sleep(TIME_SLEEP)
                 continue
 
             if state == 'xxx-home':
                 if TARGET_PACK in ['charizard', 'pikachu', 'mewtwo']:
-                    ldagent.tap(185,154)
+                    # ldagent.tap(185,154)
+                    ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['RB_xy_list']))
                 if TARGET_PACK == 'mew':
-                    ldagent.tap(111,154)
+                    # ldagent.tap(111,154)
+                    ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['G_xy_list']))
                 time.sleep(TIME_SLEEP)
                 continue
 
@@ -965,6 +983,25 @@ def get_version():
 def _get_xy(xy_list):
     idx = random.randint(0, len(xy_list)-1)
     return xy_list[idx]
+
+XXX_GACHA_00_STATE_TARGET_TO_COLOR_DICT = {
+    ('charizard','pikachu'): 'B',
+    ('charizard','charizard'): 'G',
+    ('charizard','mewtwo'): 'RG',
+    ('charizard','mew'): 'R',
+    ('mewtwo','charizard'): 'B',
+    ('mewtwo','mewtwo'): 'G',
+    ('mewtwo','pikachu'): 'RG',
+    ('mewtwo','mew'): 'R',
+    ('pikachu','mewtwo'): 'B',
+    ('pikachu','pikachu'): 'G',
+    ('pikachu','charizard'): 'RG',
+    ('pikachu','mew'): 'R',
+    ('mew','mew'): 'G',
+    ('mew','charizard'): 'R',
+    ('mew','mewtwo'): 'R',
+    ('mew','pikachu'): 'R',
+}
 
 if __name__ == '__main__':
     main()
