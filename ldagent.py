@@ -1,4 +1,5 @@
 import common
+import numpy as np
 import os
 import shutil
 import time
@@ -96,9 +97,22 @@ def config(config_data):
     os.makedirs(os.path.dirname(SCREENCAP_PATH), exist_ok=True)
 
 def screencap():
-    adb_exec(['shell', 'screencap', '-p', '/sdcard/tmp-screencap.png'])
-    adb_exec(['pull', '/sdcard/tmp-screencap.png', SCREENCAP_PATH])
-    img = common.cv2_imread(SCREENCAP_PATH)
+    # adb_exec(['shell', 'echo -n;screencap -p /sdcard/tmp-screencap.png'])
+    # adb_exec(['pull', '/sdcard/tmp-screencap.png', SCREENCAP_PATH])
+    try:
+        process_ret = subprocess.run([ADB_PATH, "-s", f"emulator-{ADB_IDX}", 'exec-out', 'screencap -p'], capture_output=True, timeout=5)
+        if process_ret.returncode != 0:
+            logger.error(f'RZBQUXKBHP adb_exec returncode = {process_ret.returncode}')
+            raise LdAgentException('adb_exec returncode!=0')
+        stdout = process_ret.stdout
+        if len(stdout) <= 0:
+            logger.error(f'HPHJGWWXOR screencap stdout too short')
+            raise LdAgentException('screencap stdout too short')
+        return cv2.imdecode(np.frombuffer(process_ret.stdout, np.uint8), cv2.IMREAD_COLOR)
+    except subprocess.TimeoutExpired:
+        logger.error(f'SZLGCPJJAD adb_exec timeout')
+        raise LdAgentException('adb_exec timeout')
+    # img = common.cv2_imread(SCREENCAP_PATH)
     return img
 
 def tap(x, y):
