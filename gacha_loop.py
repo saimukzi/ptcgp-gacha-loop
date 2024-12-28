@@ -630,7 +630,7 @@ def main():
                 action_action = action['action']
                 logger.debug(f'OLOWPQVZMD action={action_action}')
                 next_state_double_act_state = state
-                if state in ['s06-gacha1-03','s09-wonder-11','s09-wonder-14','s09-wonder-16','xxx-tips16','xxx-tips25']:
+                if state in ['s06-gacha1-03','s09-wonder-11','s09-wonder-12','s09-wonder-14','s09-wonder-16','xxx-tips16','xxx-tips25']:
                     next_state_double_act_state = None
                 if action['action'] == 'click':
                     xy = _get_xy(action['xy_list'])
