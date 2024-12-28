@@ -9,6 +9,7 @@ from my_logger import logger
 state_data_list = []
 state_fix_dict = {}
 state_to_action_dist = {}
+state_to_forget_img_dict = {}
 
 def load_state():
     state_list = os.listdir(os.path.join(const.MY_PATH, 'res', 'state'))
@@ -36,6 +37,7 @@ def load_state():
         if os.path.exists(img_mask_fn):
             img_mask = common.cv2_imread(img_mask_fn, flags=cv2.IMREAD_UNCHANGED).astype(np.float32)
             assert(img_mask.shape[2] == 4)
+            img_mask = img_mask[:,:,3:4]
         else:
             img_mask = None
 
@@ -72,6 +74,7 @@ def load_state():
         if os.path.exists(img_mask_fn):
             img_mask = common.cv2_imread(img_mask_fn, flags=cv2.IMREAD_UNCHANGED).astype(np.float32)
             assert(img_mask.shape[2] == 4)
+            img_mask = img_mask[:,:,3:4]
         else:
             img_mask = None
         if state0 not in state_fix_dict:
@@ -83,6 +86,7 @@ def load_state():
             'img_mask': img_mask,
         })
 
+    # action
     for img_fn in os.listdir(os.path.join(const.MY_PATH, 'res', 'state')):
         if not img_fn.endswith('.png'):
             continue
@@ -122,6 +126,15 @@ def load_state():
                 'RGB_xy_list': _to_xy_list(img, 'RGB'),
             }
 
+    # forget
+    for img_fn in os.listdir(os.path.join(const.MY_PATH, 'res', 'state')):
+        if not img_fn.endswith('.forget.png'):
+            continue
+        token = img_fn.split('.')[:-1]
+        state = token[0]
+        img = common.cv2_imread(os.path.join(const.MY_PATH, 'res', 'state', img_fn), flags=cv2.IMREAD_UNCHANGED).astype(np.float32)
+        img = img[:,:,3:4] / 255
+        state_to_forget_img_dict[state] = img
 
 def get_state(img, debug=False):
     imgmx = img.max(axis=2)
@@ -182,7 +195,7 @@ def _get_state_diff(img, img_min, img_max, img_mask, debug=False):
         cv2.imwrite('diff_min.png', diff_min)
 
     if img_mask is not None:
-        mask = img_mask[:,:,3:4]
+        mask = img_mask
         # mask = mask.reshape(mask.shape[:2])
         mask = mask / 255
         diff = diff * mask

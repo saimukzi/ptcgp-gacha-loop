@@ -138,6 +138,8 @@ def main():
 
     emu_ok = False
 
+    debug_img_idx = 0
+
     # [EJUUQPPRST] check if the state go pass these states in order
     # - s02-toc-00
     # - s03-start-00
@@ -147,6 +149,14 @@ def main():
 
     # [ZRTRNAFFLV] restart emu to free memory
     freemem_last_reset = time.time()
+
+    state_double_act_state = None
+    state_double_act_time = time.time()
+    state_double_act_img = None
+    STATE_DOUBLE_ACT_WAIT = 5
+    # double_act_img = None
+    # double_act_time = time.time()
+    # DOUBLE_ACT_TIMEOUT = 5
 
     while True:
         try:
@@ -219,6 +229,14 @@ def main():
             if state == 'xxx-gacha-05-U':
                 state = 'UNKNOWN'
 
+            if config_data['DEBUG_IMG']:
+                logger.debug(f'CNRSFFOMKV debug_img_idx={debug_img_idx}, state={state}')
+                debug_img_fn = os.path.join(INSTANCE_VAR_FOLDER, 'debug_img', '%02d.png'%debug_img_idx)
+                os.makedirs(os.path.dirname(debug_img_fn), exist_ok=True)
+                cv2.imwrite(debug_img_fn, img)
+                debug_img_idx += 1
+                debug_img_idx %= 100
+
             # print(state_history, state)
             logger.debug(f'PSDLSJCDBB state_history={state_history}')
             logger.debug(f'WJPUTEHGOE state={state}')
@@ -247,25 +265,40 @@ def main():
 
             if 'xxx-swipeup' in flag_set:
                 # fking add img to album animation
-                if state not in ['xxx-cont']:
-                    # ldagent.tap(275,378)
-                    time.sleep(TIME_SLEEP/2)
+                if state in ['UNKNOWN']:
+                    ldagent.tap(275,378)
+                    time.sleep(TIME_SLEEP)
                     continue
                 flag_set.remove('xxx-swipeup')
+
+            logger.debug(f'IWFCYLNYDB state={state}')
+            logger.debug(f'IWFCYLNYDB flag_set={flag_set}')
+
+            if (state == state_double_act_state) and (time.time() - state_double_act_time < STATE_DOUBLE_ACT_WAIT):
+                is_double_act = True
+                if state in state_list.state_to_forget_img_dict:
+                    mask_img = state_list.state_to_forget_img_dict[state]
+                    img_diff = np.abs(img - state_double_act_img)
+                    img_diff = img_diff * mask_img
+                    img_diff = img_diff.sum() / mask_img.sum() / img_diff.shape[2]
+                    logger.debug(f'LZKXOWTZMK img_diff={img_diff}')
+                    if img_diff > 5:
+                        is_double_act = False
+                if is_double_act:
+                    logger.debug(f'AXTNCKYONS double_act')
+                    time.sleep(TIME_SLEEP/2)
+                    continue
 
             if state == 'err-badname':
                 flag_set.add(state)
 
-            if 'err-badname' in flag_set:
-                if state == 'xxx-dialog-sc':
-                    state = 's05-name-00'
-                if state == 'xxx-dialog-swc':
-                    ldagent.tap(150, 179)
-                    time.sleep(TIME_SLEEP)
-                    state = 's05-name-02'
-
-            logger.debug(f'IWFCYLNYDB state={state}')
-            logger.debug(f'IWFCYLNYDB flag_set={flag_set}')
+            # if 'err-badname' in flag_set:
+            #     if state == 'xxx-dialog-sc':
+            #         state = 's05-name-00'
+            #     if state == 'xxx-dialog-swc':
+            #         ldagent.tap(150, 179)
+            #         time.sleep(TIME_SLEEP)
+            #         state = 's05-name-02'
 
             if state == 'err-launch-00':
                 force_resetapp = True
@@ -299,26 +332,43 @@ def main():
                     check_cycle_loop_state = state
                     check_cycle_last_reset = time.time()
 
-                if state_history[-1] != 's02-toc-01':
+                if 's02-toc-01' not in flag_set:
                     # ldagent.tap(149, 207)
                     ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['R_xy_list']))
+                    state_double_act_state = state
+                    state_double_act_time = time.time()
+                    state_double_act_img = img
                     time.sleep(TIME_SLEEP)
                     continue
                 else:
                     # ldagent.tap(74, 268)
+                    flag_set.remove('s02-toc-01')
                     ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['G_xy_list']))
+                    state_double_act_state = state
+                    state_double_act_time = time.time()
+                    state_double_act_img = img
                     time.sleep(TIME_SLEEP)
                     continue
 
+            if state == 's02-toc-01':
+                flag_set.add(state)
+
             if state == 's02-toc-02':
-                if state_history[-1] != 's02-toc-01':
+                if 's02-toc-01' not in flag_set:
                     # ldagent.tap(150, 240)
                     ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['R_xy_list']))
+                    state_double_act_state = state
+                    state_double_act_time = time.time()
+                    state_double_act_img = img
                     time.sleep(TIME_SLEEP)
                     continue
                 else:
                     # ldagent.tap(73, 294)
+                    flag_set.remove('s02-toc-01')
                     ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['G_xy_list']))
+                    state_double_act_state = state
+                    state_double_act_time = time.time()
+                    state_double_act_img = img
                     time.sleep(TIME_SLEEP)
                     continue
 
@@ -335,6 +385,12 @@ def main():
                     time.sleep(TIME_SLEEP/2)
                     continue
 
+            if state == 's05-name-01':
+                # need double check
+                if state_history[-1] != state:
+                    time.sleep(TIME_SLEEP/2)
+                    continue
+
             if state == 's05-name-02':
                 # need double check
                 if state_history[-1] != state:
@@ -343,8 +399,10 @@ def main():
                 for _ in range(10):
                     ldagent.keyevent(67)
                     time.sleep(0.2) # speed of typing
-                if 'err-badname' in flag_set:
-                    flag_set.remove('err-badname')
+                state_double_act_state = state
+                state_double_act_time = time.time()
+                state_double_act_img = img
+                time.sleep(TIME_SLEEP)
                 continue
 
             if state == 's05-name-02-empty':
@@ -352,6 +410,8 @@ def main():
                 if state_history[-1] != state:
                     time.sleep(TIME_SLEEP/2)
                     continue
+                if 'err-badname' in flag_set:
+                    flag_set.remove('err-badname')
                 yyyymmddhhmmss = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
                 username = USERNAME
                 username = username.replace('{IDX}', '%03d' % (user_idx%1000))
@@ -372,12 +432,64 @@ def main():
                 user_idx %= 10000
                 with open(USER_IDX_PATH, 'w') as f:
                     f.write(str(user_idx))
+                state_double_act_state = state
+                state_double_act_time = time.time()
+                state_double_act_img = img
                 time.sleep(TIME_SLEEP)
-                ldagent.tap(250, 364)
+                # ldagent.tap(250, 364)
+                # ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                # time.sleep(TIME_SLEEP)
+                continue
+
+            if state == 's05-name-03':
+                if 'err-badname' in flag_set:
+                    for _ in range(10):
+                        ldagent.keyevent(67)
+                        time.sleep(0.2) # speed of typing
+                    state_double_act_state = state
+                    state_double_act_time = time.time()
+                    state_double_act_img = img
+                    time.sleep(TIME_SLEEP)
+                    continue
+                ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['G_xy_list']))
+                state_double_act_state = state
+                state_double_act_time = time.time()
+                state_double_act_img = img
+                time.sleep(TIME_SLEEP)
+                continue
+
+            if state == 's05-name-04':
+                if 'err-badname' in flag_set:
+                    ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['R_xy_list']))
+                    state_double_act_state = state
+                    state_double_act_time = time.time()
+                    state_double_act_img = img
+                    time.sleep(TIME_SLEEP)
+                    continue
+                ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['G_xy_list']))
+                state_double_act_state = state
+                state_double_act_time = time.time()
+                state_double_act_img = img
+                time.sleep(TIME_SLEEP)
+                continue
+
+            if state == 's05-name-05':
+                if 'err-badname' in flag_set:
+                    ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['R_xy_list']))
+                    state_double_act_state = state
+                    state_double_act_time = time.time()
+                    state_double_act_img = img
+                    time.sleep(TIME_SLEEP)
+                    continue
+                ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['G_xy_list']))
+                state_double_act_state = state
+                state_double_act_time = time.time()
+                state_double_act_img = img
                 time.sleep(TIME_SLEEP)
                 continue
 
             if state == 's11-hourglass-00':
+                # double check
                 if state_history[-1] != state:
                     time.sleep(TIME_SLEEP/2)
                     continue
@@ -394,9 +506,16 @@ def main():
                     flag_set.add('s12-end-03-confirm')
 
             if state.startswith('xxx-gacha-00-'):
+                # need double check
+                if state_history[-1] != state:
+                    time.sleep(TIME_SLEEP/2)
+                    continue
                 state_pack = state[13:]
                 color = XXX_GACHA_00_STATE_TARGET_TO_COLOR_DICT[(state_pack, TARGET_PACK)]
                 ldagent.tap(*_get_xy(state_list.state_to_action_dist[state][f'{color}_xy_list']))
+                state_double_act_state = state
+                state_double_act_time = time.time()
+                state_double_act_img = img
                 time.sleep(TIME_SLEEP)
                 continue
 
@@ -404,10 +523,16 @@ def main():
                 if TARGET_PACK != state[13:]:
                     # ldagent.tap(150,348)
                     ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['R_xy_list']))
+                    state_double_act_state = state
+                    state_double_act_time = time.time()
+                    state_double_act_img = img
                     time.sleep(TIME_SLEEP)
                     continue
                 # ldagent.tap(150,313)
                 ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['G_xy_list']))
+                state_double_act_state = state
+                state_double_act_time = time.time()
+                state_double_act_img = img
                 time.sleep(TIME_SLEEP)
                 continue
 
@@ -478,6 +603,9 @@ def main():
 
                 # ldagent.tap(150,377)
                 ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                state_double_act_state = state
+                state_double_act_time = time.time()
+                state_double_act_img = img
                 time.sleep(TIME_SLEEP)
                 continue
 
@@ -488,6 +616,9 @@ def main():
                 if TARGET_PACK == 'mew':
                     # ldagent.tap(111,154)
                     ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['G_xy_list']))
+                state_double_act_state = state
+                state_double_act_time = time.time()
+                state_double_act_img = img
                 time.sleep(TIME_SLEEP)
                 continue
 
@@ -496,18 +627,31 @@ def main():
 
             if state in state_list.state_to_action_dist:
                 action = state_list.state_to_action_dist[state]
+                action_action = action['action']
+                logger.debug(f'OLOWPQVZMD action={action_action}')
+                next_state_double_act_state = state
+                if state in ['s06-gacha1-03','s09-wonder-11','s09-wonder-14','s09-wonder-16','xxx-tips16','xxx-tips25']:
+                    next_state_double_act_state = None
                 if action['action'] == 'click':
                     xy = _get_xy(action['xy_list'])
                     ldagent.tap(*xy)
+                    state_double_act_state = next_state_double_act_state
+                    state_double_act_time = time.time()
+                    state_double_act_img = img
                     time.sleep(TIME_SLEEP)
                     continue
                 if action['action'] == 'swipe':
                     from_xy = _get_xy(action['from_xy_list'])
                     to_xy = _get_xy(action['to_xy_list'])
-                    duration = int(action['duration'] / config_data['SPEED_FACTOR'])
+                    # duration = int(action['duration'] / config_data['SPEED_FACTOR'])
+                    duration = int(action['duration'])
                     ldagent.swipe(*from_xy, *to_xy, duration)
                     time.sleep(TIME_SLEEP)
                     continue
+
+            if state == 'UNKNOWN':
+                state_double_act_state = None
+                continue
 
         except ldagent.LdAgentException as e:
             logger.error(f'MYBPMBYDXK LdAgentException: {e}')
