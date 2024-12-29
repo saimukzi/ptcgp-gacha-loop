@@ -94,6 +94,8 @@ def main():
     card_list.load_card_img()
 
     config.check(config_data)
+    
+    state_list.STATE_DETECT_THRESHOLD = float(config_data['STATE_DETECT_THRESHOLD'])
 
     APP_VAR_FOLDER = os.path.join(const.APP_PATH, 'var')
     logger.debug(f'APP_VAR_FOLDER={APP_VAR_FOLDER}')
