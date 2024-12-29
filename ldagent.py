@@ -16,6 +16,19 @@ import winreg
 
 PACKAGE_NAME = 'jp.pokemon.pokemontcgp'
 
+class LDPlayerApp:
+
+    def __init__(self, ldplayer_path, ldconsole_encoding=''):
+        self.ldplayer_path = ldplayer_path
+        self.ldconsole_path = os.path.join(ldplayer_path, 'ldconsole.exe')
+
+    def _cmd(self, cmd, timeout=30, check=True):
+        process_ret = subprocess.run([self.ldconsole_path]+cmd, capture_output=True, timeout=timeout)
+        logger.debug(f'cmd returncode = {process_ret.returncode}')
+        if check:
+            assert(process_ret.returncode == 0)
+        return process_ret
+
 INSTANCE_ID = None
 
 LDPLAYER_PATH = None
