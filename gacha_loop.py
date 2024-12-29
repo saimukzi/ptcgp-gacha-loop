@@ -330,6 +330,18 @@ def main():
                 ldagent.tap(153, 361)
                 time.sleep(TIME_SLEEP)
                 continue
+            if state == 's01-info-05':
+                ldagent.tap(150, 157)
+                time.sleep(TIME_SLEEP)
+                continue
+            if state == 's01-info-06':
+                ldagent.tap(153, 315)
+                time.sleep(TIME_SLEEP)
+                continue
+            if state == 's01-info-07':
+                ldagent.tap(153, 340)
+                time.sleep(TIME_SLEEP)
+                continue
             if state == 's02-toc-00':
                 if check_cycle_loop_state in [None, 's12-end-00']:
                     check_cycle_loop_state = state
