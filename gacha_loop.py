@@ -1,3 +1,4 @@
+import common
 import filelock
 import os
 import random
@@ -69,10 +70,16 @@ def main():
     START_YYYYMMDDHHMMSS = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
     MY_PID = os.getpid()
 
+    swipe_speed_factor = config_data['SPEED_FACTOR']
+    if config_data['ENABLE_PLATINMODS']:
+        swipe_speed_factor = 1
+
     TIME_SLEEP = 0.5 / config_data['SPEED_FACTOR']
     logger.debug(f'IMLIDECFNW TIME_SLEEP={TIME_SLEEP}')
     if config_data['SWIPE_PACK_SEC'] is not None:
         SWIPE_PACK_MS = int(config_data['SWIPE_PACK_SEC'] * 1000)
+    elif config_data['ENABLE_PLATINMODS']:
+        SWIPE_PACK_MS = 1000
     else:
         SWIPE_PACK_MS = int(1000/config_data['SPEED_FACTOR'])
     logger.debug(f'KQOHOWKNBY SWIPE_PACK_MS={SWIPE_PACK_MS}')
@@ -91,7 +98,12 @@ def main():
         logger.error(f'instance is locked: {INSTANCE_ID}')
         sys.exit(1)
 
-    state_list.load_state()
+    state_list_mask255f = None
+    if config_data['ENABLE_PLATINMODS']:
+        platinmods_mask255f = common.cv2_imread(os.path.join(const.MY_PATH, 'res', 'platinmods-mask.png'), flags=cv2.IMREAD_UNCHANGED).astype(np.float32)[:,:,3:4]
+        state_list_mask255f = platinmods_mask255f
+
+    state_list.load_state(state_list_mask255f)
     card_list.load_card_img()
 
     config.check(config_data)
@@ -160,6 +172,10 @@ def main():
     # double_act_time = time.time()
     # DOUBLE_ACT_TIMEOUT = 5
 
+    platinmods_speed = 1
+    target_platinmods_speed = 3
+    last_swipe_time = 0
+
     while True:
         try:
             update_logger(config_data)
@@ -218,6 +234,8 @@ def main():
                 ldagent.recover()
                 emu_ok = True
                 flag_set = set()
+                platinmods_speed = 1
+                target_platinmods_speed = 3
                 continue
 
             if state != 'UNKNOWN':
@@ -244,6 +262,46 @@ def main():
             logger.debug(f'WJPUTEHGOE state={state}')
             logger.debug(f'YAISJIINTI flag_set={flag_set}')
 
+            if state == 'xxx-gacha-05-U':
+                state = 'UNKNOWN'
+
+            if (config_data['ENABLE_PLATINMODS']):
+                if     (state in ['s06-gacha1-04']) \
+                    or (state.startswith('xxx-gacha-03-')) \
+                    or ('s03-start-01' in flag_set) \
+                    or (time.time()-last_swipe_time<1):
+                    target_platinmods_speed = 1
+                elif (not state.startswith('platinmods-menu-')):
+                    target_platinmods_speed = 3
+
+                if state == 'platinmods-menu-1':
+                    platinmods_speed = 1
+                if state == 'platinmods-menu-2':
+                    platinmods_speed = 2
+                if state == 'platinmods-menu-3':
+                    platinmods_speed = 3
+                if (target_platinmods_speed != platinmods_speed):
+                    if state.startswith('platinmods-menu-'):
+                        if target_platinmods_speed == 1:
+                            print('tap 35, 214')
+                            ldagent.tap(35, 214)
+                        if target_platinmods_speed == 2:
+                            print('tap 109 214')
+                            ldagent.tap(109, 214)
+                        if target_platinmods_speed == 3:
+                            print('tap 182, 214')
+                            ldagent.tap(182, 214)
+                        time.sleep(TIME_SLEEP/2)
+                        continue
+                    ldagent.tap(18, 125)
+                    time.sleep(TIME_SLEEP/2)
+                    continue
+                if (target_platinmods_speed == platinmods_speed):
+                    if state.startswith('platinmods-menu-'):
+                        ldagent.tap(170, 324)
+                        time.sleep(TIME_SLEEP/2)
+                        continue
+                    
             if 's03-start-01' in flag_set:
                 # playing fking opening animation
                 if state not in ['xxx-dialog-swc', 'xxx-dialog-sc', 'xxx-dialog-lw']:
@@ -273,8 +331,7 @@ def main():
                     continue
                 flag_set.remove('xxx-swipeup')
 
-            logger.debug(f'IWFCYLNYDB state={state}')
-            logger.debug(f'IWFCYLNYDB flag_set={flag_set}')
+            logger.debug(f'IWFCYLNYDB state={state} flag_set={flag_set}')
 
             if (state == state_double_act_state) and (time.time() - state_double_act_time < STATE_DOUBLE_ACT_WAIT):
                 is_double_act = True
@@ -375,6 +432,10 @@ def main():
                     continue
 
             if state == 's03-start-00':
+                # need double check
+                if state_history[-1] != state:
+                    time.sleep(TIME_SLEEP/2)
+                    continue
                 if check_cycle_loop_state in [None, 's02-toc-00']:
                     check_cycle_loop_state = state
 
@@ -497,6 +558,9 @@ def main():
                     continue
 
             if state == 's12-end-00':
+                if time.time() - last_s12_end_00 < 1:
+                    # double click
+                    continue
                 if check_cycle_loop_state in [None, 's03-start-00']:
                     check_cycle_loop_state = state
 

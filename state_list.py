@@ -13,7 +13,7 @@ state_to_forget_img_dict = {}
 
 STATE_DETECT_THRESHOLD = 1
 
-def load_state():
+def load_state(input_mask255f_img = None):
     state_list = os.listdir(os.path.join(const.MY_PATH, 'res', 'state'))
     state_list = filter(lambda x: x.endswith('.max.png'), state_list)
     state_list = map(lambda x: x[:-8], state_list)
@@ -40,6 +40,9 @@ def load_state():
             img_mask = common.cv2_imread(img_mask_fn, flags=cv2.IMREAD_UNCHANGED).astype(np.float32)
             assert(img_mask.shape[2] == 4)
             img_mask = img_mask[:,:,3:4]
+            img_mask = input_mask255f_img * img_mask / 255
+        elif input_mask255f_img is not None:
+            img_mask = input_mask255f_img
         else:
             img_mask = None
 
@@ -77,8 +80,12 @@ def load_state():
             img_mask = common.cv2_imread(img_mask_fn, flags=cv2.IMREAD_UNCHANGED).astype(np.float32)
             assert(img_mask.shape[2] == 4)
             img_mask = img_mask[:,:,3:4]
+            img_mask = input_mask255f_img * img_mask / 255
+        elif input_mask255f_img is not None:
+            img_mask = input_mask255f_img
         else:
             img_mask = None
+
         if state0 not in state_fix_dict:
             state_fix_dict[state0] = []
         state_fix_dict[state0].append({
