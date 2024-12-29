@@ -9,7 +9,7 @@ LD_EMU_NAME: "PTCGP-Gacha-00"
 # TARGET_PACK: 抽甚麼包: charizard, mewtwo, pikachu, mew
 TARGET_PACK: "mew"
 
-# TARGET_CARD_LIST: 抽到甚麼卡的時候會停下來，卡片代號請參考 res\card 資料夾
+# TARGET_CARD_LIST: 抽到甚麼卡的時候會停下來，卡片代號請參考 _internal\res\card 資料夾
 TARGET_CARD_LIST:
   - "cPK_20_000040_00_FUSHIGIBANAex_SR"
   - "cPK_20_000230_00_NASSYex_SR"
@@ -66,10 +66,10 @@ HANDLE_WONDER_RARE_PACK: "STOP"
 # HANDLE_NONWONDER_RARE_PACK: 處理不可得卡神包
 HANDLE_NONWONDER_RARE_PACK: "STOP"
 
-# HANDLE_WONDER_TARGET_PACK: 處理可得卡目標神包
+# HANDLE_WONDER_TARGET_RARE_PACK: 處理可得卡目標神包
 HANDLE_WONDER_TARGET_RARE_PACK: "STOP"
 
-# HANDLE_NONWONDER_TARGET_PACK: 處理不可得卡目標神包
+# HANDLE_NONWONDER_TARGET_RARE_PACK: 處理不可得卡目標神包
 HANDLE_NONWONDER_TARGET_RARE_PACK: "STOP"
 
 # WONDER_SAINT: 得卡聖人: 如果不是目標包，但同時是可得卡二星包，就不刪帳重刷，增加其他玩家在得卡挑戰中遇到二星包的機會
