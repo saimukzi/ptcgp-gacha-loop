@@ -270,6 +270,7 @@ class LDPlayerInstance(LDPlayerGlobal):
 
     def i_list2(self):
         ret = self.list2()
+        logger.debug(f'NTTAAYJBLG list2 ret = {ret}')
         ret = filter(lambda i:i['IDX']==str(self.emu_idx), ret)
         ret = list(ret)
         if len(ret) == 1:
