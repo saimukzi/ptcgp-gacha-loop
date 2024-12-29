@@ -287,25 +287,26 @@ def main():
                     platinmods_speed = 3
                 if (target_platinmods_speed != platinmods_speed):
                     if not state.startswith('platinmods-menu-'):
-                        ldagent.tap(18, 125)
+                        my_ldagent.tap(18, 125)
                         time.sleep(TIME_SLEEP/2)
                     if target_platinmods_speed == 1:
-                        ldagent.tap(35, 214)
+                        my_ldagent.tap(35, 214)
                         platinmods_speed = 1
-                        ldagent.tap(170, 324)
+                        time.sleep(TIME_SLEEP/2)
                     if target_platinmods_speed == 2:
-                        ldagent.tap(109, 214)
+                        my_ldagent.tap(109, 214)
                         platinmods_speed = 2
-                        ldagent.tap(170, 324)
+                        time.sleep(TIME_SLEEP/2)
                     if target_platinmods_speed == 3:
-                        ldagent.tap(182, 214)
+                        my_ldagent.tap(182, 214)
                         platinmods_speed = 3
-                        ldagent.tap(170, 324)
+                        time.sleep(TIME_SLEEP/2)
+                    my_ldagent.tap(170, 324)
                     time.sleep(TIME_SLEEP/2)
                     continue
                 if (target_platinmods_speed == platinmods_speed):
                     if state.startswith('platinmods-menu-'):
-                        ldagent.tap(170, 324)
+                        my_ldagent.tap(170, 324)
                         time.sleep(TIME_SLEEP/2)
                         continue
                     
@@ -746,7 +747,7 @@ def main():
                 if action['action'] == 'swipe':
                     from_xy = _get_xy(action['from_xy_list'])
                     to_xy = _get_xy(action['to_xy_list'])
-                    duration = int(action['duration'] / config_data['SPEED_FACTOR'])
+                    duration = int(action['duration'] / swipe_speed_factor)
                     # duration = int(action['duration'])
                     my_ldagent.swipe(*from_xy, *to_xy, duration)
                     last_swipe_time = time.time()
