@@ -122,16 +122,21 @@ def main():
         with open(USER_IDX_PATH, 'r') as f:
             user_idx = int(f.read())
 
-    ldagent.config(config_data)
+    # ldagent.config(config_data)
+    my_ldagent = ldagent.get_ldagent(config_data)
 
     check_disk_space(config_data)
 
-    emu_lock_path = get_emu_lock_path(ldagent.LDPLAYER_PATH, str(ldagent.EMU_IDX))
-    logger.debug(f'XFLZMQZROH emu_lock_path={emu_lock_path}')
-    emu_lock = filelock.lock(emu_lock_path, f'{START_YYYYMMDDHHMMSS},{MY_PID}')
-    if emu_lock is None:
-        logger.error(f'emu is locked: {ldagent.EMU_IDX}')
+    ret = my_ldagent.lock_emu()
+    if not ret:
+        logger.error(f'FYPBSVTUKY emu is locked')
         sys.exit(1)
+    # emu_lock_path = get_emu_lock_path(ldagent.LDPLAYER_PATH, str(ldagent.EMU_IDX))
+    # logger.debug(f'XFLZMQZROH emu_lock_path={emu_lock_path}')
+    # emu_lock = filelock.lock(emu_lock_path, f'{START_YYYYMMDDHHMMSS},{MY_PID}')
+    # if emu_lock is None:
+    #     logger.error(f'emu is locked: {ldagent.EMU_IDX}')
+    #     sys.exit(1)
 
     flag_set = set()
     
@@ -168,10 +173,10 @@ def main():
             if force_copyemu_resetapp:
                 logger.debug(f'KQZSYHRWME force_copyemu')
                 assert(force_copyemu_name!=None)
-                ldagent.killemu()
+                my_ldagent.killemu()
                 freemem_last_reset = time.time()
                 emu_ok = False
-                ldagent.copyemu(force_copyemu_name)
+                my_ldagent.copyemu(force_copyemu_name)
                 force_copyemu_name = None
                 force_resetapp = True
                 force_rebootemu = False
@@ -181,25 +186,25 @@ def main():
 
             if force_rebootemu:
                 logger.debug(f'KKTWULVBBG force_restart')
-                ldagent.killemu()
+                my_ldagent.killemu()
                 freemem_last_reset = time.time()
                 emu_ok = False
                 force_rebootemu = False
                 force_killapp = False
                 continue
 
-            if force_resetapp and ldagent.is_emu_running():
+            if force_resetapp and my_ldagent.is_emu_running():
                 logger.debug(f'SRDWQJYJIR force_resetapp')
-                ldagent.killapp()
+                my_ldagent.killapp()
                 emu_ok = False
-                ldagent.resetapp()
+                my_ldagent.resetapp()
                 force_resetapp = False
                 force_killapp = False
                 continue
 
             if force_killapp:
                 logger.debug(f'NFTCLCTTHC force_killapp')
-                ldagent.killapp()
+                my_ldagent.killapp()
                 emu_ok = False
                 force_killapp = False
                 continue
@@ -215,7 +220,7 @@ def main():
 
             if not emu_ok:
                 logger.debug(f'URNYXLHHXQ recover emu')
-                ldagent.recover()
+                my_ldagent.recover()
                 emu_ok = True
                 flag_set = set()
                 continue
@@ -224,7 +229,7 @@ def main():
                 state_history.append(state)
             state_history = state_history[-5:]
 
-            img = ldagent.screencap().astype(np.float32)
+            img = my_ldagent.screencap().astype(np.float32)
 
             state = state_list.get_state(img)
 
@@ -247,8 +252,8 @@ def main():
             if 's03-start-01' in flag_set:
                 # playing fking opening animation
                 if state not in ['xxx-dialog-swc', 'xxx-dialog-sc', 'xxx-dialog-lw']:
-                    ldagent.tap(275,378)
-                    ldagent.tap(275,378)
+                    my_ldagent.tap(275,378)
+                    my_ldagent.tap(275,378)
                     time.sleep(TIME_SLEEP/2)
                     continue
                 if state == 'xxx-dialog-lw':
@@ -257,9 +262,9 @@ def main():
             if 'xxx-gacha-03' in flag_set:
                 # after gacha, may play fking animation
                 if state not in ['xxx-gacha-05','s06-gacha1-03','s06-gacha1-04'] and (not state.startswith('xxx-gacha-03')):
-                    ldagent.tap(150,304)
-                    ldagent.tap(281,381)
-                    ldagent.tap(281,381)
+                    my_ldagent.tap(150,304)
+                    my_ldagent.tap(281,381)
+                    my_ldagent.tap(281,381)
                     time.sleep(TIME_SLEEP/2)
                     continue
                 if state in ['xxx-gacha-05','s06-gacha1-03','s06-gacha1-04']:
@@ -268,7 +273,7 @@ def main():
             if 'xxx-swipeup' in flag_set:
                 # fking add img to album animation
                 if state in ['UNKNOWN']:
-                    ldagent.tap(275,378)
+                    my_ldagent.tap(275,378)
                     time.sleep(TIME_SLEEP)
                     continue
                 flag_set.remove('xxx-swipeup')
@@ -336,7 +341,7 @@ def main():
 
                 if 's02-toc-01' not in flag_set:
                     # ldagent.tap(149, 207)
-                    ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['R_xy_list']))
+                    my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['R_xy_list']))
                     state_double_act_state = state
                     state_double_act_time = time.time()
                     state_double_act_img = img
@@ -345,7 +350,7 @@ def main():
                 else:
                     # ldagent.tap(74, 268)
                     flag_set.remove('s02-toc-01')
-                    ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['G_xy_list']))
+                    my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['G_xy_list']))
                     state_double_act_state = state
                     state_double_act_time = time.time()
                     state_double_act_img = img
@@ -358,7 +363,7 @@ def main():
             if state == 's02-toc-02':
                 if 's02-toc-01' not in flag_set:
                     # ldagent.tap(150, 240)
-                    ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['R_xy_list']))
+                    my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['R_xy_list']))
                     state_double_act_state = state
                     state_double_act_time = time.time()
                     state_double_act_img = img
@@ -367,7 +372,7 @@ def main():
                 else:
                     # ldagent.tap(73, 294)
                     flag_set.remove('s02-toc-01')
-                    ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['G_xy_list']))
+                    my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['G_xy_list']))
                     state_double_act_state = state
                     state_double_act_time = time.time()
                     state_double_act_img = img
@@ -399,7 +404,7 @@ def main():
                     time.sleep(TIME_SLEEP/2)
                     continue
                 for _ in range(10):
-                    ldagent.keyevent(67)
+                    my_ldagent.keyevent(67)
                     time.sleep(0.2) # speed of typing
                 state_double_act_state = state
                 state_double_act_time = time.time()
@@ -429,7 +434,7 @@ def main():
                 username = username.replace('{mm}', yyyymmddhhmmss[10:12])
                 username = username.replace('{ss}', yyyymmddhhmmss[12:14])
                 logger.debug(f'DCMMMGVEHA username={username}')
-                ldagent.input_text(username)
+                my_ldagent.input_text(username)
                 user_idx += 1
                 user_idx %= 10000
                 with open(USER_IDX_PATH, 'w') as f:
@@ -446,14 +451,14 @@ def main():
             if state == 's05-name-03':
                 if 'err-badname' in flag_set:
                     for _ in range(10):
-                        ldagent.keyevent(67)
+                        my_ldagent.keyevent(67)
                         time.sleep(0.2) # speed of typing
                     state_double_act_state = state
                     state_double_act_time = time.time()
                     state_double_act_img = img
                     time.sleep(TIME_SLEEP)
                     continue
-                ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['G_xy_list']))
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['G_xy_list']))
                 state_double_act_state = state
                 state_double_act_time = time.time()
                 state_double_act_img = img
@@ -462,13 +467,13 @@ def main():
 
             if state == 's05-name-04':
                 if 'err-badname' in flag_set:
-                    ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['R_xy_list']))
+                    my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['R_xy_list']))
                     state_double_act_state = state
                     state_double_act_time = time.time()
                     state_double_act_img = img
                     time.sleep(TIME_SLEEP)
                     continue
-                ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['G_xy_list']))
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['G_xy_list']))
                 state_double_act_state = state
                 state_double_act_time = time.time()
                 state_double_act_img = img
@@ -477,13 +482,13 @@ def main():
 
             if state == 's05-name-05':
                 if 'err-badname' in flag_set:
-                    ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['R_xy_list']))
+                    my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['R_xy_list']))
                     state_double_act_state = state
                     state_double_act_time = time.time()
                     state_double_act_img = img
                     time.sleep(TIME_SLEEP)
                     continue
-                ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['G_xy_list']))
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['G_xy_list']))
                 state_double_act_state = state
                 state_double_act_time = time.time()
                 state_double_act_img = img
@@ -497,11 +502,44 @@ def main():
                     continue
 
             if state == 's12-end-00':
+                # need double check
+                if state_history[-1] != state:
+                    time.sleep(TIME_SLEEP/2)
+                    continue
+                flag_set.add(state)
                 if check_cycle_loop_state in [None, 's03-start-00']:
                     check_cycle_loop_state = state
 
+            if state == 's12-end-01':
+                # need double check
+                if state_history[-1] != state:
+                    time.sleep(TIME_SLEEP/2)
+                    continue
+                if 's12-end-00' in flag_set:
+                    my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state][f'G_xy_list']))
+                else:
+                    my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state][f'R_xy_list']))
+
+            if state == 's12-end-02':
+                # need double check
+                if state_history[-1] != state:
+                    time.sleep(TIME_SLEEP/2)
+                    continue
+                if 's12-end-00' in flag_set:
+                    my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state][f'G_xy_list']))
+                else:
+                    my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state][f'R_xy_list']))
+
             if state == 's12-end-03':
-                flag_set.add(state)
+                # need double check
+                if state_history[-1] != state:
+                    time.sleep(TIME_SLEEP/2)
+                    continue
+                if 's12-end-00' in flag_set:
+                    my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state][f'G_xy_list']))
+                    flag_set.add(state)
+                else:
+                    my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state][f'R_xy_list']))
 
             if state == 'xxx-dialog-swr':
                 if 's12-end-03' in flag_set:
@@ -514,7 +552,7 @@ def main():
                     continue
                 state_pack = state[13:]
                 color = XXX_GACHA_00_STATE_TARGET_TO_COLOR_DICT[(state_pack, TARGET_PACK)]
-                ldagent.tap(*_get_xy(state_list.state_to_action_dist[state][f'{color}_xy_list']))
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state][f'{color}_xy_list']))
                 state_double_act_state = state
                 state_double_act_time = time.time()
                 state_double_act_img = img
@@ -524,14 +562,14 @@ def main():
             if state.startswith('xxx-gacha-01-'):
                 if TARGET_PACK != state[13:]:
                     # ldagent.tap(150,348)
-                    ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['R_xy_list']))
+                    my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['R_xy_list']))
                     state_double_act_state = state
                     state_double_act_time = time.time()
                     state_double_act_img = img
                     time.sleep(TIME_SLEEP)
                     continue
                 # ldagent.tap(150,313)
-                ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['G_xy_list']))
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['G_xy_list']))
                 state_double_act_state = state
                 state_double_act_time = time.time()
                 state_double_act_img = img
@@ -604,7 +642,7 @@ def main():
                     continue
 
                 # ldagent.tap(150,377)
-                ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
                 state_double_act_state = state
                 state_double_act_time = time.time()
                 state_double_act_img = img
@@ -614,10 +652,10 @@ def main():
             if state == 'xxx-home':
                 if TARGET_PACK in ['charizard', 'pikachu', 'mewtwo']:
                     # ldagent.tap(185,154)
-                    ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['RB_xy_list']))
+                    my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['RB_xy_list']))
                 if TARGET_PACK == 'mew':
                     # ldagent.tap(111,154)
-                    ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['G_xy_list']))
+                    my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['G_xy_list']))
                 state_double_act_state = state
                 state_double_act_time = time.time()
                 state_double_act_img = img
@@ -632,11 +670,11 @@ def main():
                 action_action = action['action']
                 logger.debug(f'OLOWPQVZMD action={action_action}')
                 next_state_double_act_state = state
-                if state in ['s06-gacha1-03','s09-wonder-11','s09-wonder-12','s09-wonder-14','s09-wonder-16','xxx-tips16','xxx-tips25']:
+                if state in ['s06-gacha1-03','s07-mission-02','s09-wonder-11','s09-wonder-12','s09-wonder-14','s09-wonder-16','xxx-tips16','xxx-tips25']:
                     next_state_double_act_state = None
                 if action['action'] == 'click':
                     xy = _get_xy(action['xy_list'])
-                    ldagent.tap(*xy)
+                    my_ldagent.tap(*xy)
                     state_double_act_state = next_state_double_act_state
                     state_double_act_time = time.time()
                     state_double_act_img = img
@@ -645,15 +683,17 @@ def main():
                 if action['action'] == 'swipe':
                     from_xy = _get_xy(action['from_xy_list'])
                     to_xy = _get_xy(action['to_xy_list'])
-                    # duration = int(action['duration'] / config_data['SPEED_FACTOR'])
-                    duration = int(action['duration'])
-                    ldagent.swipe(*from_xy, *to_xy, duration)
+                    duration = int(action['duration'] / config_data['SPEED_FACTOR'])
+                    # duration = int(action['duration'])
+                    my_ldagent.swipe(*from_xy, *to_xy, duration)
                     time.sleep(TIME_SLEEP)
                     continue
 
             if state == 'UNKNOWN':
                 state_double_act_state = None
                 continue
+            
+            time.sleep(TIME_SLEEP/2)
 
         except ldagent.LdAgentException as e:
             logger.error(f'MYBPMBYDXK LdAgentException: {e}')
@@ -666,7 +706,7 @@ def main():
 def check_disk_space(config_data):
     if config_data['MIN_FREE_DISK_SPACE'] <= 0:
         return
-    free_space = shutil.disk_usage(ldagent.LDPLAYER_PATH).free
+    free_space = shutil.disk_usage(ldagent.get_ldplayer_path(config_data)).free
     if free_space < config_data['MIN_FREE_DISK_SPACE']:
         logger.error(f'XOCKTBIWKG not enough disk space: {free_space}')
         sys.exit(1)
