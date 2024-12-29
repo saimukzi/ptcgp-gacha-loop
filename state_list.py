@@ -11,6 +11,8 @@ state_fix_dict = {}
 state_to_action_dist = {}
 state_to_forget_img_dict = {}
 
+STATE_DETECT_THRESHOLD = 1
+
 def load_state():
     state_list = os.listdir(os.path.join(const.MY_PATH, 'res', 'state'))
     state_list = filter(lambda x: x.endswith('.max.png'), state_list)
@@ -143,7 +145,7 @@ def get_state(img, debug=False):
     imgv = imgmx
     imgsv = np.stack([imgs, imgv], axis=2)
     img = np.append(img, imgsv, axis=2)
-    diff, state = 1, 'UNKNOWN'
+    diff, state = STATE_DETECT_THRESHOLD, 'UNKNOWN'
     for state_data in state_data_list:
         new_state = state_data['state']
         img_min = state_data['img_min']
@@ -161,7 +163,7 @@ def get_state(img, debug=False):
 
     while state in state_fix_dict:
         old_state = state
-        diff, state = 1, state
+        diff, state = STATE_DETECT_THRESHOLD, state
         for state_data in state_fix_dict[state]:
             new_state = state_data['state1']
             img_min = state_data['img_min']
