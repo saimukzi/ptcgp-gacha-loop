@@ -281,19 +281,21 @@ def main():
                 if state == 'platinmods-menu-3':
                     platinmods_speed = 3
                 if (target_platinmods_speed != platinmods_speed):
-                    if state.startswith('platinmods-menu-'):
-                        if target_platinmods_speed == 1:
-                            print('tap 35, 214')
-                            ldagent.tap(35, 214)
-                        if target_platinmods_speed == 2:
-                            print('tap 109 214')
-                            ldagent.tap(109, 214)
-                        if target_platinmods_speed == 3:
-                            print('tap 182, 214')
-                            ldagent.tap(182, 214)
+                    if not state.startswith('platinmods-menu-'):
+                        ldagent.tap(18, 125)
                         time.sleep(TIME_SLEEP/2)
-                        continue
-                    ldagent.tap(18, 125)
+                    if target_platinmods_speed == 1:
+                        ldagent.tap(35, 214)
+                        platinmods_speed = 1
+                        ldagent.tap(170, 324)
+                    if target_platinmods_speed == 2:
+                        ldagent.tap(109, 214)
+                        platinmods_speed = 2
+                        ldagent.tap(170, 324)
+                    if target_platinmods_speed == 3:
+                        ldagent.tap(182, 214)
+                        platinmods_speed = 3
+                        ldagent.tap(170, 324)
                     time.sleep(TIME_SLEEP/2)
                     continue
                 if (target_platinmods_speed == platinmods_speed):
@@ -558,9 +560,6 @@ def main():
                     continue
 
             if state == 's12-end-00':
-                if time.time() - last_s12_end_00 < 1:
-                    # double click
-                    continue
                 if check_cycle_loop_state in [None, 's03-start-00']:
                     check_cycle_loop_state = state
 
@@ -696,7 +695,7 @@ def main():
                 action_action = action['action']
                 logger.debug(f'OLOWPQVZMD action={action_action}')
                 next_state_double_act_state = state
-                if state in ['s06-gacha1-03','s09-wonder-11','s09-wonder-12','s09-wonder-14','s09-wonder-16','xxx-tips16','xxx-tips25']:
+                if state in ['s06-gacha1-03','s07-mission-02','s09-wonder-11','s09-wonder-12','s09-wonder-14','s09-wonder-16','xxx-tips16','xxx-tips25']:
                     next_state_double_act_state = None
                 if action['action'] == 'click':
                     xy = _get_xy(action['xy_list'])
@@ -712,6 +711,7 @@ def main():
                     # duration = int(action['duration'] / config_data['SPEED_FACTOR'])
                     duration = int(action['duration'])
                     ldagent.swipe(*from_xy, *to_xy, duration)
+                    last_swipe_time = time.time()
                     time.sleep(TIME_SLEEP)
                     continue
 
