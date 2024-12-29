@@ -19,7 +19,8 @@ def main():
 
     # config_data = yaml.load(open(args.config, 'r'), Loader=yaml.FullLoader)
     config_data = config.get_config(args.config)
-    ldagent.config(config_data)
+    # ldagent.config(config_data)
+    my_ldagent = ldagent.get_ldagent(config_data)
 
     img_min = None
     img_max = None
@@ -56,7 +57,7 @@ def main():
 
 
     for _ in range(100):
-        img = ldagent.screencap()
+        img = my_ldagent.screencap()
         img_zmax = img.max(axis=2)
         img_zmin = img.min(axis=2)
         imgs = (img_zmax - img_zmin).astype(img.dtype)
