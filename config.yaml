@@ -104,3 +104,7 @@ ENABLE_REBOOT: true
 # 如果你是用 NVIDIA 的顯示卡，設定為 1 就可以了
 # 如果你是用其他的顯示卡，而 bot 經常卡在某畫面，則設定為 2.0 或 3.0
 STATE_DETECT_THRESHOLD: 1.0
+
+# 支援 Platinmods，預設為 false
+# 在沒有 Platinmods 的情況下，不要改動這個設定
+ENABLE_PLATINMODS: false

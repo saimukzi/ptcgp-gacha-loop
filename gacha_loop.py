@@ -1,3 +1,4 @@
+import common
 import filelock
 import os
 import sys
@@ -68,10 +69,16 @@ def main():
     START_YYYYMMDDHHMMSS = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
     MY_PID = os.getpid()
 
+    swipe_speed_factor = config_data['SPEED_FACTOR']
+    if config_data['ENABLE_PLATINMODS']:
+        swipe_speed_factor = 1
+
     TIME_SLEEP = 0.5 / config_data['SPEED_FACTOR']
     logger.debug(f'IMLIDECFNW TIME_SLEEP={TIME_SLEEP}')
     if config_data['SWIPE_PACK_SEC'] is not None:
         SWIPE_PACK_MS = int(config_data['SWIPE_PACK_SEC'] * 1000)
+    elif config_data['ENABLE_PLATINMODS']:
+        SWIPE_PACK_MS = 1000
     else:
         SWIPE_PACK_MS = int(1000/config_data['SPEED_FACTOR'])
     logger.debug(f'KQOHOWKNBY SWIPE_PACK_MS={SWIPE_PACK_MS}')
@@ -90,7 +97,12 @@ def main():
         logger.error(f'instance is locked: {INSTANCE_ID}')
         sys.exit(1)
 
-    state_list.load_state()
+    state_list_mask255f = None
+    if config_data['ENABLE_PLATINMODS']:
+        platinmods_mask255f = common.cv2_imread(os.path.join(const.MY_PATH, 'res', 'platinmods-mask.png'), flags=cv2.IMREAD_UNCHANGED).astype(np.float32)[:,:,3:4]
+        state_list_mask255f = platinmods_mask255f
+
+    state_list.load_state(state_list_mask255f)
     card_list.load_card_img()
 
     config.check(config_data)
@@ -148,6 +160,13 @@ def main():
 
     # [ZRTRNAFFLV] restart emu to free memory
     freemem_last_reset = time.time()
+
+    platinmods_speed = 1
+    target_platinmods_speed = 3
+
+    last_swipe_time = 0
+
+    last_s12_end_00 = 0
 
     while True:
         try:
@@ -207,6 +226,8 @@ def main():
                 ldagent.recover()
                 emu_ok = True
                 flag_set = set()
+                platinmods_speed = 1
+                target_platinmods_speed = 3
                 continue
 
             if state != 'UNKNOWN':
@@ -232,6 +253,43 @@ def main():
             if state == 'xxx-gacha-05-U':
                 state = 'UNKNOWN'
 
+            if (config_data['ENABLE_PLATINMODS']):
+                if     (state in ['s06-gacha1-04']) \
+                    or (state.startswith('xxx-gacha-03-')) \
+                    or ('s03-start-01' in flag_set) \
+                    or (time.time()-last_swipe_time<1):
+                    target_platinmods_speed = 1
+                elif (not state.startswith('platinmods-menu-')):
+                    target_platinmods_speed = 3
+
+                if state == 'platinmods-menu-1':
+                    platinmods_speed = 1
+                if state == 'platinmods-menu-2':
+                    platinmods_speed = 2
+                if state == 'platinmods-menu-3':
+                    platinmods_speed = 3
+                if (target_platinmods_speed != platinmods_speed):
+                    if state.startswith('platinmods-menu-'):
+                        if target_platinmods_speed == 1:
+                            print('tap 35, 214')
+                            ldagent.tap(35, 214)
+                        if target_platinmods_speed == 2:
+                            print('tap 109 214')
+                            ldagent.tap(109, 214)
+                        if target_platinmods_speed == 3:
+                            print('tap 182, 214')
+                            ldagent.tap(182, 214)
+                        time.sleep(TIME_SLEEP/2)
+                        continue
+                    ldagent.tap(18, 125)
+                    time.sleep(TIME_SLEEP/2)
+                    continue
+                if (target_platinmods_speed == platinmods_speed):
+                    if state.startswith('platinmods-menu-'):
+                        ldagent.tap(170, 324)
+                        time.sleep(TIME_SLEEP/2)
+                        continue
+                    
             if 's03-start-01' in flag_set:
                 # playing fking opening animation
                 if state not in ['xxx-dialog-swc', 'xxx-dialog-sc', 'xxx-dialog-lw']:
@@ -274,8 +332,7 @@ def main():
                     time.sleep(TIME_SLEEP)
                     state = 's05-name-02'
 
-            logger.debug(f'IWFCYLNYDB state={state}')
-            logger.debug(f'IWFCYLNYDB flag_set={flag_set}')
+            logger.debug(f'IWFCYLNYDB state={state} flag_set={flag_set}')
 
             if state == 'err-launch-00':
                 force_resetapp = True
@@ -378,6 +435,10 @@ def main():
                 time.sleep(TIME_SLEEP)
                 continue
             if state == 's03-start-00':
+                # need double check
+                if state_history[-1] != state:
+                    time.sleep(TIME_SLEEP/2)
+                    continue
                 if check_cycle_loop_state in [None, 's02-toc-00']:
                     check_cycle_loop_state = state
                 ldagent.tap(150, 248)
@@ -457,7 +518,8 @@ def main():
                 time.sleep(TIME_SLEEP)
                 continue
             if state == 's06-gacha1-04':
-                ldagent.swipe(150,300,150,100,int(50/config_data['SPEED_FACTOR']))
+                ldagent.swipe(150,300,150,100,int(50/swipe_speed_factor))
+                last_swipe_time = time.time()
                 time.sleep(TIME_SLEEP)
                 continue
             # if state == 's06-gacha1-05':
@@ -563,12 +625,17 @@ def main():
                 continue
 
             if state == 's12-end-00':
+                if time.time() - last_s12_end_00 < 1:
+                    # double click
+                    continue
                 if check_cycle_loop_state in [None, 's03-start-00']:
                     check_cycle_loop_state = state
                 ldagent.tap(263,385)
+                last_s12_end_00 = time.time()
                 time.sleep(TIME_SLEEP)
                 continue
             if state == 's12-end-01':
+                last_s12_end_00 = 0
                 ldagent.tap(161,325)
                 time.sleep(TIME_SLEEP)
                 continue
@@ -697,6 +764,7 @@ def main():
 
             if state.startswith('xxx-gacha-03-'):
                 ldagent.swipe(20,231,280,231,SWIPE_PACK_MS)
+                last_swipe_time = time.time()
                 flag_set.add('xxx-gacha-03')
                 time.sleep(TIME_SLEEP)
                 continue
