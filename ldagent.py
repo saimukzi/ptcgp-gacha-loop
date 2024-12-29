@@ -327,7 +327,7 @@ def get_app_version():
     assert(False)
 
 
-def adb_exec(cmd, timeout=5):
+def adb_exec(cmd, timeout=15):
     try:
         process_ret = subprocess.run([ADB_PATH, "-s", f"emulator-{ADB_IDX}"]+cmd, capture_output=True, timeout=timeout)
         if process_ret.returncode != 0:
