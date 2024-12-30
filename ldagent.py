@@ -339,7 +339,9 @@ def get_ldagent(config_data):
     list2_ret = ldplayerglobal.list2()
     list2_ret = filter(lambda i:i['NAME']==ld_emu_name, list2_ret)
     list2_ret = list(list2_ret)
-    assert(len(list2_ret)==1)
+    if len(list2_ret) != 1:
+        logger.error(f'CCNUBUZCYP len(list2_ret) != 1, list2_ret={list2_ret}')
+        assert(False)
     list2_ret = list2_ret[0]
     emu_idx = list2_ret['IDX']
 
