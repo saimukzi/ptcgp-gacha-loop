@@ -19,13 +19,12 @@
 
 ## 使用
 
-1. [下載 gacha_loop-20241226-200658.zip](https://mega.nz/file/BBdliCBa#SRHP7zDIogUxtFHT6lWhrRGIf4Twl3hufTrubz6rj10)
+1. [下載 gacha_loop-20241230-191802.zip](https://mega.nz/file/tFlmnLgY#v2mp0GLe2UfH0jX34uMcM9zfEoqoOm53ebvQM9q0ZIQ)
 2. 打開雷電多開器。建立新模擬器，例如名為"PTCGP-Gacha-00"。
 3. 在模擬器安裝 PTCGP，亦確保沒有登入任何帳號。
 4. 修改 config.yaml
 5. 執行 gacha_loop.exe
 6. 第一次執行時，遊戲可能會卡在 Google Play 問卷畫面，需自行清理。
-7. 完成第一週目後，模擬器會關閉一下，然後短時間內恢復，此乃正常現象。目的是備份遊戲沒有帳號的狀態，將來恢復用。這個重啟只會在第一週目完成後發生。
 
 ## 示範
 
@@ -44,7 +43,7 @@ https://youtu.be/eVZvWM8qQDU
 
 ## 支援
 
-- [西木子DC](https://discord.gg/kdZ5fQxP)
+- [西木子DC](https://discord.gg/rjR4bE3Tzj)
 - 電郵 saimukzi@hiauntie.com ，請附上 log 資料夾 zip 及 var\\instances\\default\\tmp-screencap.png 。
 
 ## 感謝

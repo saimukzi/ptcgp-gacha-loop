@@ -214,7 +214,7 @@ class LDPlayerInstance(LDPlayerGlobal):
 
         # copy emu
         # it will return emu id as exit code, so check=False
-        self._g_ldconsole_cmd(['copy', '--name', new_name, '--from', str(self.emu_idx)], check=False)
+        self._g_ldconsole_cmd(['copy', '--name', new_name, '--from', str(self.emu_idx)], check=False, timeout=300)
 
         # check new emu created
         list2_ret = self.list2()
