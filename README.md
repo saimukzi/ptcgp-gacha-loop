@@ -43,7 +43,7 @@ https://youtu.be/eVZvWM8qQDU
 
 ## 支援
 
-- [西木子DC](https://discord.gg/kdZ5fQxP)
+- [西木子DC](https://discord.gg/rjR4bE3Tzj)
 - 電郵 saimukzi@hiauntie.com ，請附上 log 資料夾 zip 及 var\\instances\\default\\tmp-screencap.png 。
 
 ## 感謝
