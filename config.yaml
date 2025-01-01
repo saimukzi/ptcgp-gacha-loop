@@ -104,3 +104,7 @@ ENABLE_REBOOT: true
 # 如果你是用 NVIDIA 的顯示卡，設定為 1 就可以了
 # 如果你是用其他的顯示卡，而 bot 經常卡在某畫面，則設定為 2.0 或 3.0
 STATE_DETECT_THRESHOLD: 1.0
+
+# SWIPE_UP_ESCAPE: 第一次抽包時，重啟遊戲，跳過滑動輸入
+# 如果卡在第一次抽包時的滑動輸入，設定為 true
+FIRST_SWIPE_UP_KILL_APP: false
