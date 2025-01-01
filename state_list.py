@@ -40,11 +40,14 @@ def load_state(input_mask255f_img = None):
             img_mask = common.cv2_imread(img_mask_fn, flags=cv2.IMREAD_UNCHANGED).astype(np.float32)
             assert(img_mask.shape[2] == 4)
             img_mask = img_mask[:,:,3:4]
-            img_mask = input_mask255f_img * img_mask / 255
-        elif input_mask255f_img is not None:
-            img_mask = input_mask255f_img
         else:
             img_mask = None
+
+        if input_mask255f_img is not None:
+            if img_mask is None:
+                img_mask = input_mask255f_img
+            else:
+                img_mask = input_mask255f_img * img_mask / 255
 
         state_data_list.append({
             'state': state,
@@ -80,11 +83,14 @@ def load_state(input_mask255f_img = None):
             img_mask = common.cv2_imread(img_mask_fn, flags=cv2.IMREAD_UNCHANGED).astype(np.float32)
             assert(img_mask.shape[2] == 4)
             img_mask = img_mask[:,:,3:4]
-            img_mask = input_mask255f_img * img_mask / 255
-        elif input_mask255f_img is not None:
-            img_mask = input_mask255f_img
         else:
             img_mask = None
+
+        if input_mask255f_img is not None:
+            if img_mask is None:
+                img_mask = input_mask255f_img
+            else:
+                img_mask = input_mask255f_img * img_mask / 255
 
         if state0 not in state_fix_dict:
             state_fix_dict[state0] = []

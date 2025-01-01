@@ -312,12 +312,12 @@ def main():
                     
             if 's03-start-01' in flag_set:
                 # playing fking opening animation
-                if state not in ['xxx-dialog-swc', 'xxx-dialog-sc', 'xxx-dialog-lw']:
+                if state not in ['xxx-dialog-swc', 'xxx-dialog-sc', 'xxx-dialog-lw','s04-welcome-00']:
                     my_ldagent.tap(275,378)
                     my_ldagent.tap(275,378)
                     time.sleep(TIME_SLEEP/2)
                     continue
-                if state == 'xxx-dialog-lw':
+                if state == 's04-welcome-00':
                     flag_set.remove('s03-start-01')
 
             if 'xxx-gacha-03' in flag_set:
@@ -450,6 +450,16 @@ def main():
             if state == 's03-start-01':
                 flag_set.add(state)
 
+            if state == 's04-welcome-00':
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                state = 's04-welcome-01'
+                time.sleep(TIME_SLEEP)
+
+            if state == 's04-welcome-01':
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                time.sleep(TIME_SLEEP)
+                continue
+
             if state == 's05-name-00':
                 # need double check
                 if state_history[-1] != state:
@@ -556,6 +566,46 @@ def main():
                 state_double_act_state = state
                 state_double_act_time = time.time()
                 state_double_act_img = img
+                time.sleep(TIME_SLEEP)
+                continue
+
+            if state == 's09-wonder-17':
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                state = 's09-wonder-18'
+                time.sleep(TIME_SLEEP)
+
+            if state == 's09-wonder-18':
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                state = 's09-wonder-19'
+                time.sleep(TIME_SLEEP)
+
+            if state == 's09-wonder-19':
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                state = 's09-wonder-20'
+                time.sleep(TIME_SLEEP)
+
+            if state == 's09-wonder-20':
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                state = 's09-wonder-21'
+                time.sleep(TIME_SLEEP)
+
+            if state == 's09-wonder-21':
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                time.sleep(TIME_SLEEP)
+                continue
+
+            if state == 's10-tutorialend-00':
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                state = 's10-tutorialend-01'
+                time.sleep(TIME_SLEEP)
+
+            if state == 's10-tutorialend-01':
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                state = 's10-tutorialend-02'
+                time.sleep(TIME_SLEEP)
+
+            if state == 's10-tutorialend-02':
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
                 time.sleep(TIME_SLEEP)
                 continue
 
