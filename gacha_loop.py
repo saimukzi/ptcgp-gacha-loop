@@ -130,9 +130,13 @@ def main():
     os.makedirs(INSTANCE_VAR_FOLDER, exist_ok=True)
     USER_IDX_PATH = os.path.join(INSTANCE_VAR_FOLDER, 'user_idx.txt')
     user_idx = 0
-    if os.path.exists(USER_IDX_PATH):
-        with open(USER_IDX_PATH, 'r') as f:
-            user_idx = int(f.read())
+    try:
+        if os.path.exists(USER_IDX_PATH):
+            with open(USER_IDX_PATH, 'r') as f:
+                user_idx = int(f.read())
+    except:
+        logger.error(f'DKZEUSMNFN user_idx load error')
+        user_idx = 0
 
     # ldagent.config(config_data)
     my_ldagent = ldagent.get_ldagent(config_data)
@@ -569,6 +573,11 @@ def main():
                 time.sleep(TIME_SLEEP)
                 continue
 
+            if state == 's06-gacha1-01':
+                # [HCCNTWDXEA] kill app to avoid lock in swipe state
+                if config_data['FIRST_SWIPE_UP_KILL_APP']:
+                    flag_set.add('HCCNTWDXEA')
+
             if state == 's09-wonder-17':
                 my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
                 state = 's09-wonder-18'
@@ -691,6 +700,11 @@ def main():
                 continue
 
             if state.startswith('xxx-gacha-03-'):
+                # [HCCNTWDXEA] kill app to avoid lock in swipe state
+                if 'HCCNTWDXEA' in flag_set:
+                    force_killapp = True
+                    continue
+                ldagent.swipe(20,231,280,231,SWIPE_PACK_MS)
                 flag_set.add('xxx-gacha-03')
 
             if state == 'xxx-gacha-04':
