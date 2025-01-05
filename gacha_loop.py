@@ -197,6 +197,7 @@ def main():
             sec = config_data[sec]
         wait_time = last_mywait_time + sec + config_data['UIWAIT_OFFSET'] - time.time()
         wait_time = wait_time/30
+        wait_time = wait_time/config_data['SPEED_FACTOR']
         wait_time = max(1.1/30, wait_time) # one frame
         time.sleep(wait_time)
         last_mywait_time = time.time()
@@ -298,6 +299,10 @@ def main():
                 state = 'UNKNOWN'
 
             if (config_data['ENABLE_PLATINMODS']):
+                # s06-gacha1-04: first swipe up
+                # xxx-gacha-03-: open pack
+                # s03-start-01-skip-anime: create acc first anime
+                # last_swipe_time: may retry swipe
                 if     (state in ['s06-gacha1-04']) \
                     or (state.startswith('xxx-gacha-03-')) \
                     or ('s03-start-01-skip-anime' in flag_set) \
@@ -630,7 +635,7 @@ def main():
                     continue
                 if 'xxx-gacha-03' in flag_set:
                     flag_set.discard('xxx-gacha-03')
-                    for _ in range(12):
+                    for _ in range(10):
                         my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
                         mywait('UIWAIT_COMMON_GACHA_RESULT_1CARD')
                     continue # 's06-gacha1-04', swipe up hell
