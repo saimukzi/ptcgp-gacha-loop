@@ -90,12 +90,20 @@ class LDPlayerInstance(LDPlayerGlobal):
         self.adb_idx = str(int(emu_idx)*2+5554)
 
     def is_emu_running(self):
-        ret = self._i_ldconsole_cmd(['isrunning']).strip()
-        # print(ret)
-        assert(ret in ['running', 'stop'])
-        ret = (ret == 'running')
-        logger.debug(f'FXWVANPZJD isrunning = {ret}')
-        return ret
+        for _ in range(5):
+            ret = self._i_ldconsole_cmd(['isrunning']).strip()
+            # print(ret)
+            assert(ret in ['running', 'stop',''])
+            if ret == '':
+                logger.error(f'XTDWEGPNFD is running no output')
+                time.sleep(1.1/60)
+                continue
+            ret = (ret == 'running')
+            logger.debug(f'FXWVANPZJD isrunning = {ret}')
+            return ret
+        logger.error(f'ZVRWINULMI is running no output x5')
+        assert(False)
+
 
     def screencap(self):
         try:
