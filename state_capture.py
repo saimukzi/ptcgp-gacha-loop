@@ -15,6 +15,7 @@ def main():
     parser.add_argument('--append', action='store_true')
     parser.add_argument('config', type=str)
     parser.add_argument('state', type=str)
+    parser.add_argument('sec', type=int, nargs='?')
     args = parser.parse_args()
 
     # config_data = yaml.load(open(args.config, 'r'), Loader=yaml.FullLoader)
@@ -55,8 +56,9 @@ def main():
             shutil.copyfile(img_svmax_fn, img_svmax_fn + '.bak')
             img_svmax = common.cv2_imread(img_svmax_fn)
 
-
-    for _ in range(100):
+    t = time.time()
+    i = 0
+    while True:
         img = my_ldagent.screencap()
         img_zmax = img.max(axis=2)
         img_zmin = img.min(axis=2)
@@ -68,6 +70,11 @@ def main():
         img_max = cv2_max(img_max, img)
         img_svmin = cv2_min(img_svmin, imgsv)
         img_svmax = cv2_max(img_svmax, imgsv)
+        i += 1
+        if args.sec is None and i >= 100:
+            break
+        if args.sec is not None and time.time() - t >= args.sec:
+            break
         time.sleep(0.05)
     
     os.makedirs(os.path.join(const.MY_PATH, 'res', 'state'), exist_ok=True)

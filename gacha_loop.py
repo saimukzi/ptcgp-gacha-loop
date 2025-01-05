@@ -185,6 +185,22 @@ def main():
     target_platinmods_speed = 3
     last_swipe_time = 0
 
+    # mywait
+    last_mywait_time = time.time()
+    def reset_mywait():
+        nonlocal last_mywait_time
+        last_mywait_time = time.time()
+    def mywait(id):
+        nonlocal last_mywait_time
+        sec = config_data[id]
+        while isinstance(sec, str):
+            sec = config_data[sec]
+        wait_time = last_mywait_time + sec + config_data['UIWAIT_OFFSET'] - time.time()
+        wait_time = wait_time/30
+        wait_time = max(1.1/30, wait_time) # one frame
+        time.sleep(wait_time)
+        last_mywait_time = time.time()
+
     while True:
         try:
             update_logger(config_data)
@@ -255,6 +271,8 @@ def main():
 
             state = state_list.get_state(img)
 
+            reset_mywait()
+
             if state == 'xxx-gacha-05-U':
                 state = 'UNKNOWN'
 
@@ -262,7 +280,12 @@ def main():
                 logger.debug(f'CNRSFFOMKV debug_img_idx={debug_img_idx}, state={state}')
                 debug_img_fn = os.path.join(INSTANCE_VAR_FOLDER, 'debug_img', '%02d.png'%debug_img_idx)
                 os.makedirs(os.path.dirname(debug_img_fn), exist_ok=True)
-                cv2.imwrite(debug_img_fn, img)
+                if os.path.exists(debug_img_fn):
+                    os.remove(debug_img_fn)
+                img_encode = cv2.imencode('.png', img)[1]
+                with open(debug_img_fn, 'wb') as f:
+                    f.write(img_encode)
+                # cv2.imwrite(debug_img_fn, img)
                 debug_img_idx += 1
                 debug_img_idx %= 100
 
@@ -277,7 +300,7 @@ def main():
             if (config_data['ENABLE_PLATINMODS']):
                 if     (state in ['s06-gacha1-04']) \
                     or (state.startswith('xxx-gacha-03-')) \
-                    or ('s03-start-01' in flag_set) \
+                    or ('s03-start-01-skip-anime' in flag_set) \
                     or (time.time()-last_swipe_time<1):
                     target_platinmods_speed = 1
                 elif (not state.startswith('platinmods-menu-')):
@@ -314,51 +337,33 @@ def main():
                         time.sleep(TIME_SLEEP/2)
                         continue
                     
-            if 's03-start-01' in flag_set:
-                # playing fking opening animation
-                if state not in ['xxx-dialog-swc', 'xxx-dialog-sc', 'xxx-dialog-lw','s04-welcome-00']:
-                    my_ldagent.tap(275,378)
-                    my_ldagent.tap(275,378)
-                    time.sleep(TIME_SLEEP/2)
-                    continue
-                if state == 's04-welcome-00':
-                    flag_set.remove('s03-start-01')
-
-            if 'xxx-gacha-03' in flag_set:
-                # after gacha, may play fking animation
-                if state not in ['xxx-gacha-05','s06-gacha1-03','s06-gacha1-04'] and (not state.startswith('xxx-gacha-03')):
-                    my_ldagent.tap(150,304)
-                    my_ldagent.tap(281,381)
-                    my_ldagent.tap(281,381)
-                    time.sleep(TIME_SLEEP/2)
-                    continue
-                if state in ['xxx-gacha-05','s06-gacha1-03','s06-gacha1-04']:
-                    flag_set.remove('xxx-gacha-03')
-
-            if 'xxx-swipeup' in flag_set:
-                # fking add img to album animation
-                if state in ['UNKNOWN']:
-                    my_ldagent.tap(275,378)
-                    time.sleep(TIME_SLEEP)
-                    continue
-                flag_set.remove('xxx-swipeup')
+            # if 'xxx-gacha-03' in flag_set:
+            #     # after gacha, may play fking animation
+            #     if state not in ['xxx-gacha-05','s06-gacha1-03','s06-gacha1-04'] and (not state.startswith('xxx-gacha-03')):
+            #         my_ldagent.tap(150,304)
+            #         my_ldagent.tap(281,381)
+            #         my_ldagent.tap(281,381)
+            #         time.sleep(TIME_SLEEP/2)
+            #         continue
+            #     if state in ['xxx-gacha-05','s06-gacha1-03','s06-gacha1-04']:
+            #         flag_set.remove('xxx-gacha-03')
 
             logger.debug(f'IWFCYLNYDB state={state} flag_set={flag_set}')
 
-            if (state == state_double_act_state) and (time.time() - state_double_act_time < STATE_DOUBLE_ACT_WAIT):
-                is_double_act = True
-                if state in state_list.state_to_forget_img_dict:
-                    mask_img = state_list.state_to_forget_img_dict[state]
-                    img_diff = np.abs(img - state_double_act_img)
-                    img_diff = img_diff * mask_img
-                    img_diff = img_diff.sum() / mask_img.sum() / img_diff.shape[2]
-                    logger.debug(f'LZKXOWTZMK img_diff={img_diff}')
-                    if img_diff > 5:
-                        is_double_act = False
-                if is_double_act:
-                    logger.debug(f'AXTNCKYONS double_act')
-                    time.sleep(TIME_SLEEP/2)
-                    continue
+            # if (state == state_double_act_state) and (time.time() - state_double_act_time < STATE_DOUBLE_ACT_WAIT):
+            #     is_double_act = True
+            #     if state in state_list.state_to_forget_img_dict:
+            #         mask_img = state_list.state_to_forget_img_dict[state]
+            #         img_diff = np.abs(img - state_double_act_img)
+            #         img_diff = img_diff * mask_img
+            #         img_diff = img_diff.sum() / mask_img.sum() / img_diff.shape[2]
+            #         logger.debug(f'LZKXOWTZMK img_diff={img_diff}')
+            #         if img_diff > 5:
+            #             is_double_act = False
+            #     if is_double_act:
+            #         logger.debug(f'AXTNCKYONS double_act')
+            #         time.sleep(TIME_SLEEP/2)
+            #         continue
 
             if state == 'err-badname':
                 flag_set.add(state)
@@ -398,105 +403,156 @@ def main():
                     force_rebootemu = True
                     continue
 
+            if state == 's01-info-00':
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_INFO_OPEN_YEAR')
+                state = 's01-info-01'
+
+            if state == 's01-info-01':
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_INFO_SELECT_YEAR')
+                state = 's01-info-02'
+
+            if state == 's01-info-02':
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_INFO_OPEN_MONTH')
+                state = 's01-info-03'
+
+            if state == 's01-info-03':
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_INFO_SELECT_MONTH')
+                continue
+
+            if state == 's01-info-05':
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_INFO_OPEN_REGION')
+                state = 's01-info-06'
+
+            if state == 's01-info-06':
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_INFO_SELECT_REGION')
+                state = 's01-info-07'
+
+            if state == 's01-info-07':
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_INFO_REGION_OK')
+                state = 's01-info-04'
+
+            if state == 's01-info-04':
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_INFO_OK_0')
+                state = 'xxx-dialog-swc'
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_INFO_OK_1')
+                continue
+
             if state == 's02-toc-00':
                 if check_cycle_loop_state in [None, 's12-end-00']:
                     check_cycle_loop_state = state
                     check_cycle_last_reset = time.time()
 
                 if 's02-toc-01' not in flag_set:
-                    # ldagent.tap(149, 207)
                     my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['R_xy_list']))
-                    state_double_act_state = state
-                    state_double_act_time = time.time()
-                    state_double_act_img = img
-                    time.sleep(TIME_SLEEP)
+                    mywait('UIWAIT_TOC_OPEN_TOC')
+                    # state = 's02-toc-01'
                     continue
-                else:
-                    # ldagent.tap(74, 268)
-                    flag_set.remove('s02-toc-01')
-                    my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['G_xy_list']))
-                    state_double_act_state = state
-                    state_double_act_time = time.time()
-                    state_double_act_img = img
-                    time.sleep(TIME_SLEEP)
-                    continue
+                    # my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                    # mywait('UIWAIT_TOC_CLOSE_TOC')
+                    # state = 's02-toc-00'
+                flag_set.discard('s02-toc-01')
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['G_xy_list']))
+                mywait('UIWAIT_TOC_AGREE_TOC')
+                # state = 's02-toc-02'
+                continue
 
             if state == 's02-toc-01':
                 flag_set.add(state)
 
             if state == 's02-toc-02':
                 if 's02-toc-01' not in flag_set:
-                    # ldagent.tap(150, 240)
                     my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['R_xy_list']))
-                    state_double_act_state = state
-                    state_double_act_time = time.time()
-                    state_double_act_img = img
-                    time.sleep(TIME_SLEEP)
+                    mywait('UIWAIT_TOC_OPEN_PRIVACY')
+                    # state = 's02-toc-01'
                     continue
-                else:
-                    # ldagent.tap(73, 294)
-                    flag_set.remove('s02-toc-01')
-                    my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['G_xy_list']))
-                    state_double_act_state = state
-                    state_double_act_time = time.time()
-                    state_double_act_img = img
-                    time.sleep(TIME_SLEEP)
-                    continue
+                    # my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                    # mywait('UIWAIT_TOC_CLOSE_PRIVACY')
+                    # state = 's02-toc-02'
+                flag_set.discard('s02-toc-01')
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['G_xy_list']))
+                mywait('UIWAIT_TOC_AGREE_PRIVACY')
+                # state = 's02-toc-04'
+                continue
 
-            if state == 's03-start-00':
-                # need double check
-                if state_history[-1] != state:
+            if state == 's02-toc-04':
+                if 's02-toc-04-remain' in flag_set:
+                    flag_set.discard('s02-toc-04-remain')
                     time.sleep(TIME_SLEEP/2)
                     continue
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_TOC_OK')
+                flag_set.add('s02-toc-04-remain')
+                continue
+            flag_set.discard('s02-toc-04-remain')
+
+            if state == 's03-start-00':
                 if check_cycle_loop_state in [None, 's02-toc-00']:
                     check_cycle_loop_state = state
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_ACC_START')
+                state = 's03-start-01'
 
             if state == 's03-start-01':
-                flag_set.add(state)
+                flag_set.add('s03-start-01-skip-anime')
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_ACC_NO_LINK')
+                continue
+
+            if 's03-start-01-skip-anime' in flag_set:
+                # playing fking opening animation
+                if state not in ['xxx-dialog-swc', 'xxx-dialog-sc', 'xxx-dialog-lw','s04-welcome-00']:
+                    my_ldagent.tap(275,378)
+                    my_ldagent.tap(275,378)
+                    time.sleep(TIME_SLEEP/2)
+                    continue
+                if state == 's04-welcome-00':
+                    flag_set.discard('s03-start-01-skip-anime')
 
             if state == 's04-welcome-00':
                 my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_WELCOME_DIALOG_0')
                 state = 's04-welcome-01'
-                time.sleep(TIME_SLEEP)
 
             if state == 's04-welcome-01':
                 my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
-                time.sleep(TIME_SLEEP)
+                mywait('UIWAIT_WELCOME_DIALOG_1')
                 continue
 
             if state == 's05-name-00':
-                # need double check
-                if state_history[-1] != state:
-                    time.sleep(TIME_SLEEP/2)
-                    continue
+                if 's05-name-nonempty' in flag_set:
+                    if state_history[-1] != state:
+                        time.sleep(TIME_SLEEP/2)
+                        continue
+                    flag_set.discard('s05-name-nonempty')
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_NAME_ICONNAME_INPUTBOX')
+                state = 's05-name-01'
 
             if state == 's05-name-01':
-                # need double check
-                if state_history[-1] != state:
-                    time.sleep(TIME_SLEEP/2)
-                    continue
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_NAME_NAME_INPUTBOX')
+                continue
 
             if state == 's05-name-02':
                 # need double check
-                if state_history[-1] != state:
-                    time.sleep(TIME_SLEEP/2)
-                    continue
                 for _ in range(10):
                     my_ldagent.keyevent(67)
                     time.sleep(0.2) # speed of typing
-                state_double_act_state = state
-                state_double_act_time = time.time()
-                state_double_act_img = img
                 time.sleep(TIME_SLEEP)
                 continue
 
             if state == 's05-name-02-empty':
-                # need double check
-                if state_history[-1] != state:
-                    time.sleep(TIME_SLEEP/2)
-                    continue
-                if 'err-badname' in flag_set:
-                    flag_set.remove('err-badname')
+                flag_set.discard('err-badname')
+                flag_set.discard('s05-name-nonempty')
                 yyyymmddhhmmss = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
                 username = USERNAME
                 username = username.replace('{IDX}', '%03d' % (user_idx%1000))
@@ -515,206 +571,557 @@ def main():
                 my_ldagent.input_text(username)
                 user_idx += 1
                 user_idx %= 10000
-                with open(USER_IDX_PATH, 'w') as f:
-                    f.write(str(user_idx))
-                state_double_act_state = state
-                state_double_act_time = time.time()
-                state_double_act_img = img
-                time.sleep(TIME_SLEEP)
-                # ldagent.tap(250, 364)
-                # ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
-                # time.sleep(TIME_SLEEP)
-                continue
+                try:
+                    with open(USER_IDX_PATH, 'w') as f:
+                        f.write(str(user_idx))
+                except:
+                    pass
+                state = 's05-name-03'
 
             if state == 's05-name-03':
                 if 'err-badname' in flag_set:
                     for _ in range(10):
                         my_ldagent.keyevent(67)
                         time.sleep(0.2) # speed of typing
-                    state_double_act_state = state
-                    state_double_act_time = time.time()
-                    state_double_act_img = img
                     time.sleep(TIME_SLEEP)
                     continue
                 my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['G_xy_list']))
-                state_double_act_state = state
-                state_double_act_time = time.time()
-                state_double_act_img = img
-                time.sleep(TIME_SLEEP)
-                continue
+                mywait('UIWAIT_NAME_NAME_OK')
+                flag_set.add('s05-name-nonempty')
+                continue # possible error msg here
 
             if state == 's05-name-04':
                 if 'err-badname' in flag_set:
                     my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['R_xy_list']))
-                    state_double_act_state = state
-                    state_double_act_time = time.time()
-                    state_double_act_img = img
                     time.sleep(TIME_SLEEP)
                     continue
                 my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['G_xy_list']))
-                state_double_act_state = state
-                state_double_act_time = time.time()
-                state_double_act_img = img
-                time.sleep(TIME_SLEEP)
-                continue
+                mywait('UIWAIT_NAME_ICONNAME_OK_0')
+                continue # possible error msg here
 
             if state == 's05-name-05':
                 if 'err-badname' in flag_set:
                     my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['R_xy_list']))
-                    state_double_act_state = state
-                    state_double_act_time = time.time()
-                    state_double_act_img = img
                     time.sleep(TIME_SLEEP)
                     continue
                 my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['G_xy_list']))
-                state_double_act_state = state
-                state_double_act_time = time.time()
-                state_double_act_img = img
+                mywait('UIWAIT_NAME_ICONNAME_OK_1')
+                continue
+
+            if state == 's06-gacha1-00':
+                flag_set.discard('s05-name-nonempty')
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_GACHA1_SELECTPACK')
+                state = 's06-gacha1-01'
+
+            if state == 's06-gacha1-01':
+                # [FIRST_SWIPE_UP_KILL_APP] kill app to avoid lock in swipe state
+                if config_data['FIRST_SWIPE_UP_KILL_APP']:
+                    flag_set.add('FIRST_SWIPE_UP_KILL_APP')
+                # flag_set.add('s06-gacha1-03-combo') # 
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_GACHA1_CONFIRMPACK')
+                continue # 'xxx-gacha-03-'
+
+            if state == 's06-gacha1-03':
+                # double confirm, mix with 'xxx-gacha-04'
+                if state_history[-1] != state:
+                    time.sleep(TIME_SLEEP/2)
+                    continue
+                if 'xxx-gacha-03' in flag_set:
+                    flag_set.discard('xxx-gacha-03')
+                    for _ in range(12):
+                        my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                        mywait('UIWAIT_COMMON_GACHA_RESULT_1CARD')
+                    continue # 's06-gacha1-04', swipe up hell
+                else:
+                    my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                    time.sleep(TIME_SLEEP)
+                    continue
+
+            if state == 's06-gacha1-05':
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_COMMON_MSG_SKIP')
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_GACHA1_MSG')
+                state = 's06-gacha1-06'
+
+            if state == 's06-gacha1-06':
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                # mywait('UIWAIT_GACHA1_CARDLIST_CLICK')
                 time.sleep(TIME_SLEEP)
                 continue
 
-            if state == 's06-gacha1-01':
-                # [HCCNTWDXEA] kill app to avoid lock in swipe state
-                if config_data['FIRST_SWIPE_UP_KILL_APP']:
-                    flag_set.add('HCCNTWDXEA')
+            if state == 's06-gacha1-07':
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_GACHA1_NEXT')
+                state = 'xxx-dialog-swc'
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_GACHA1_END_WHITE')
+                flag_set.add('target-s07')
+                continue # long unknown stupid wait
+
+            if state == 's07-mission-00':
+                flag_set.discard('target-s07')
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_MISSION_SE_BUTTON')
+                state = 's07-mission-01'
+
+            if state == 's07-mission-01':
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_COMMON_MSG_SKIP')
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_MISSION_MSG_0')
+                state = 's07-mission-02'
+
+            if state == 's07-mission-02':
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_MISSION_CLICK_MISSION')
+                state = 's07-mission-03'
+
+            if state == 's07-mission-03':
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_MISSION_CLICK_COMPLETE')
+                state = 's07-mission-04'
+
+            if state == 's07-mission-04':
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_MISSION_OK')
+                continue
+
+            if state == 's08-gacha2-05':
+                if 's08-gacha2-05' in state_history:
+                    my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                    time.sleep(TIME_SLEEP)
+                    continue
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_COMMON_MSG_SKIP')
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_GACHA2_MSG_0')
+                state = 's08-gacha2-06'
+
+            if state == 's08-gacha2-06':
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_COMMON_MSG_SKIP')
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_GACHA2_MSG_1')
+                state = 's08-gacha2-02'
+
+            if state == 's08-gacha2-02':
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_GACHA2_CLICK_PACK')
+                continue
+
+            if state == 's08-gacha2-07':
+                state = 'xxx-dialog-lc'
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_GACHA2_DIALOG')
+                state = 's08-gacha2-04'
+
+            if state == 's08-gacha2-04':
+                flag_set.add('GACHA2-ING')
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                # mywait('UIWAIT_GACHA2_OPEN_PACK')
+                time.sleep(TIME_SLEEP)
+                flag_set.add('xxx-gacha-02-spam')
+                continue
+                # state = 'xxx-gacha-02-mewtwo'
+
+
+            if state == 's09-wonder-00':
+                # one more frame
+                if state_history[-1] != state:
+                    time.sleep(TIME_SLEEP/2)
+                    continue
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_WONDER_UNLOCK')
+                flag_set.add('s09-wonder-01-ok')
+                state = 's09-wonder-01'
+
+            if state == 's09-wonder-01':
+                # short time fix with s09-wonder-00
+                if ('s09-wonder-01-ok' not in flag_set) and (state_history[-1] != state):
+                    time.sleep(TIME_SLEEP/2)
+                    continue
+                flag_set.discard('s09-wonder-01-ok')
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_WONDER_CONT')
+                # s09-wonder-02
+                continue
+
+            if state == 's09-wonder-02':
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_COMMON_MSG_SKIP')
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_WONDER_MSG_0')
+                state = 's09-wonder-03'
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_COMMON_MSG_SKIP')
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_WONDER_MSG_1')
+                state = 's09-wonder-04'
+
+            if state == 's09-wonder-04':
+                # short time mix with s07-mission-00
+                if 'target-s07' in flag_set:
+                    time.sleep(TIME_SLEEP/2)
+                    continue
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_WONDER_WONDER_BTN')
+                # state = 's09-wonder-11'
+                continue
+
+            if state == 's09-wonder-11':
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_COMMON_MSG_SKIP')
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_WONDER_MSG_2')
+                state = 's09-wonder-17'
 
             if state == 's09-wonder-17':
                 my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_WONDER_DIALOG_0')
                 state = 's09-wonder-18'
-                time.sleep(TIME_SLEEP)
 
             if state == 's09-wonder-18':
                 my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_WONDER_DIALOG_1')
                 state = 's09-wonder-19'
-                time.sleep(TIME_SLEEP)
 
             if state == 's09-wonder-19':
                 my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_WONDER_DIALOG_2')
                 state = 's09-wonder-20'
-                time.sleep(TIME_SLEEP)
 
             if state == 's09-wonder-20':
                 my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_WONDER_DIALOG_3')
                 state = 's09-wonder-21'
-                time.sleep(TIME_SLEEP)
 
             if state == 's09-wonder-21':
                 my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_WONDER_DIALOG_4')
+                state = 's09-wonder-22'
+
+            if state == 's09-wonder-22':
+                # state = 'xxx-msg'
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_COMMON_MSG_SKIP')
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_WONDER_MSG_3')
+                state = 's09-wonder-12'
+
+            if state == 's09-wonder-12':
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_WONDER_CLICK_WONDERITEM')
+                state = 's09-wonder-13'
+
+            # wonder shuffle SE skip btn
+            if state == 's09-wonder-13':
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_WONDER_OK')
+                flag_set.add('s09-wonder-13')
+                continue
+
+            # wonder 5 choose 1
+            if ('s09-wonder-13' in flag_set) and (state != 's09-wonder-14'):
+                state = 's09-wonder-23'
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_WONDER_SHUFFLE_SKIP')
+                continue
+
+            if state == 's09-wonder-14':
+                flag_set.discard('s09-wonder-13')
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_WONDER_CLICK_CARD')
+                state = 's09-wonder-15'
+
+            if state == 's09-wonder-15':
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_WONDER_CLICK_RESULT1')
+                state = 'xxx-swipeup'
+
+            if state == 's09-wonder-16':
+                for _ in range(5):
+                    my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                    time.sleep(TIME_SLEEP/2)
                 time.sleep(TIME_SLEEP)
                 continue
 
             if state == 's10-tutorialend-00':
                 my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_TUTORIALEND_DIALOG_0')
                 state = 's10-tutorialend-01'
-                time.sleep(TIME_SLEEP)
 
             if state == 's10-tutorialend-01':
                 my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_TUTORIALEND_DIALOG_1')
                 state = 's10-tutorialend-02'
-                time.sleep(TIME_SLEEP)
 
             if state == 's10-tutorialend-02':
                 my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
-                time.sleep(TIME_SLEEP)
+                mywait('UIWAIT_TUTORIALEND_DIALOG_2')
+                state = 's10-tutorialend-03'
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_COMMON_MSG_SKIP')
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_TUTORIALEND_MSG_0')
+                state = 's10-tutorialend-04'
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_COMMON_MSG_SKIP')
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_TUTORIALEND_MSG_1')
+                state = 's10-tutorialend-05'
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_COMMON_MSG_SKIP')
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_TUTORIALEND_MSG_2')
                 continue
 
+
+            if state == 's11-hourglass-02':
+                flag_set.add('s11-hourglass')
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_GACHA5_DIALOG_0')
+                state = 's11-hourglass-04'
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_COMMON_MSG_SKIP')
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_GACHA5_MSG_0')
+                flag_set.add('s11-hourglass-00-pass')
+                state = 's11-hourglass-00'
+
             if state == 's11-hourglass-00':
-                # double check
-                if state_history[-1] != state:
+                # double confirm
+                if ('s11-hourglass-00-pass' not in flag_set) and (state_history[-1] != state):
                     time.sleep(TIME_SLEEP/2)
                     continue
+                flag_set.discard('s11-hourglass-00-pass')
+                flag_set.add('GACHA4-DONE')
+                # btn 開封1包
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_GACHA5_BTN_0')
+                state = 'xxx-msg'
+                # msg 1個開包沙漏
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_COMMON_MSG_SKIP')
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_GACHA5_MSG_1')
+                state = 's11-hourglass-03'
+
+            if state == 's11-hourglass-03':
+                # dialog 開包沙漏可透過玩家等級提升
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_GACHA5_DIALOG_1')
+                state = 'xxx-dialog-lwc'
+                # dialog 購買特級護照
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_GACHA5_DIALOG_2')
+                state = 's11-hourglass-01'
+
+            if state == 's11-hourglass-01':
+                # btn OK
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_GACHA5_BTN_1')
+                flag_set.add('xxx-gacha-02-spam')
+                continue
 
             if state == 's12-end-00':
-                # need double check
-                if state_history[-1] != state:
+                # remain
+                if 's12-end-00-remain' in flag_set:
+                    flag_set.discard('s12-end-00-remain')
                     time.sleep(TIME_SLEEP/2)
                     continue
                 flag_set.add(state)
                 if check_cycle_loop_state in [None, 's03-start-00']:
                     check_cycle_loop_state = state
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_END_CLICK_MENU')
+                flag_set.add('s12-end-00-remain')
+                flag_set.add('s12-end-01-pass')
+                # state = 's12-end-01'
+                continue
+            flag_set.discard('s12-end-00-remain')
 
             if state == 's12-end-01':
-                # need double check
-                if state_history[-1] != state:
+                # remain
+                if 's12-end-01-remain' in flag_set:
+                    flag_set.discard('s12-end-01-remain')
                     time.sleep(TIME_SLEEP/2)
                     continue
+                # short moment
+                if (not 's12-end-01-pass' in flag_set) and (state_history[-1] != state):
+                    time.sleep(TIME_SLEEP/2)
+                    continue
+                flag_set.discard('s12-end-01-pass')
                 if 's12-end-00' in flag_set:
                     my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state][f'G_xy_list']))
+                    mywait('UIWAIT_END_CLICK_OTHER')
+                    flag_set.add('s12-end-01-remain')
+                    flag_set.add('s12-end-02-pass')
+                    # state = 's12-end-02'
+                    continue
                 else:
                     my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state][f'R_xy_list']))
+                    time.sleep(TIME_SLEEP)
+                    continue
+            flag_set.discard('s12-end-01-remain')
 
             if state == 's12-end-02':
-                # need double check
-                if state_history[-1] != state:
+                # remain
+                if 's12-end-02-remain' in flag_set:
+                    flag_set.discard('s12-end-02-remain')
                     time.sleep(TIME_SLEEP/2)
                     continue
+                # short moment
+                if (not 's12-end-02-pass' in flag_set) and (state_history[-1] != state):
+                    time.sleep(TIME_SLEEP/2)
+                    continue
+                flag_set.discard('s12-end-02-pass')
                 if 's12-end-00' in flag_set:
                     my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state][f'G_xy_list']))
+                    mywait('UIWAIT_END_CLICK_ACCOUNT')
+                    flag_set.add('s12-end-02-remain')
+                    flag_set.add('s12-end-03-pass')
+                    # state = 's12-end-03'
+                    continue
                 else:
                     my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state][f'R_xy_list']))
+                    time.sleep(TIME_SLEEP)
+                    continue
+            flag_set.discard('s12-end-02-remain')
 
             if state == 's12-end-03':
-                # need double check
-                if state_history[-1] != state:
+                # remain
+                if 's12-end-03-remain' in flag_set:
+                    flag_set.discard('s12-end-03-remain')
                     time.sleep(TIME_SLEEP/2)
                     continue
+                # short moment
+                if (not 's12-end-03-pass' in flag_set) and (state_history[-1] != state):
+                    time.sleep(TIME_SLEEP/2)
+                    continue
+                flag_set.discard('s12-end-03-pass')
                 if 's12-end-00' in flag_set:
-                    my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state][f'G_xy_list']))
                     flag_set.add(state)
+                    my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state][f'G_xy_list']))
+                    mywait('UIWAIT_END_CLICK_DEL')
+                    state = 'xxx-dialog-lwr'
+                    my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state][f'xy_list']))
+                    mywait('UIWAIT_END_DIALOG_0')
+                    state = 'xxx-dialog-swr'
+                    flag_set.add('s12-end-03-confirm')
+                    my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state][f'xy_list']))
+                    # state = 'xxx-dialog-sc'
+                    # loading here
+                    time.sleep(TIME_SLEEP)
+                    flag_set.add('s12-end-03-remain')
+                    continue
                 else:
                     my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state][f'R_xy_list']))
+                    time.sleep(TIME_SLEEP)
+                    continue
+            flag_set.discard('s12-end-03-remain')
 
             if state == 'xxx-dialog-swr':
                 if 's12-end-03' in flag_set:
                     flag_set.add('s12-end-03-confirm')
 
             if state.startswith('xxx-gacha-00-'):
-                # need double check
-                if state_history[-1] != state:
+                # not stable
+                if ('xxx-gacha-00-pass' not in flag_set) and (state_history[-1] != state):
+                    logger.debug(f'KVIUGILTOC xxx-gacha-00- state_history[-1] != state')
                     time.sleep(TIME_SLEEP/2)
                     continue
+                flag_set.discard('xxx-gacha-00-pass')
                 state_pack = state[13:]
                 color = XXX_GACHA_00_STATE_TARGET_TO_COLOR_DICT[(state_pack, TARGET_PACK)]
                 my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state][f'{color}_xy_list']))
-                state_double_act_state = state
-                state_double_act_time = time.time()
-                state_double_act_img = img
-                time.sleep(TIME_SLEEP)
-                continue
-
-            if state.startswith('xxx-gacha-01-'):
-                if TARGET_PACK != state[13:]:
-                    # ldagent.tap(150,348)
-                    my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['R_xy_list']))
-                    state_double_act_state = state
-                    state_double_act_time = time.time()
-                    state_double_act_img = img
+                if state_pack != TARGET_PACK:
                     time.sleep(TIME_SLEEP)
                     continue
-                # ldagent.tap(150,313)
+                flag_set.add('xxx-gacha-01-pass')
+                mywait('UIWAIT_GACHA_SELECT_PACK')
+                if flag_set & {'GACHA2-DONE','GACHA3-DONE','GACHA4-DONE'}:
+                    state = f'xxx-gacha-01-{state_pack}'
+                else:
+                    continue
+
+            if state.startswith('xxx-gacha-01-'):
+                # double confirm
+                if ('xxx-gacha-01-pass' not in flag_set) and (state_history[-1] != state):
+                    time.sleep(TIME_SLEEP/2)
+                    continue
+                flag_set.discard('xxx-gacha-01-pass')
+                state_pack = state[13:]
+                if state_pack != TARGET_PACK:
+                    my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['R_xy_list']))
+                    time.sleep(TIME_SLEEP)
+                    continue
                 my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['G_xy_list']))
-                state_double_act_state = state
-                state_double_act_time = time.time()
-                state_double_act_img = img
+                mywait('UIWAIT_GACHA_CONFIRM_PACK')
+                flag_set.add('xxx-gacha-02-spam')
+                # state = f'xxx-gacha-02-{state_pack}'
+                for i in range(6):
+                    if f'GACHA{i}-DONE' in flag_set:
+                        flag_set.discard(f'GACHA{i}-DONE')
+                        flag_set.add(f'GACHA{i+1}-ING')
                 time.sleep(TIME_SLEEP)
                 continue
 
+            if ('xxx-gacha-02-spam' in flag_set) and (not state.startswith('xxx-gacha-03-')):
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist['xxx-gacha-02-pikachu']['xy_list']))
+                time.sleep(TIME_SLEEP)
+                continue
+
+            if state.startswith('xxx-gacha-02-'):
+                state_pack = state[13:]
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_COMMON_GACHA_PACK_RING')
+                state = f'xxx-gacha-03-{state_pack}'
+
             if state.startswith('xxx-gacha-03-'):
-                # [HCCNTWDXEA] kill app to avoid lock in swipe state
-                if 'HCCNTWDXEA' in flag_set:
+                flag_set.discard('xxx-gacha-02-spam')
+                # [FIRST_SWIPE_UP_KILL_APP] kill app to avoid lock in swipe state
+                if 'FIRST_SWIPE_UP_KILL_APP' in flag_set:
                     force_killapp = True
                     continue
-                ldagent.swipe(20,231,280,231,SWIPE_PACK_MS)
+                action = state_list.state_to_action_dist[state]
+                from_xy = _get_xy(action['from_xy_list'])
+                to_xy = _get_xy(action['to_xy_list'])
+                duration = int(action['duration'] / swipe_speed_factor)
+                my_ldagent.swipe(*from_xy, *to_xy, duration)
+                last_swipe_time = time.time()
                 flag_set.add('xxx-gacha-03')
+                time.sleep(TIME_SLEEP)
+                continue # swipe may fail
 
-            if state == 'xxx-gacha-04':
-                flag_set.add('xxx-gacha-03')
+            if (state == 'xxx-gacha-04') or (state == 'xxx-gacha-04-x'):
+                flag_set.add('xxx-gacha-04')
+                if 'xxx-gacha-03' in flag_set:
+                    flag_set.discard('xxx-gacha-03')
+                    for _ in range(4):
+                        my_ldagent.tap(150,304)
+                        my_ldagent.tap(281,381)
+                        my_ldagent.tap(281,381)
+                        mywait('UIWAIT_COMMON_GACHA_RESULT_1CARD')
+                my_ldagent.tap(150,304)
+                my_ldagent.tap(281,381)
+                my_ldagent.tap(281,381)
+                mywait('UIWAIT_COMMON_GACHA_RESULT_LASTCARD')
+                continue
 
-            if state == 'xxx-gacha-04-x':
-                flag_set.add('xxx-gacha-03')
+            # fking video
+            if ('xxx-gacha-04' in flag_set) and (state == 'UNKNOWN'):
+                my_ldagent.tap(150,304)
+                my_ldagent.tap(281,381)
+                my_ldagent.tap(281,381)
+                mywait('UIWAIT_COMMON_GACHA_RESULT_LASTCARD')
+                continue
 
             # gacha result
             if state == 'xxx-gacha-05':
+                flag_set.discard('xxx-gacha-04')
                 check_disk_space(config_data)
                 t = int(time.time())
                 logger.debug(f'ZNHRHBHGMT GACHA_RESULT: {t}')
@@ -766,46 +1173,70 @@ def main():
                 # let other player to get the wonder pack
                 if config_data['WONDER_SAINT'] and exist_cost4 and all_wonder:
                     logger.debug(f'KRVQOASGCP WONDER_SAINT')
+                    flag_set.add('WONDER_SAINT')
+                    # force_resetapp = True
+
+                if ('WONDER_SAINT' in flag_set) and ('s11-hourglass' in flag_set):
                     force_resetapp = True
                     continue
 
                 # ldagent.tap(150,377)
                 my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
-                state_double_act_state = state
-                state_double_act_time = time.time()
-                state_double_act_img = img
-                time.sleep(TIME_SLEEP)
+                mywait('UIWAIT_COMMON_GACHA_RESULT_5CARD')
                 continue
 
             if state == 'xxx-home':
+                # double check
+                if state_history[-1] != state:
+                    time.sleep(TIME_SLEEP/2)
+                    continue
                 if TARGET_PACK in ['charizard', 'pikachu', 'mewtwo']:
                     # ldagent.tap(185,154)
                     my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['RB_xy_list']))
                 if TARGET_PACK == 'mew':
                     # ldagent.tap(111,154)
                     my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['G_xy_list']))
-                state_double_act_state = state
-                state_double_act_time = time.time()
-                state_double_act_img = img
-                time.sleep(TIME_SLEEP)
+                mywait('UIWAIT_HOME_CLICK_PACK')
+                flag_set.add('xxx-gacha-00-pass')
+                # 'xxx-gacha-00-'
                 continue
 
             if state == 'xxx-swipeup':
-                flag_set.add(state)
+                for i in range(2,6):
+                    if f'GACHA{i}-ING' in flag_set:
+                        flag_set.discard(f'GACHA{i}-ING')
+                        flag_set.add(f'GACHA{i}-DONE')
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_COMMON_SWIPEUP')
+                state = 'xxx-cardlist'
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
+                mywait('UIWAIT_COMMON_CARDLIST')
+                if 'GACHA3-DONE' in flag_set:
+                    flag_set.add('xxx-gacha-01-pass')
+                continue
+                
+
+            # if ('xxx-swipeup' in flag_set):
+            #     # fking add img to album animation
+            #     if state in ['UNKNOWN']:
+            #         my_ldagent.tap(275,378)
+            #         time.sleep(TIME_SLEEP)
+            #         continue
+            #     flag_set.remove('xxx-swipeup')
 
             if state in state_list.state_to_action_dist:
                 action = state_list.state_to_action_dist[state]
                 action_action = action['action']
                 logger.debug(f'OLOWPQVZMD action={action_action}')
-                next_state_double_act_state = state
-                if state in ['s06-gacha1-03','s07-mission-02','s09-wonder-11','s09-wonder-12','s09-wonder-14','s09-wonder-16','xxx-tips16','xxx-tips25']:
-                    next_state_double_act_state = None
+                # next_state_double_act_state = state
+                # if state in ['s06-gacha1-03','s07-mission-02','s09-wonder-11','s09-wonder-12','s09-wonder-14','s09-wonder-16','xxx-tips16','xxx-tips25']:
+                #     next_state_double_act_state = None
                 if action['action'] == 'click':
                     xy = _get_xy(action['xy_list'])
                     my_ldagent.tap(*xy)
-                    state_double_act_state = next_state_double_act_state
-                    state_double_act_time = time.time()
-                    state_double_act_img = img
+                    # state_double_act_state = next_state_double_act_state
+                    # state_double_act_time = time.time()
+                    # state_double_act_img = img
                     time.sleep(TIME_SLEEP)
                     continue
                 if action['action'] == 'swipe':
@@ -818,9 +1249,9 @@ def main():
                     time.sleep(TIME_SLEEP)
                     continue
 
-            if state == 'UNKNOWN':
-                state_double_act_state = None
-                continue
+            # if state == 'UNKNOWN':
+            #     state_double_act_state = None
+            #     continue
             
             time.sleep(TIME_SLEEP/2)
 
