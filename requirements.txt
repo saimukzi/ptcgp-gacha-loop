@@ -3,3 +3,4 @@ numpy
 opencv-python
 portalocker
 pyyaml
+windows-capture

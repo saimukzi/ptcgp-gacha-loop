@@ -268,9 +268,16 @@ def main():
                 state_history.append(state)
             state_history = state_history[-5:]
 
-            img = my_ldagent.screencap().astype(np.float32)
+            img, img_mask = my_ldagent.screencap()
+            img = img.astype(np.float32)
 
-            state = state_list.get_state(img)
+            state = state_list.get_state(img, img_mask)
+
+            if my_ldagent.screencap_require_calibrate():
+                if state in state_list.state_to_calibrate_mask_hwaf1_dict:
+                    calibrate_maskf1 = state_list.state_to_calibrate_mask_hwaf1_dict[state]
+                    my_ldagent.calibrate_screencap(calibrate_maskf1)
+                    continue
 
             reset_mywait()
 
@@ -409,6 +416,12 @@ def main():
                     continue
 
             if state == 's01-info-00':
+                # if my_ldagent.screencap_require_calibrate():
+                #     my_ldagent.calibrate_screencap(os.path.join(const.MY_PATH, 'res', 's01_info_00-calibrate-mask.png'))
+                #     # img_mask = my_ldagent.screencap_mask()
+                #     # state_list.set_mask(img_mask)
+                #     # state_list.src_mask_hwab = img_mask.astype(np.float32)
+                #     continue
                 my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
                 mywait('UIWAIT_INFO_OPEN_YEAR')
                 state = 's01-info-01'

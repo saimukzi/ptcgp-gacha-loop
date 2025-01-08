@@ -1,11 +1,15 @@
+import atexit
 import common
 import filelock
 import numpy as np
 import os
 import shutil
+import threading
 import time
+import windows_capture
 import cv2
 import subprocess
+import ldplayer_windows_agent
 from my_logger import logger
 import charset_normalizer
 import const
@@ -83,11 +87,15 @@ class LDPlayerGlobal:
 
 class LDPlayerInstance(LDPlayerGlobal):
 
-    def __init__(self, ldplayer_path, emu_idx, ldconsole_encoding='gb18030'):
+    def __init__(self, ldplayer_path, emu_idx, ldconsole_encoding='gb18030', screencap_method='WC2501'):
         super().__init__(ldplayer_path, ldconsole_encoding)
+        assert(screencap_method in ['WC2501','ADB'])
         self.emu_idx = emu_idx
         # refer to https://help.ldmnq.com/docs/LD9adbserver
         self.adb_idx = str(int(emu_idx)*2+5554)
+        self.screencap_method = screencap_method
+
+        self.wc2501_windows_agent = None
 
     def is_emu_running(self):
         for _ in range(5):
@@ -106,6 +114,21 @@ class LDPlayerInstance(LDPlayerGlobal):
 
 
     def screencap(self):
+        if self.screencap_method == 'ADB':
+            return self.adb_screencap(), None
+        if self.screencap_method == 'WC2501':
+            if self.wc2501_windows_agent is None:
+                return self.adb_screencap(), None
+            if self.wc2501_windows_agent.require_calibrate():
+                return self.adb_screencap(), None
+            img, mask = self.wc2501_windows_agent.get_calibrated_img_mask_m()
+            if img is not None:
+                return img, mask
+            return self.adb_screencap(), None
+        else:
+            assert(False)
+
+    def adb_screencap(self):
         try:
             for _ in range(10):
                 stdout = self._i_adb_cmd(['exec-out', 'screencap', '-p'], binary=True)
@@ -116,6 +139,23 @@ class LDPlayerInstance(LDPlayerGlobal):
         except subprocess.TimeoutExpired:
             logger.error(f'SZLGCPJJAD adb_exec timeout')
             raise LdAgentException('adb_exec timeout')
+
+    def screencap_require_calibrate(self):
+        if self.screencap_method == 'WC2501':
+            return self.wc2501_windows_agent.require_calibrate()
+        return False
+
+    def calibrate_screencap(self, mask_img):
+        if self.screencap_method == 'WC2501':
+            if not self.wc2501_windows_agent.require_calibrate():
+                return
+            adb_img = self.adb_screencap()
+            self.wc2501_windows_agent.calibrate_m(adb_img, mask_img)
+
+    # def screencap_mask(self):
+    #     if self.screencap_method == 'WC2501':
+    #         return self.wc2501_windows_agent.get_mask_hwa()
+    #     return None
 
     def tap(self, x, y):
         return self._i_adb_cmd(['shell', 'input', 'tap', str(x), str(y)])
@@ -167,6 +207,13 @@ class LDPlayerInstance(LDPlayerGlobal):
                 # force kill
                 if force_kill:
                     logger.debug(f'UHMMGPTQTH force kill')
+
+                    # stop WC2501
+                    if self.screencap_method == 'WC2501':
+                        if self.wc2501_windows_agent is not None:
+                            self.wc2501_windows_agent.stop()
+                            self.wc2501_windows_agent = None
+
                     self.killemu()
                     time.sleep(1)
                 
@@ -183,12 +230,20 @@ class LDPlayerInstance(LDPlayerGlobal):
                 
                 time.sleep(5)
 
+            emu_name = None
+
             # launch emu with app
             while True:
                 if self.is_emu_running():
                     break
                 self._i_ldconsole_cmd(['launchex', '--packagename', PACKAGE_NAME])
                 time.sleep(5)
+
+            # launch WC2501
+            if self.screencap_method == 'WC2501':
+                if emu_name is None: emu_name = self.i_list2()['NAME']
+                self.wc2501_windows_agent = ldplayer_windows_agent.LDPlayerWindowsAgent(emu_name)
+                self.wc2501_windows_agent.start()
 
             # launch app
             while True:
@@ -353,7 +408,7 @@ def get_ldagent(config_data):
     list2_ret = list2_ret[0]
     emu_idx = list2_ret['IDX']
 
-    return LDPlayerInstance(ldplayer_path, emu_idx)
+    return LDPlayerInstance(ldplayer_path, emu_idx, screencap_method=config_data['SCREENCAP_METHOD'])
 
     # logger.debug(f'AFCTNYVSXS LD_EMU_NAME = {LD_EMU_NAME}')
     # process_ret = subprocess.run([LDCONSOLE_PATH, "list2"], capture_output=True, timeout=30)

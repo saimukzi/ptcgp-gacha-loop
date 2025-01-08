@@ -66,20 +66,6 @@ def main():
     img_svmin = cv2_min(img_svmin, imgsv)
     img_svmax = cv2_max(img_svmax, imgsv)
 
-    # for _ in range(100):
-    #     img = ldagent.screencap()
-    #     img_zmax = img.max(axis=2)
-    #     img_zmin = img.min(axis=2)
-    #     imgs = (img_zmax - img_zmin).astype(img.dtype)
-    #     imgv = img_zmax.astype(img.dtype)
-    #     imgz = np.zeros_like(img_zmax, dtype=img.dtype)
-    #     imgsv = np.stack([imgs, imgv, imgz], axis=2).astype(img.dtype)
-    #     img_min = cv2_min(img_min, img)
-    #     img_max = cv2_max(img_max, img)
-    #     img_svmin = cv2_min(img_svmin, imgsv)
-    #     img_svmax = cv2_max(img_svmax, imgsv)
-    #     time.sleep(0.05)
-    
     os.makedirs(os.path.join(const.MY_PATH, 'res', 'state'), exist_ok=True)
 
     cv2.imwrite(img_max_fn, img_max)

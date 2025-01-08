@@ -10,6 +10,7 @@ state_data_list = []
 state_fix_dict = {}
 state_to_action_dist = {}
 state_to_forget_img_dict = {}
+state_to_calibrate_mask_hwaf1_dict = {}
 
 STATE_DETECT_THRESHOLD = 1
 
@@ -151,22 +152,32 @@ def load_state(input_mask255f_img = None):
         img = img[:,:,3:4] / 255
         state_to_forget_img_dict[state] = img
 
-def get_state(img, debug=False):
-    imgmx = img.max(axis=2)
-    imgmn = img.min(axis=2)
+    # state_to_calibrate_img_dict
+    for img_fn in os.listdir(os.path.join(const.MY_PATH, 'res', 'state')):
+        if not img_fn.endswith('.calibrate.png'):
+            continue
+        token = img_fn.split('.')[:-1]
+        state = token[0]
+        img = common.cv2_imread(os.path.join(const.MY_PATH, 'res', 'state', img_fn), flags=cv2.IMREAD_UNCHANGED).astype(np.float32)
+        img = img[:,:,3:4] / 255
+        state_to_calibrate_mask_hwaf1_dict[state] = img
+
+def get_state(src_img, src_img_mask, debug=False):
+    imgmx = src_img.max(axis=2)
+    imgmn = src_img.min(axis=2)
     imgs = imgmx-imgmn
     imgv = imgmx
     imgsv = np.stack([imgs, imgv], axis=2)
-    img = np.append(img, imgsv, axis=2)
+    src_img = np.append(src_img, imgsv, axis=2)
     diff, state = STATE_DETECT_THRESHOLD, 'UNKNOWN'
     for state_data in state_data_list:
         new_state = state_data['state']
-        img_min = state_data['img_min']
-        img_max = state_data['img_max']
-        img_mask = state_data['img_mask']
-        new_diff = _get_state_diff(img, img_min, img_max, img_mask)
+        state_img_min = state_data['img_min']
+        state_img_max = state_data['img_max']
+        state_img_mask = state_data['img_mask']
+        new_diff = _get_state_diff(src_img, src_img_mask, state_img_min, state_img_max, state_img_mask, debug=debug, debug_state_name=new_state)
         if debug:
-            # print(f'{new_state}: {new_diff}')
+            # print(f'CGVMDKKLJH {new_state}: {new_diff}')
             logger.debug(f'QWHAMZOXKX {new_state}: {new_diff}')
         if new_diff < diff:
             diff = new_diff
@@ -179,10 +190,10 @@ def get_state(img, debug=False):
         diff, state = STATE_DETECT_THRESHOLD, state
         for state_data in state_fix_dict[state]:
             new_state = state_data['state1']
-            img_min = state_data['img_min']
-            img_max = state_data['img_max']
-            img_mask = state_data['img_mask']
-            new_diff = _get_state_diff(img, img_min, img_max, img_mask)
+            state_img_min = state_data['img_min']
+            state_img_max = state_data['img_max']
+            state_img_mask = state_data['img_mask']
+            new_diff = _get_state_diff(src_img, src_img_mask, state_img_min, state_img_max, state_img_mask)
             if debug:
                 logger.debug(f'YUEAHCIRPJ {new_state}: {new_diff}')
             if new_diff < diff:
@@ -194,30 +205,42 @@ def get_state(img, debug=False):
 
     return state
 
-def _get_state_diff(img, img_min, img_max, img_mask, debug=False):
-    assert(img_min.shape == img_max.shape)
-    if img_min.shape[2] == 3:
-        img = img[:,:,:3]
+# src_mask_hwab = None
 
-    diff_max = img - img_max
+def _get_state_diff(src_img, src_img_mask, state_img_min, state_img_max, state_img_mask, debug=False, debug_state_name=None):
+    assert(state_img_min.shape == state_img_max.shape)
+    assert(not (debug and (debug_state_name is None)))
+    if state_img_min.shape[2] == 3:
+        src_img = src_img[:,:,:3]
+
+    diff_max = src_img - state_img_max
     diff_max = np.maximum(diff_max, 0)
-    diff_min = img_min - img
+    diff_min = state_img_min - src_img
     diff_min = np.maximum(diff_min, 0)
     diff = np.maximum(diff_max, diff_min)
 
-    if debug:
-        cv2.imwrite('diff_max.png', diff_max)
-        cv2.imwrite('diff_min.png', diff_min)
+        # common.cv2_imwrite(os.path.join(const.APP_PATH, 'tmp', 'debug', f'diff_max.png'), diff_max)
+        # common.cv2_imwrite(os.path.join(const.APP_PATH, 'tmp', 'debug', f'diff_min.png'), diff_min)
 
-    if img_mask is not None:
-        mask = img_mask
-        # mask = mask.reshape(mask.shape[:2])
-        mask = mask / 255
-        diff = diff * mask
-        mask_sum = mask.sum()
-        diff = diff.sum() / mask_sum / img.shape[2]
+    if state_img_mask is not None:
+        mask = state_img_mask
     else:
-        diff = diff.mean()
+        mask = np.ones(src_img.shape[:2]+(1,), dtype=np.float32) * 255
+
+    if src_img_mask is not None:
+        # logger.debug('PPBJPURJGC src_mask_hwab is not None')
+        mask = mask * src_img_mask
+    # mask = mask.reshape(mask.shape[:2])
+    mask = mask / 255
+    diff = diff * mask
+    if debug:
+        os.makedirs(os.path.join(const.APP_PATH, 'tmp', 'debug'), exist_ok=True)
+        common.cv2_imwrite(os.path.join(const.APP_PATH, 'tmp', 'debug', f'{debug_state_name}.diff.png'), diff[:,:,:3].astype(np.uint8))
+        mask_hwc = np.zeros((mask.shape[0], mask.shape[1], 3), dtype=np.uint8)
+        mask_hwc[:,:] = mask * 255
+        common.cv2_imwrite(os.path.join(const.APP_PATH, 'tmp', 'debug', f'{debug_state_name}.mask.png'), mask_hwc.astype(np.uint8))
+    mask_sum = mask.sum()
+    diff = diff.sum() / mask_sum / src_img.shape[2]
 
     return diff
 

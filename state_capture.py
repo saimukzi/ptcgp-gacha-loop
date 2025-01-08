@@ -59,7 +59,7 @@ def main():
     t = time.time()
     i = 0
     while True:
-        img = my_ldagent.screencap()
+        img = my_ldagent.adb_screencap()
         img_zmax = img.max(axis=2)
         img_zmin = img.min(axis=2)
         imgs = (img_zmax - img_zmin).astype(img.dtype)
