@@ -1,4 +1,5 @@
 import atexit
+import os
 import cv2
 import numpy as np
 import pygetwindow as gw
@@ -6,6 +7,8 @@ import threading
 import time
 
 import common
+import config
+import const
 from my_logger import logger
 from windows_capture import WindowsCapture, Frame, InternalCaptureControl
 
@@ -346,6 +349,9 @@ def _detect_bar_color(img):
     global bar_color
     if bar_color is not None:
         return
+    if config.my_config_data['DEBUG_MODE']:
+        os.makedirs(os.path.join(const.APP_PATH, 'tmp', 'debug'), exist_ok=True) 
+        common.cv2_imwrite(os.path.join(const.APP_PATH, 'tmp', 'debug', 'bar_color.png'), img)
     bar_color = _top_count_color(img[1:3])
     logger.debug(f'KKZHHDZLRF bar_color: {bar_color}')
 
@@ -353,6 +359,9 @@ def _detect_bg_color(img):
     global bg_color
     if bg_color is not None:
         return
+    if config.my_config_data['DEBUG_MODE']:
+        os.makedirs(os.path.join(const.APP_PATH, 'tmp', 'debug'), exist_ok=True) 
+        common.cv2_imwrite(os.path.join(const.APP_PATH, 'tmp', 'debug', 'bg_color.png'), img)
     bg_color = _top_count_color(img[:, 1:3])
     logger.debug(f'ETRRWXBHIS bg_color: {bg_color}')
 

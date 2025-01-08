@@ -7,6 +7,8 @@ from my_logger import logger
 MY_PATH = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_CONFIG_PATH = os.path.join(MY_PATH, 'default.yaml')  
 
+my_config = None
+
 def get_config(fn):
     ret = yaml.load(open(DEFAULT_CONFIG_PATH, 'rt', encoding='utf-8'), Loader=yaml.FullLoader)
     config_data = yaml.load(open(fn, 'rt', encoding='utf-8'), Loader=yaml.FullLoader)
@@ -38,6 +40,8 @@ def get_config(fn):
         config_data['MIN_FREE_DISK_SPACE'] = 0
 
     ret.update(config_data)
+
+    my_config_data = ret
 
     return ret
 
