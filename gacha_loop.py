@@ -275,8 +275,8 @@ def main():
 
             if my_ldagent.screencap_require_calibrate():
                 if state in state_list.state_to_calibrate_mask_hwaf1_dict:
-                    calibrate_maskf1 = state_list.state_to_calibrate_mask_hwaf1_dict[state]
-                    my_ldagent.calibrate_screencap(calibrate_maskf1)
+                    calibrate_mask_hwaf1 = state_list.state_to_calibrate_mask_hwaf1_dict[state]
+                    my_ldagent.calibrate_screencap(calibrate_mask_hwaf1)
                     continue
 
             reset_mywait()
@@ -1146,7 +1146,7 @@ def main():
                 gacha_result_folder = os.path.join(const.APP_PATH, 'gacha_result')
                 os.makedirs(gacha_result_folder, exist_ok=True)
                 ret_fn = os.path.join(gacha_result_folder, f'{t}.png')
-                cv2.imwrite(ret_fn, img)
+                common.cv2_imwrite(ret_fn, img)
                 gacha_result = card_list.read_gacha_result(img)
                 is_target = len(set(gacha_result) & TARGET_CARD_SET)>0
                 logger.debug(f'OKTLVAGTGC is_target: {is_target}')

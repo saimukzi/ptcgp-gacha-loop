@@ -79,10 +79,10 @@ def main():
     
     os.makedirs(os.path.join(const.MY_PATH, 'res', 'state'), exist_ok=True)
 
-    cv2.imwrite(img_max_fn, img_max)
-    cv2.imwrite(img_min_fn, img_min)
-    cv2.imwrite(img_svmax_fn, img_svmax)
-    cv2.imwrite(img_svmin_fn, img_svmin)
+    common.cv2_imwrite(img_max_fn, img_max)
+    common.cv2_imwrite(img_min_fn, img_min)
+    common.cv2_imwrite(img_svmax_fn, img_svmax)
+    common.cv2_imwrite(img_svmin_fn, img_svmin)
 
 def cv2_min(i0, i1):
     if i0 is None:
