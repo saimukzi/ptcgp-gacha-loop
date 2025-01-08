@@ -31,7 +31,7 @@ class LDPlayerWindowsAgent:
         # windows capture
         self.windows_capture = WindowsCapture(
             cursor_capture=False,
-            draw_border=True,
+            draw_border=None,
             monitor_index=None,
             window_name=self.window_name,
         )
