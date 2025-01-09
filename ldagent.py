@@ -145,12 +145,12 @@ class LDPlayerInstance(LDPlayerGlobal):
             return self.wc2501_windows_agent.require_calibrate()
         return False
 
-    def calibrate_screencap(self, mask_img):
+    def calibrate_screencap(self, mask_hwaf1):
         if self.screencap_method == 'WC2501':
             if not self.wc2501_windows_agent.require_calibrate():
                 return
             adb_img = self.adb_screencap()
-            self.wc2501_windows_agent.calibrate_m(adb_img, mask_img)
+            self.wc2501_windows_agent.calibrate_m(adb_img, mask_hwaf1)
 
     # def screencap_mask(self):
     #     if self.screencap_method == 'WC2501':
