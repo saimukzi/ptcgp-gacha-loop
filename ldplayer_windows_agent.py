@@ -108,16 +108,18 @@ class LDPlayerWindowsAgent:
         y_sum = img1.sum(axis=1)
         y_not_bar = (y_sum < w//4)
         y_not_bar[0] = False
-        game_y0 = int(y_not_bar.nonzero()[0][0])
+        y_not_bar[-1] = False
+        y_not_bar_nonzero = y_not_bar.nonzero()
+        game_y0 = int(y_not_bar_nonzero[0][0])
+        game_y1 = int(y_not_bar_nonzero[0][-1])+1
 
         x_sum = img1.sum(axis=0)
-        x_bar = (x_sum > h//4)
-        x_bar[-1] = True
-        x_bar_idx_list = x_bar.nonzero()[0]
-        game_x1 = int(x_bar_idx_list[0])
-
-        game_x0 = 1
-        game_y1 = h-1
+        x_not_bar = (x_sum < h//4)
+        x_not_bar[0] = False
+        x_not_bar[-1] = False
+        x_not_bar_nonzero = x_not_bar.nonzero()
+        game_x0 = int(x_not_bar_nonzero[0][0])
+        game_x1 = int(x_not_bar_nonzero[0][-1])+1
 
         game_w = game_x1 - game_x0
         game_h = game_y1 - game_y0
@@ -221,26 +223,28 @@ class LDPlayerWindowsAgent:
     def __detect_target_outer_wh_m(self):
         self._detect_bg_color_m()
         img, wh = self.get_img_wh_m()
-        bar_n, bar_e = get_bar_ne(img)
+        bar_n, bar_s, bar_w, bar_e = get_bar_nswe(img)
+        logger.debug(f'NWKDLGNXQG bar_n={bar_n}, bar_e={bar_e}')
 
         # find target_outer_width
         le = TARGET_INNER_W - 20
-        g = TARGET_INNER_W + bar_e + 20
+        g = TARGET_INNER_W + bar_w + bar_e + 20
 
         while g-le > 1:
             m = (le+g)//2
-            img = self._change_wh_m((m,TARGET_INNER_H + bar_n + 20))
+            img = self._change_wh_m((m,TARGET_INNER_H + bar_n + bar_s + 20))
             img1 = np.equal(img, bg_color).all(axis=2)
             y_sum = img1.sum(axis=1)
             y_bg = (y_sum > m//4)
-            x0 = 250
+            x0 = m//2
             while (not y_bg[x0]):
                 x0 -= 1
             x0 += 1
-            x1 = 250
+            x1 = m//2
             while (not y_bg[x1]):
                 x1 += 1
             game_h = x1 - x0
+            logger.debug(f'ZIXANFIVVU m={m}, game_h={game_h}')
             if game_h > TARGET_INNER_H:
                 g = m
             else:
@@ -248,22 +252,23 @@ class LDPlayerWindowsAgent:
         target_outer_width = le
 
         le = TARGET_INNER_H - 20
-        g = TARGET_INNER_H + bar_n + 20
+        g = TARGET_INNER_H + bar_n + bar_s + 20
 
         while g-le > 1:
             m = (le+g)//2
-            img = self._change_wh_m((TARGET_INNER_W + bar_e + 20,m))
+            img = self._change_wh_m((TARGET_INNER_W + bar_w + bar_e + 20,m))
             img1 = np.equal(img, bg_color).all(axis=2)
             x_sum = img1.sum(axis=0)
             x_bg = (x_sum > m//4)
-            y0 = 250
+            y0 = m//2
             while (not x_bg[y0]):
                 y0 -= 1
             y0 += 1
-            y1 = 250
+            y1 = m//2
             while (not x_bg[y1]):
                 y1 += 1
             game_w = y1 - y0
+            logger.debug(f'SCLUPUARAX m={m} game_w={game_w}')
             if game_w > TARGET_INNER_W:
                 g = m
             else:
@@ -277,8 +282,8 @@ class LDPlayerWindowsAgent:
         if bg_color is not None:
             return
         img, wh = self.get_img_wh_m()
-        bar_ne = get_bar_ne(img)
-        img = self._change_wh_m((TARGET_INNER_W+40+bar_ne[1],TARGET_INNER_H+bar_ne[0]))
+        bar_n,bar_s,bar_w,bar_e = get_bar_nswe(img)
+        img = self._change_wh_m((TARGET_INNER_W+40+bar_w+bar_e,TARGET_INNER_H+bar_n+bar_s))
         _detect_bg_color(img)
 
     def _change_wh_m(self, wh):
@@ -294,7 +299,7 @@ class LDPlayerWindowsAgent:
             self.windows_capture_control = None
 
     def _windows_capture__frame_handler(self, frame: Frame, capture_control: InternalCaptureControl):
-        frame.save_as_image("tmp.png")
+        #frame.save_as_img("tmp.png")
         with self.img_condition:
             self.img_tmp = frame.frame_buffer
             self.img_condition.notify()
@@ -320,11 +325,11 @@ def calibrate_img(img, calibrate_data):
 
 
 def get_bareexist(img):
-    bar_ne = get_bar_ne(img)
-    return bar_ne[1] > 4
+    _,_,_,bar_e = get_bar_nswe(img)
+    return bar_e > 4
 
 
-def get_bar_ne(img):
+def get_bar_nswe(img):
     _detect_bar_color(img)
 
     img1 = np.equal(img, bar_color).all(axis=2)
@@ -333,17 +338,25 @@ def get_bar_ne(img):
     y_sum = img1.sum(axis=1)
     y_not_bar = (y_sum < w//4)
     y_not_bar[0] = False
-    y_not_bar_idx = int(y_not_bar.nonzero()[0][0])
-    bar_n = y_not_bar_idx
+    y_not_bar[-1] = False
+    y_not_bar_nonzero = y_not_bar.nonzero()
+    bar_y0 = int(y_not_bar_nonzero[0][0])
+    bar_y1 = int(y_not_bar_nonzero[0][-1])+1
 
     x_sum = img1.sum(axis=0)
-    x_bar = (x_sum > h//4)
-    x_bar[-1] = True
-    x_bar_idx_list = x_bar.nonzero()[0]
-    x_bar_idx = int(x_bar_idx_list[0])
-    bar_e = w - x_bar_idx
+    x_not_bar = (x_sum < h//4)
+    x_not_bar[0] = False
+    x_not_bar[-1] = False
+    x_not_bar_nonzero = x_not_bar.nonzero()
+    bar_x0 = int(x_not_bar_nonzero[0][0])
+    bar_x1 = int(x_not_bar_nonzero[0][-1])+1
+    
+    bar_n = bar_y0
+    bar_s = h-bar_y1
+    bar_w = bar_x0
+    bar_e = w-bar_x1
 
-    return bar_n, bar_e
+    return bar_n, bar_s, bar_w, bar_e
 
 def _detect_bar_color(img):
     global bar_color
@@ -362,7 +375,7 @@ def _detect_bg_color(img):
     if config.my_config_data['DEBUG_MODE']:
         os.makedirs(os.path.join(const.APP_PATH, 'tmp', 'debug'), exist_ok=True) 
         common.cv2_imwrite(os.path.join(const.APP_PATH, 'tmp', 'debug', 'bg_color.png'), img)
-    bg_color = _top_count_color(img[:, 1:3])
+    bg_color = _top_count_color(img[:, 3:6])
     logger.debug(f'ETRRWXBHIS bg_color: {bg_color}')
 
 def _top_count_color(img):
@@ -384,8 +397,8 @@ def main():
     while True:
         img, wh = agent.get_img_wh_m()
         print(f'wh: {wh}')
-        bar_ne = get_bar_ne(img)
-        print(f'bar_ne: {bar_ne}')
+        bar_nswe = get_bar_nswe(img)
+        print(f'bar_nswe: {bar_nswe}')
         agent.fix_target_wh_m()
         time.sleep(0.5)
 
