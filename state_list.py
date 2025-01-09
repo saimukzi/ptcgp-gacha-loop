@@ -108,7 +108,7 @@ def load_state(input_mask255f_img = None):
             continue
         token = img_fn.split('.')[:-1]
         state = token[0]
-        img = cv2.imread(os.path.join(const.MY_PATH, 'res', 'state', img_fn)).astype(np.float32)
+        img = common.cv2_imread(os.path.join(const.MY_PATH, 'res', 'state', img_fn)).astype(np.float32)
         if token[1] == 'click':
             assert(state not in state_to_action_dist)
             state_to_action_dist[state] = {
