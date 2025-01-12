@@ -76,15 +76,16 @@ class LDPlayerWindowsAgent:
                 _detect_bar_color(ret_img)
                 self.last_img_bareexist = get_bareexist(ret_img)
                 img_wh = (ret_img.shape[1], ret_img.shape[0])
-                if img_wh != self.game_window.size:
-                    self.img_condition.wait(0.1)
-                    continue
-                if self.last_img_bareexist not in bareexist_to_target_outer_wh_dict:
-                    self._detect_target_outer_wh_m()
-                    continue
-                if img_wh != bareexist_to_target_outer_wh_dict[self.last_img_bareexist]:
-                    self.fix_target_wh_m()
-                    continue
+                if auto_restore:
+                    if img_wh != self.game_window.size:
+                        self.img_condition.wait(0.1)
+                        continue
+                    if self.last_img_bareexist not in bareexist_to_target_outer_wh_dict:
+                        self._detect_target_outer_wh_m()
+                        continue
+                    if img_wh != bareexist_to_target_outer_wh_dict[self.last_img_bareexist]:
+                        self.fix_target_wh_m()
+                        continue
                 common.cv2_imwrite('get_img_wh_m.png', ret_img)
                 return ret_img, img_wh
 
