@@ -107,10 +107,14 @@ class LDPlayerWindowsAgent:
                 # self.last_img_bareexist = get_bareexist(ret_img)
                 img = ret_img_data['img']
                 # img_wh = (ret_img.shape[1], ret_img.shape[0])
-                ret_img_data['wh'] = (img.shape[1], img.shape[0])
+                if 'wh' not in ret_img_data:
+                    ret_img_data['wh'] = (img.shape[1], img.shape[0])
                 if config.my_config_data['DEBUG_MODE']:
                     try:
-                        common.cv2_imwrite(os.path.join(my_path.instance_debug(), 'get_img_data.png'), img)
+                        if 'debug-png' not in ret_img_data:
+                            str_idx = '%03d'%ret_img_data['idx']
+                            common.cv2_imwrite(os.path.join(my_path.instance_debug(), 'get_img_data', f'{str_idx}.png'), img)
+                            ret_img_data['debug-png'] = True
                     except:
                         pass
                 # return ret_img, img_wh
@@ -288,18 +292,24 @@ class LDPlayerWindowsAgent:
         self._detect_bg_color_m()
         # img, wh = self.get_img_wh_m()
         img_data = self.get_img_data()
-        while True:
-            bar_n, bar_s, bar_w, bar_e = get_bar_nswe(img_data)
-            logger.debug(f'NWKDLGNXQG bar_n={bar_n}, bar_e={bar_e}')
+        good = False
+        for _ in range(5):
+            bar_n, bar_s, bar_w, bar_e = bar_nswe = get_bar_nswe(img_data)
+            logger.debug(f'NWKDLGNXQG bar_nswe={bar_nswe}')
             if bar_n >= 5:
+                good = True
                 break
             t = int(time.time())
-            logger.error(f'VZZTKINCTS bar_n={bar_n}, bar_e={bar_e} t={t}')
+            logger.error(f'VZZTKINCTS bar_nswe={bar_nswe}')
             try:
                 common.cv2_imwrite(my_path.instance_debug(),'err_img',f'VZZTKINCTS-{t}.png')
             except:
                 pass
+            time.sleep(1.1)
             img_data = self.get_img_data(nnext=True)
+        if not good:
+            logger.error(f'TULVEQVNBD')
+            assert(False)
 
         # find target_outer_width
         le = TARGET_INNER_W - 20
@@ -308,11 +318,11 @@ class LDPlayerWindowsAgent:
         while g-le > 1:
             m = (le+g)//2
             self._change_wh_m((m,TARGET_INNER_H + bar_n + bar_s + 20))
-            img_data = self.get_img_data(nnext=True)
-            img = img_data['img']
             # have saw case skipped value, need more frame to confirm
             for _ in range(5):
-                img1 = np.equal(img, bg_color).all(axis=2)
+                img_data = self.get_img_data(nnext=True)
+            img = img_data['img']
+            img1 = np.equal(img, bg_color).all(axis=2)
             y_sum = img1.sum(axis=1)
             y_bg = (y_sum > m//4)
             x0 = m//2
@@ -336,11 +346,11 @@ class LDPlayerWindowsAgent:
         while g-le > 1:
             m = (le+g)//2
             self._change_wh_m((TARGET_INNER_W + bar_w + bar_e + 20,m))
-            img_data = self.get_img_data(nnext=True)
+            for _ in range(5):
+                img_data = self.get_img_data(nnext=True)
             img = img_data['img']
             # have saw case skipped value, need more frame to confirm
-            for _ in range(5):
-                img1 = np.equal(img, bg_color).all(axis=2)
+            img1 = np.equal(img, bg_color).all(axis=2)
             x_sum = img1.sum(axis=0)
             x_bg = (x_sum > m//4)
             y0 = m//2
@@ -392,7 +402,7 @@ class LDPlayerWindowsAgent:
                 'idx': self.img_idx,
             }
             self.img_idx += 1
-            self.img_idx %= 1000000
+            self.img_idx %= 1000
             self.img_condition.notify()
 
     def _windows_capture__closed_handler(self):
