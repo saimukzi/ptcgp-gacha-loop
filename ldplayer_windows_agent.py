@@ -44,8 +44,10 @@ class LDPlayerWindowsAgent:
 
         self.img_condition = threading.Condition()
         self.img_tmp = None
+        self.img_idx = 0
 
         self.last_img_bareexist = None
+        
 
     def start(self):
         self.windows_capture_control = self.windows_capture.start_free_threaded()
@@ -58,11 +60,15 @@ class LDPlayerWindowsAgent:
             atexit.unregister(self._atexit)
 
 
-    def get_img_wh_m(self, auto_restore=True):
+    def get_img_wh_m(self, auto_restore=True, nnext=False):
         with self.img_condition:
+            old_img_idx = self.img_idx
             while True:
                 if auto_restore:
                     self.restore_game_window_m()
+                if nnext and (self.img_idx == old_img_idx):
+                    self.img_condition.wait(0.1)
+                    continue
                 ret_img = self.img_tmp
                 if ret_img is None:
                     self.img_condition.wait(0.1)
@@ -94,7 +100,7 @@ class LDPlayerWindowsAgent:
 
 
     def calibrate_m(self, adb_img, mask_hwaf1):
-        img, wh = self.get_img_wh_m()
+        img, wh = self.get_img_wh_m(nnext=True)
         bareexist = get_bareexist(img)
         logger.debug(f'BACGWQPWBP bareexist={bareexist}')
         if bareexist in bareexist_to_calibrate_data_dict:
@@ -104,7 +110,7 @@ class LDPlayerWindowsAgent:
         self._detect_bg_color_m()
         self.fix_target_wh_m()
         
-        img, wh = self.get_img_wh_m()
+        img, wh = self.get_img_wh_m(nnext=True)
 
         adb_bgr = adb_img[:,:,:3]
 
@@ -243,6 +249,7 @@ class LDPlayerWindowsAgent:
         while g-le > 1:
             m = (le+g)//2
             img = self._change_wh_m((m,TARGET_INNER_H + bar_n + bar_s + 20))
+            img,_ = self.get_img_wh_m(nnext=True) # last frame may have remain
             img1 = np.equal(img, bg_color).all(axis=2)
             y_sum = img1.sum(axis=1)
             y_bg = (y_sum > m//4)
@@ -267,6 +274,7 @@ class LDPlayerWindowsAgent:
         while g-le > 1:
             m = (le+g)//2
             img = self._change_wh_m((TARGET_INNER_W + bar_w + bar_e + 20,m))
+            img,_ = self.get_img_wh_m(nnext=True) # last frame may have remain
             img1 = np.equal(img, bg_color).all(axis=2)
             x_sum = img1.sum(axis=0)
             x_bg = (x_sum > m//4)
@@ -312,6 +320,8 @@ class LDPlayerWindowsAgent:
         #frame.save_as_img("tmp.png")
         with self.img_condition:
             self.img_tmp = frame.frame_buffer
+            self.img_idx += 1
+            self.img_idx %= 1000000
             self.img_condition.notify()
 
     def _windows_capture__closed_handler(self):
