@@ -295,7 +295,9 @@ class LDPlayerWindowsAgent:
             self._change_wh_m((m,TARGET_INNER_H + bar_n + bar_s + 20))
             img_data = self.get_img_data(nnext=True)
             img = img_data['img']
-            img1 = np.equal(img, bg_color).all(axis=2)
+            # have saw case skipped value, need more frame to confirm
+            for _ in range(5):
+                img1 = np.equal(img, bg_color).all(axis=2)
             y_sum = img1.sum(axis=1)
             y_bg = (y_sum > m//4)
             x0 = m//2
@@ -321,7 +323,9 @@ class LDPlayerWindowsAgent:
             self._change_wh_m((TARGET_INNER_W + bar_w + bar_e + 20,m))
             img_data = self.get_img_data(nnext=True)
             img = img_data['img']
-            img1 = np.equal(img, bg_color).all(axis=2)
+            # have saw case skipped value, need more frame to confirm
+            for _ in range(5):
+                img1 = np.equal(img, bg_color).all(axis=2)
             x_sum = img1.sum(axis=0)
             x_bg = (x_sum > m//4)
             y0 = m//2
