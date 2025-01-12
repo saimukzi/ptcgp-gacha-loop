@@ -883,10 +883,11 @@ def main():
             #     set_wait_state({state,'s06-gacha1-06'})
             #     continue
 
+            # may delay to 'xxx-msg' and back
             if state == 's06-gacha1-06':
                 my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
                 # mywait('UIWAIT_GACHA1_CARDLIST_CLICK')
-                set_wait_state({state,'s06-gacha1-07'})
+                set_wait_state({state,'xxx-msg','s06-gacha1-07'})
                 # time.sleep(TIME_SLEEP)
                 continue
 
