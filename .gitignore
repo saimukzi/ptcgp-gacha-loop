@@ -12,3 +12,4 @@ dist
 smz-*
 *.lock
 .project
+*.disable
