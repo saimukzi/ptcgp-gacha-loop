@@ -70,14 +70,21 @@ class LDPlayerWindowsAgent:
                 _detect_bar_color(ret_img)
                 self.last_img_bareexist = get_bareexist(ret_img)
                 img_wh = (ret_img.shape[1], ret_img.shape[0])
-                if img_wh == self.game_window.size:
-                    common.cv2_imwrite('get_img_wh_m.png', ret_img)
-                    return ret_img, img_wh
-                self.img_condition.wait(0.1)
+                if img_wh != self.game_window.size:
+                    self.img_condition.wait(0.1)
+                    continue
+                if self.last_img_bareexist not in bareexist_to_target_outer_wh_dict:
+                    self._detect_target_outer_wh_m()
+                    continue
+                if img_wh != bareexist_to_target_outer_wh_dict[self.last_img_bareexist]:
+                    self.fix_target_wh_m()
+                    continue
+                common.cv2_imwrite('get_img_wh_m.png', ret_img)
+                return ret_img, img_wh
 
 
     def get_calibrated_img_mask_m(self):
-        logger.debug(f'PAQSBDIAQU get_calibrated_img_m')
+        logger.debug(f'PAQSBDIAQU get_calibrated_img_mask_m')
         img, wh = self.get_img_wh_m()
         bareexist = get_bareexist(img)
         if bareexist not in bareexist_to_calibrate_data_dict:
@@ -91,6 +98,7 @@ class LDPlayerWindowsAgent:
         bareexist = get_bareexist(img)
         logger.debug(f'BACGWQPWBP bareexist={bareexist}')
         if bareexist in bareexist_to_calibrate_data_dict:
+            logger.debug('LIZHDDQLTY already calibrated')
             return
         _detect_bar_color(img)
         self._detect_bg_color_m()
@@ -178,6 +186,7 @@ class LDPlayerWindowsAgent:
             'dest_yyxx': dest_yyxx,
         }
         bareexist_to_calibrate_data_dict[bareexist] = calibrate_data
+        logger.debug(f'XPAUNVZVIT bareexist_to_calibrate_data_dict: {bareexist_to_calibrate_data_dict}')
 
     def require_calibrate(self):
         # logger.debug(f'OFFABARANL require_calibrate last_img_bareexist: {self.last_img_bareexist}')
