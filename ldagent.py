@@ -274,10 +274,10 @@ class LDPlayerInstance(LDPlayerGlobal):
                 if process_ret.returncode == 0:
                     logger.debug(f'PJESCSKYDC pidof stdout = {process_ret.stdout}')
                     break
-                self._i_ldconsole_cmd(['runapp', '--packagename', PACKAGE_NAME])
                 if time.time() - time_start > 60:
                     logger.error(f'FPVMAQKLOG recover timeout')
                     raise LdAgentException('recover timeout')
+                self._i_ldconsole_cmd(['runapp', '--packagename', PACKAGE_NAME])
                 time.sleep(5)
 
         except subprocess.TimeoutExpired:
