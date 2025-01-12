@@ -267,6 +267,7 @@ class LDPlayerInstance(LDPlayerGlobal):
                 self.wc2501_windows_agent.start()
 
             # launch app
+            time_start = time.time()
             while True:
                 process_ret = subprocess.run([self.adb_path, "-s", f"emulator-{self.adb_idx}",'shell', 'pidof', PACKAGE_NAME], capture_output=True, timeout=30)
                 logger.debug(f'OIADLYZHXI pidof returncode = {process_ret.returncode}')
@@ -274,6 +275,9 @@ class LDPlayerInstance(LDPlayerGlobal):
                     logger.debug(f'PJESCSKYDC pidof stdout = {process_ret.stdout}')
                     break
                 self._i_ldconsole_cmd(['runapp', '--packagename', PACKAGE_NAME])
+                if time.time() - time_start > 60:
+                    logger.error(f'FPVMAQKLOG recover timeout')
+                    raise LdAgentException('recover timeout')
                 time.sleep(5)
 
         except subprocess.TimeoutExpired:
