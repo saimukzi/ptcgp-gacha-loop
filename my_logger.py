@@ -34,7 +34,7 @@ def update_logger(config_data):
     hh = yyyymmddhh[8:10]
     if yyyymmddhh == logger_file_handler_yyyymmddhh:
         return
-    fn = os.path.join(const.APP_PATH,'log', yyyy, mm, dd, f'{yyyy}{mm}{dd}-{hh}-{INSTANCE_ID}.log')
+    fn = os.path.join(const.APP_PATH,'log','instances',INSTANCE_ID, yyyy, mm, dd, f'{yyyy}{mm}{dd}-{hh}.log')
     # print(fn)
     os.makedirs(os.path.dirname(fn), exist_ok=True)
     new_logger_file_handler = logging.FileHandler(fn, encoding='utf-8')

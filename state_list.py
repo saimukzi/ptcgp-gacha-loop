@@ -1,8 +1,9 @@
 import common
-import os
 import const
 import cv2
+import my_path
 import numpy as np
+import os
 
 from my_logger import logger
 
@@ -257,9 +258,6 @@ def _get_state_diff(src_img, src_img_mask, state_img_min, state_img_max, state_i
     diff_min = np.maximum(diff_min, 0)
     diff = np.maximum(diff_max, diff_min)
 
-        # common.cv2_imwrite(os.path.join(const.APP_PATH, 'tmp', 'debug', f'diff_max.png'), diff_max)
-        # common.cv2_imwrite(os.path.join(const.APP_PATH, 'tmp', 'debug', f'diff_min.png'), diff_min)
-
     if state_img_mask is not None:
         mask = state_img_mask
     else:
@@ -272,11 +270,11 @@ def _get_state_diff(src_img, src_img_mask, state_img_min, state_img_max, state_i
     mask = mask / 255
     diff = diff * mask
     if debug:
-        os.makedirs(os.path.join(const.APP_PATH, 'tmp', 'debug'), exist_ok=True)
-        common.cv2_imwrite(os.path.join(const.APP_PATH, 'tmp', 'debug', f'{debug_state_name}.diff.png'), diff[:,:,:3].astype(np.uint8))
+        # os.makedirs(os.path.join(const.APP_PATH, 'tmp', 'debug'), exist_ok=True)
+        common.cv2_imwrite(os.path.join(my_path.instance_debug(), f'{debug_state_name}.diff.png'), diff[:,:,:3].astype(np.uint8))
         mask_hwc = np.zeros((mask.shape[0], mask.shape[1], 3), dtype=np.uint8)
         mask_hwc[:,:] = mask * 255
-        common.cv2_imwrite(os.path.join(const.APP_PATH, 'tmp', 'debug', f'{debug_state_name}.mask.png'), mask_hwc.astype(np.uint8))
+        common.cv2_imwrite(os.path.join(my_path.instance_debug(), f'{debug_state_name}.mask.png'), mask_hwc.astype(np.uint8))
     mask_sum = mask.sum()
     diff = diff.sum() / mask_sum / src_img.shape[2]
 

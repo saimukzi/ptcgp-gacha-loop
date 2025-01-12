@@ -1,6 +1,7 @@
 import atexit
 import os
 import cv2
+import my_path
 import numpy as np
 import pygetwindow as gw
 import threading
@@ -467,8 +468,7 @@ def _detect_bar_color(img_data):
         return
     img = img_data['img']
     if config.my_config_data['DEBUG_MODE']:
-        os.makedirs(os.path.join(const.APP_PATH, 'tmp', 'debug'), exist_ok=True) 
-        common.cv2_imwrite(os.path.join(const.APP_PATH, 'tmp', 'debug', 'bar_color.png'), img)
+        common.cv2_imwrite(os.path.join(my_path.instance_debug(), 'bar_color.png'), img)
     bar_color = _top_count_color(img[1:3])
     logger.debug(f'KKZHHDZLRF bar_color: {bar_color}')
 
@@ -478,8 +478,7 @@ def _detect_bg_color(img_data):
         return
     img = img_data['img']
     if config.my_config_data['DEBUG_MODE']:
-        os.makedirs(os.path.join(const.APP_PATH, 'tmp', 'debug'), exist_ok=True) 
-        common.cv2_imwrite(os.path.join(const.APP_PATH, 'tmp', 'debug', 'bg_color.png'), img)
+        common.cv2_imwrite(os.path.join(my_path.instance_debug(), 'bg_color.png'), img)
     bg_color = _top_count_color(img[:, 3:6])
     logger.debug(f'ETRRWXBHIS bg_color: {bg_color}')
 

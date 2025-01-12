@@ -1,5 +1,6 @@
 import common
 import filelock
+import my_path
 import os
 import random
 import sys
@@ -14,7 +15,6 @@ import card_list
 import config
 from my_logger import logger, update_logger
 import const
-import seed_backup as backuppy
 import shutil
 
 # YYYYMMDDHH = time.strftime('%Y%m%d%H', time.localtime(time.time()))
@@ -92,7 +92,7 @@ def main():
         logger.error(f'config file is locked: {args_config}')
         sys.exit(1)
 
-    instance_lock_path = get_instance_lock_path(INSTANCE_ID)
+    instance_lock_path = get_instance_lock_path()
     logger.debug(f'JEDVXLDIZW instance_lock_path={instance_lock_path}')
     instance_lock = filelock.lock(instance_lock_path, f'{START_YYYYMMDDHHMMSS},{MY_PID}')
     if instance_lock is None:
@@ -109,26 +109,19 @@ def main():
 
     config.check(config_data)
     
+    my_path.makedirs()
+
     state_list.STATE_DETECT_THRESHOLD = float(config_data['STATE_DETECT_THRESHOLD'])
 
-    APP_VAR_FOLDER = os.path.join(const.APP_PATH, 'var')
-    logger.debug(f'APP_VAR_FOLDER={APP_VAR_FOLDER}')
-    os.makedirs(APP_VAR_FOLDER, exist_ok=True)
-
-    # SEED_EMU_BACKUP_PATH = os.path.join(APP_VAR_FOLDER, 'seed_emu_backup.ldbk')
-    # logger.debug(f'SEED_EMU_BACKUP_PATH={SEED_EMU_BACKUP_PATH}')
-
-    backup = backuppy.SeedBackup(config_data)
-    backup.clear_old_backup()
     force_resetapp = False
     force_rebootemu = False
     force_killapp = False
     force_copyemu_resetapp = False
     force_copyemu_name = None
 
-    INSTANCE_VAR_FOLDER = os.path.join(APP_VAR_FOLDER, 'instances', INSTANCE_ID)
-    logger.debug(f'INSTANCE_VAR_FOLDER={INSTANCE_VAR_FOLDER}')
-    os.makedirs(INSTANCE_VAR_FOLDER, exist_ok=True)
+    INSTANCE_VAR_FOLDER = my_path.instance_var()
+    # logger.debug(f'INSTANCE_VAR_FOLDER={INSTANCE_VAR_FOLDER}')
+    # os.makedirs(INSTANCE_VAR_FOLDER, exist_ok=True)
     USER_IDX_PATH = os.path.join(INSTANCE_VAR_FOLDER, 'user_idx.txt')
     user_idx = 0
     try:
@@ -1554,9 +1547,7 @@ def main():
                     check_disk_space(config_data)
                     t = int(time.time())
                     logger.debug(f'ZNHRHBHGMT GACHA_RESULT: {t}')
-                    gacha_result_folder = os.path.join(const.APP_PATH, 'gacha_result')
-                    os.makedirs(gacha_result_folder, exist_ok=True)
-                    ret_fn = os.path.join(gacha_result_folder, f'{t}.png')
+                    ret_fn = os.path.join(my_path.instance_gacha_result(), f'{t}.png')
                     common.cv2_imwrite(ret_fn, img)
                     gacha_result = card_list.read_gacha_result(img)
                     is_target = len(set(gacha_result) & TARGET_CARD_SET)>0
@@ -1810,8 +1801,8 @@ def get_config_fn_lock_path(config_fn):
 def get_emu_lock_path(ldplayer_path, emu_name):
     return os.path.join(ldplayer_path, 'ptcgp-gl', 'emus', emu_name, 'lock')
 
-def get_instance_lock_path(instance_id):
-    return os.path.join(const.APP_PATH, 'var', 'instances', instance_id, 'lock')
+def get_instance_lock_path():
+    return os.path.join(my_path.instance_var(), 'lock')
 
 def get_version():
     if os.path.exists(const.VERSION_FN):
