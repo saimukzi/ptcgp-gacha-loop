@@ -6,8 +6,10 @@ import numpy as np
 
 from my_logger import logger
 
+state_name_set = set()
 state_data_list = []
 state_fix_dict = {}
+state1_to_state0_set_dict = {}
 state_to_action_dist = {}
 state_to_forget_img_dict = {}
 state_to_calibrate_mask_hwaf1_dict = {}
@@ -50,6 +52,7 @@ def load_state(input_mask255f_img = None):
             else:
                 img_mask = input_mask255f_img * img_mask / 255
 
+        state_name_set.add(state)
         state_data_list.append({
             'state': state,
             'img_min': img_min,
@@ -93,6 +96,9 @@ def load_state(input_mask255f_img = None):
             else:
                 img_mask = input_mask255f_img * img_mask / 255
 
+        state_name_set.add(state0)
+        state_name_set.add(state1)
+
         if state0 not in state_fix_dict:
             state_fix_dict[state0] = []
         state_fix_dict[state0].append({
@@ -101,6 +107,10 @@ def load_state(input_mask255f_img = None):
             'img_max': img_max,
             'img_mask': img_mask,
         })
+
+        if state1 not in state1_to_state0_set_dict:
+            state1_to_state0_set_dict[state1] = set()
+        state1_to_state0_set_dict[state1].add(state0)
 
     # action
     for img_fn in os.listdir(os.path.join(const.MY_PATH, 'res', 'state')):
@@ -162,7 +172,25 @@ def load_state(input_mask255f_img = None):
         img = img[:,:,3:4] / 255
         state_to_calibrate_mask_hwaf1_dict[state] = img
 
-def get_state(src_img, src_img_mask, debug=False):
+def get_state(src_img, src_img_mask, state_mask=None, debug=False):
+    _state_mask_cal = None
+    _state_mask_check = None
+    if state_mask is not None:
+        if '-' not in state_mask:
+            _state_mask_check = set(state_mask)
+        else:
+            _state_mask_check = state_name_set - state_mask
+        _state_mask_cal = set(_state_mask_check)
+        old_len = len(_state_mask_cal)
+        while True:
+            for state1 in _state_mask_cal:
+                if state1 in state1_to_state0_set_dict:
+                    _state_mask_cal = _state_mask_cal.union(state1_to_state0_set_dict[state1])
+            new_len = len(_state_mask_cal)
+            if new_len == old_len:
+                break
+            old_len = new_len
+
     imgmx = src_img.max(axis=2)
     imgmn = src_img.min(axis=2)
     imgs = imgmx-imgmn
@@ -172,6 +200,8 @@ def get_state(src_img, src_img_mask, debug=False):
     diff, state = STATE_DETECT_THRESHOLD, 'UNKNOWN'
     for state_data in state_data_list:
         new_state = state_data['state']
+        if _state_mask_cal is not None and new_state not in _state_mask_cal:
+            continue
         state_img_min = state_data['img_min']
         state_img_max = state_data['img_max']
         state_img_mask = state_data['img_mask']
@@ -190,6 +220,8 @@ def get_state(src_img, src_img_mask, debug=False):
         diff, state = STATE_DETECT_THRESHOLD, state
         for state_data in state_fix_dict[state]:
             new_state = state_data['state1']
+            if _state_mask_cal is not None and new_state not in _state_mask_cal:
+                continue
             state_img_min = state_data['img_min']
             state_img_max = state_data['img_max']
             state_img_mask = state_data['img_mask']
@@ -203,7 +235,13 @@ def get_state(src_img, src_img_mask, debug=False):
         if state == old_state:
             break
 
+    if _state_mask_check is not None and state not in _state_mask_check:
+        state = 'UNKNOWN'
+
     return state
+
+def state_prefix(state_p):
+    return set(filter(lambda x: x.startswith(state_p), state_name_set))
 
 # src_mask_hwab = None
 

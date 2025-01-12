@@ -94,6 +94,7 @@ class LDPlayerInstance(LDPlayerGlobal):
         # refer to https://help.ldmnq.com/docs/LD9adbserver
         self.adb_idx = str(int(emu_idx)*2+5554)
         self.screencap_method = screencap_method
+        self.last_adb_screencap_time = 0
 
         self.wc2501_windows_agent = None
 
@@ -130,8 +131,12 @@ class LDPlayerInstance(LDPlayerGlobal):
 
     def adb_screencap(self):
         try:
+            sleep_time = self.last_adb_screencap_time + 0.5 - time.time()
+            if sleep_time > 0:
+                time.sleep(sleep_time)
             for _ in range(10):
                 stdout = self._i_adb_cmd(['exec-out', 'screencap', '-p'], binary=True)
+                self.last_adb_screencap_time = time.time()
                 if len(stdout) > 0:
                     return cv2.imdecode(np.frombuffer(stdout, np.uint8), cv2.IMREAD_COLOR)
                 logger.error(f'HPHJGWWXOR screencap stdout too short')
@@ -158,16 +163,32 @@ class LDPlayerInstance(LDPlayerGlobal):
     #     return None
 
     def tap(self, x, y):
-        return self._i_adb_cmd(['shell', 'input', 'tap', str(x), str(y)])
+        try:
+            return self._i_adb_cmd(['shell', 'input', 'tap', str(x), str(y)])
+        except:
+            logger.error(f'TNUQCEWOOO tap error')
+            raise LdAgentException('tap error')
     
     def input_text(self, txt):
-        return self._i_adb_cmd(['shell', 'input', 'text', txt])
+        try:
+            return self._i_adb_cmd(['shell', 'input', 'text', txt])
+        except:
+            logger.error(f'SPMDGODODM input_text error')
+            raise LdAgentException('input_text error')
     
     def swipe(self, x1, y1, x2, y2, duration):
-        return self._i_adb_cmd(['shell', 'input', 'swipe', str(x1), str(y1), str(x2), str(y2), str(int(duration))])
+        try:
+            return self._i_adb_cmd(['shell', 'input', 'swipe', str(x1), str(y1), str(x2), str(y2), str(int(duration))])
+        except:
+            logger.error(f'WRKCWLDNAQ swipe error')
+            raise LdAgentException('swipe error')
 
     def keyevent(self, key):
-        return self._i_adb_cmd(['shell', 'input', 'keyevent', str(key)])
+        try:
+            return self._i_adb_cmd(['shell', 'input', 'keyevent', str(key)])
+        except:
+            logger.error(f'DKJWIXWXXB keyevent error')
+            raise LdAgentException('keyevent error')
 
     def recover(self):
         logger.debug('YTQEMXRINZ recover START')

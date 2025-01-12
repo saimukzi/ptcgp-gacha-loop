@@ -71,6 +71,7 @@ class LDPlayerWindowsAgent:
                 self.last_img_bareexist = get_bareexist(ret_img)
                 img_wh = (ret_img.shape[1], ret_img.shape[0])
                 if img_wh == self.game_window.size:
+                    common.cv2_imwrite('get_img_wh_m.png', ret_img)
                     return ret_img, img_wh
                 self.img_condition.wait(0.1)
 
@@ -80,7 +81,7 @@ class LDPlayerWindowsAgent:
         img, wh = self.get_img_wh_m()
         bareexist = get_bareexist(img)
         if bareexist not in bareexist_to_calibrate_data_dict:
-            return None
+            return None, None
         calibrate_data = bareexist_to_calibrate_data_dict[bareexist]
         return calibrate_img(img, calibrate_data), calibrate_data['mask']
 
