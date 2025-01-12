@@ -13,3 +13,4 @@ smz-*
 *.lock
 .project
 *.disable
+get_img_wh_m.png
