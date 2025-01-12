@@ -288,8 +288,18 @@ class LDPlayerWindowsAgent:
         self._detect_bg_color_m()
         # img, wh = self.get_img_wh_m()
         img_data = self.get_img_data()
-        bar_n, bar_s, bar_w, bar_e = get_bar_nswe(img_data)
-        logger.debug(f'NWKDLGNXQG bar_n={bar_n}, bar_e={bar_e}')
+        while True:
+            bar_n, bar_s, bar_w, bar_e = get_bar_nswe(img_data)
+            logger.debug(f'NWKDLGNXQG bar_n={bar_n}, bar_e={bar_e}')
+            if bar_n >= 5:
+                break
+            t = int(time.time())
+            logger.error(f'VZZTKINCTS bar_n={bar_n}, bar_e={bar_e} t={t}')
+            try:
+                common.cv2_imwrite(my_path.instance_debug(),'err_img',f'VZZTKINCTS-{t}.png')
+            except:
+                pass
+            img_data = self.get_img_data(nnext=True)
 
         # find target_outer_width
         le = TARGET_INNER_W - 20

@@ -20,6 +20,7 @@ def cv2_imwrite(file_path, img, params=None):
     while True:
         try:
             bytess = cv2.imencode('.png', img, params=params)[1].tobytes()
+            os.makedirs(os.path.dirname(file_path), exist_ok=True)
             with open(file_path, 'wb') as f:
                 f.write(bytess)
             break

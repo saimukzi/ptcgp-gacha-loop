@@ -270,7 +270,7 @@ def _get_state_diff(src_img, src_img_mask, state_img_min, state_img_max, state_i
     # mask = mask.reshape(mask.shape[:2])
     mask = mask / 255
     diff = diff * mask
-    if debug or config.my_config_data['DEBUG_IMG']:
+    if debug or config.my_config_data['DEBUG_MODE']:
         # os.makedirs(os.path.join(const.APP_PATH, 'tmp', 'debug'), exist_ok=True)
         try:
             common.cv2_imwrite(os.path.join(my_path.instance_debug(), f'{debug_state_name}.diff.png'), diff[:,:,:3].astype(np.uint8))

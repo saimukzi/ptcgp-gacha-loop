@@ -360,7 +360,7 @@ def main():
             if state == 'xxx-gacha-05-U':
                 state = 'UNKNOWN'
 
-            if config_data['DEBUG_IMG']:
+            if config_data['DEBUG_MODE']:
                 logger.debug(f'CNRSFFOMKV debug_img_idx={debug_img_idx}, state={state}')
                 debug_img_fn = os.path.join(my_path.instance_debug(), 'debug_img', '%02d.png'%debug_img_idx)
                 os.makedirs(os.path.dirname(debug_img_fn), exist_ok=True)
