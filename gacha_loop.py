@@ -356,6 +356,7 @@ def main():
                 stable_time = time.time()
 
             if my_ldagent.screencap_require_calibrate():
+                logger.debug(f'YKLZVQOJNZ screencap_require_calibrate')
                 if state in state_list.state_to_calibrate_mask_hwaf1_dict:
                     calibrate_mask_hwaf1 = state_list.state_to_calibrate_mask_hwaf1_dict[state]
                     my_ldagent.calibrate_screencap(calibrate_mask_hwaf1)

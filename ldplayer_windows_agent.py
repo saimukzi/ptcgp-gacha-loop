@@ -43,10 +43,12 @@ class LDPlayerWindowsAgent:
         self.windows_capture_control = None
 
         self.img_condition = threading.Condition()
-        self.img_tmp = None
+        # self.img_tmp = None
+        self.img_data_tmp = None
         self.img_idx = 0
 
-        self.last_img_bareexist = None
+        # self.last_img_bareexist = None
+        self._require_calibrate = True
         
 
     def start(self):
@@ -60,58 +62,95 @@ class LDPlayerWindowsAgent:
             atexit.unregister(self._atexit)
 
 
-    def get_img_wh_m(self, auto_restore=True, nnext=False):
+    # def get_img_wh_m(self, auto_restore=True, nnext=False):
+    #     with self.img_condition:
+    #         old_img_idx = self.img_idx
+    #         while True:
+    #             if auto_restore:
+    #                 self.restore_game_window_m()
+    #             if nnext and (self.img_idx == old_img_idx):
+    #                 self.img_condition.wait(0.1)
+    #                 continue
+    #             ret_img = self.img_tmp
+    #             if ret_img is None:
+    #                 self.img_condition.wait(0.1)
+    #                 continue
+    #             _detect_bar_color(ret_img)
+    #             self.last_img_bareexist = get_bareexist(ret_img)
+    #             img_wh = (ret_img.shape[1], ret_img.shape[0])
+    #             if auto_restore:
+    #                 if img_wh != self.game_window.size:
+    #                     self.img_condition.wait(0.1)
+    #                     continue
+    #                 if self.last_img_bareexist not in bareexist_to_target_outer_wh_dict:
+    #                     self._detect_target_outer_wh_m()
+    #                     continue
+    #                 if img_wh != bareexist_to_target_outer_wh_dict[self.last_img_bareexist]:
+    #                     self.fix_target_wh_m()
+    #                     continue
+    #             # common.cv2_imwrite('get_img_wh_m.png', ret_img)
+    #             return ret_img, img_wh
+
+    def get_img_data(self, nnext=False):
         with self.img_condition:
             old_img_idx = self.img_idx
             while True:
-                if auto_restore:
-                    self.restore_game_window_m()
                 if nnext and (self.img_idx == old_img_idx):
                     self.img_condition.wait(0.1)
                     continue
-                ret_img = self.img_tmp
-                if ret_img is None:
+                ret_img_data = self.img_data_tmp
+                if ret_img_data is None:
                     self.img_condition.wait(0.1)
                     continue
-                _detect_bar_color(ret_img)
-                self.last_img_bareexist = get_bareexist(ret_img)
-                img_wh = (ret_img.shape[1], ret_img.shape[0])
-                if auto_restore:
-                    if img_wh != self.game_window.size:
-                        self.img_condition.wait(0.1)
-                        continue
-                    if self.last_img_bareexist not in bareexist_to_target_outer_wh_dict:
-                        self._detect_target_outer_wh_m()
-                        continue
-                    if img_wh != bareexist_to_target_outer_wh_dict[self.last_img_bareexist]:
-                        self.fix_target_wh_m()
-                        continue
-                common.cv2_imwrite('get_img_wh_m.png', ret_img)
-                return ret_img, img_wh
-
+                # _detect_bar_color(ret_img)
+                # self.last_img_bareexist = get_bareexist(ret_img)
+                img = ret_img_data['img']
+                # img_wh = (ret_img.shape[1], ret_img.shape[0])
+                ret_img_data['wh'] = (img.shape[1], img.shape[0])
+                common.cv2_imwrite('get_img_data.png', img)
+                # return ret_img, img_wh
+                return ret_img_data
 
     def get_calibrated_img_mask_m(self):
         logger.debug(f'PAQSBDIAQU get_calibrated_img_mask_m')
-        img, wh = self.get_img_wh_m()
-        bareexist = get_bareexist(img)
+        self.restore_game_window_m()
+        self.fix_target_wh_m()
+        img_data = self.get_img_data()
+        bareexist = get_bareexist(img_data)
+        # img, wh = self.get_img_wh_m()
+        # bareexist = get_bareexist(img)
         if bareexist not in bareexist_to_calibrate_data_dict:
+            self._require_calibrate = True
             return None, None
-        calibrate_data = bareexist_to_calibrate_data_dict[bareexist]
-        return calibrate_img(img, calibrate_data), calibrate_data['mask']
+        if bareexist not in bareexist_to_target_outer_wh_dict:
+            return None, None
+        target_outer_wh = bareexist_to_target_outer_wh_dict[bareexist]
+        if img_data['wh'] != target_outer_wh:
+            return None, None
+        # calibrate_data = bareexist_to_calibrate_data_dict[bareexist]
+        # img_data['calibrate_data'] = bareexist_to_calibrate_data_dict[bareexist]
+        calibrate_img(img_data)
+        return img_data['calibrate_img'], img_data['calibrate_mask']
 
 
     def calibrate_m(self, adb_img, mask_hwaf1):
-        img, wh = self.get_img_wh_m(nnext=True)
-        bareexist = get_bareexist(img)
+        # img, wh = self.get_img_wh_m(nnext=True)
+        self.restore_game_window_m()
+        img_data = self.get_img_data(nnext=True)
+        bareexist = get_bareexist(img_data)
         logger.debug(f'BACGWQPWBP bareexist={bareexist}')
         if bareexist in bareexist_to_calibrate_data_dict:
             logger.debug('LIZHDDQLTY already calibrated')
+            self._require_calibrate = False
             return
-        _detect_bar_color(img)
+        _detect_bar_color(img_data)
         self._detect_bg_color_m()
         self.fix_target_wh_m()
         
-        img, wh = self.get_img_wh_m(nnext=True)
+        self.restore_game_window_m()
+        img_data = self.get_img_data(nnext=True)
+        img = img_data['img']
+        wh = img_data['wh']
 
         adb_bgr = adb_img[:,:,:3]
 
@@ -182,10 +221,10 @@ class LDPlayerWindowsAgent:
         # common.cv2_imwrite('target_mask.png', target_mask_rgb)
 
         src_yyxx = game_y0, game_y1, game_x0, game_x1
-        logger.debug(f'KQMXMROXWP src_yyxx: {src_yyxx}')
+        logger.debug(f'KQMXMROXWP bareexist:{bareexist} src_yyxx: {src_yyxx}')
 
         dest_yyxx = best_i, best_i+game_h, best_j, best_j+game_w
-        logger.debug(f'RRGNMXMUWZ dest_yyxx: {dest_yyxx}')
+        logger.debug(f'RRGNMXMUWZ bareexist:{bareexist} dest_yyxx: {dest_yyxx}')
 
         calibrate_data = {
             'mask': target_mask_hwa,
@@ -193,13 +232,14 @@ class LDPlayerWindowsAgent:
             'dest_yyxx': dest_yyxx,
         }
         bareexist_to_calibrate_data_dict[bareexist] = calibrate_data
-        logger.debug(f'XPAUNVZVIT bareexist_to_calibrate_data_dict: {bareexist_to_calibrate_data_dict}')
+        # logger.debug(f'XPAUNVZVIT bareexist_to_calibrate_data_dict: {bareexist_to_calibrate_data_dict}')
 
     def require_calibrate(self):
         # logger.debug(f'OFFABARANL require_calibrate last_img_bareexist: {self.last_img_bareexist}')
-        if self.last_img_bareexist is None:
-            return True
-        return self.last_img_bareexist not in bareexist_to_calibrate_data_dict
+        # if self.last_img_bareexist is None:
+        #     return True
+        # return self.last_img_bareexist not in bareexist_to_calibrate_data_dict
+        return self._require_calibrate
 
     def restore_game_window_m(self):
         good = False
@@ -226,21 +266,24 @@ class LDPlayerWindowsAgent:
     def fix_target_wh_m(self):
         self.restore_game_window_m()
         self._detect_target_outer_wh_m()
-        img, wh = self.get_img_wh_m()
-        bareexist = get_bareexist(img)
+        img_data = self.get_img_data()
+        bareexist = get_bareexist(img_data)
         self._change_wh_m(bareexist_to_target_outer_wh_dict[bareexist])
 
     def _detect_target_outer_wh_m(self):
-        img, wh = self.get_img_wh_m()
-        bareexist = get_bareexist(img)
+        self.restore_game_window_m()
+        img_data = self.get_img_data()
+        bareexist = get_bareexist(img_data)
         if bareexist not in bareexist_to_target_outer_wh_dict:
             target_outer_wh = self.__detect_target_outer_wh_m()
             bareexist_to_target_outer_wh_dict[bareexist] = target_outer_wh
 
     def __detect_target_outer_wh_m(self):
+        self.restore_game_window_m()
         self._detect_bg_color_m()
-        img, wh = self.get_img_wh_m()
-        bar_n, bar_s, bar_w, bar_e = get_bar_nswe(img)
+        # img, wh = self.get_img_wh_m()
+        img_data = self.get_img_data()
+        bar_n, bar_s, bar_w, bar_e = get_bar_nswe(img_data)
         logger.debug(f'NWKDLGNXQG bar_n={bar_n}, bar_e={bar_e}')
 
         # find target_outer_width
@@ -249,8 +292,9 @@ class LDPlayerWindowsAgent:
 
         while g-le > 1:
             m = (le+g)//2
-            img = self._change_wh_m((m,TARGET_INNER_H + bar_n + bar_s + 20))
-            img,_ = self.get_img_wh_m(nnext=True) # last frame may have remain
+            self._change_wh_m((m,TARGET_INNER_H + bar_n + bar_s + 20))
+            img_data = self.get_img_data(nnext=True)
+            img = img_data['img']
             img1 = np.equal(img, bg_color).all(axis=2)
             y_sum = img1.sum(axis=1)
             y_bg = (y_sum > m//4)
@@ -274,8 +318,9 @@ class LDPlayerWindowsAgent:
 
         while g-le > 1:
             m = (le+g)//2
-            img = self._change_wh_m((TARGET_INNER_W + bar_w + bar_e + 20,m))
-            img,_ = self.get_img_wh_m(nnext=True) # last frame may have remain
+            self._change_wh_m((TARGET_INNER_W + bar_w + bar_e + 20,m))
+            img_data = self.get_img_data(nnext=True)
+            img = img_data['img']
             img1 = np.equal(img, bg_color).all(axis=2)
             x_sum = img1.sum(axis=0)
             x_bg = (x_sum > m//4)
@@ -300,17 +345,20 @@ class LDPlayerWindowsAgent:
     def _detect_bg_color_m(self):
         if bg_color is not None:
             return
-        img, wh = self.get_img_wh_m()
-        bar_n,bar_s,bar_w,bar_e = get_bar_nswe(img)
-        img = self._change_wh_m((TARGET_INNER_W+40+bar_w+bar_e,TARGET_INNER_H+bar_n+bar_s))
-        _detect_bg_color(img)
+        self.restore_game_window_m()
+        img_data = self.get_img_data()
+        bar_n,bar_s,bar_w,bar_e = get_bar_nswe(img_data)
+        self._change_wh_m((TARGET_INNER_W+40+bar_w+bar_e,TARGET_INNER_H+bar_n+bar_s))
+        img_data = self.get_img_data(nnext=True)
+        _detect_bg_color(img_data)
 
     def _change_wh_m(self, wh):
         while True:
+            self.restore_game_window_m()
             self.game_window.size = wh
-            ret_img, img_wh = self.get_img_wh_m()
-            if img_wh == wh:
-                return ret_img
+            img_data = self.get_img_data()
+            if img_data['wh'] == wh:
+                return
 
     def _atexit(self):
         if self.windows_capture_control is not None:
@@ -320,7 +368,10 @@ class LDPlayerWindowsAgent:
     def _windows_capture__frame_handler(self, frame: Frame, capture_control: InternalCaptureControl):
         #frame.save_as_img("tmp.png")
         with self.img_condition:
-            self.img_tmp = frame.frame_buffer
+            self.img_data_tmp = {
+                'img': frame.frame_buffer,
+                'idx': self.img_idx,
+            }
             self.img_idx += 1
             self.img_idx %= 1000000
             self.img_condition.notify()
@@ -333,7 +384,19 @@ class LDPlayerWindowsAgent:
             atexit.unregister(self._atexit)
 
 
-def calibrate_img(img, calibrate_data):
+def calibrate_img(img_data):
+    if 'calibrate_img' in img_data:
+        return
+
+    bareexist = get_bareexist(img_data)
+
+    if bareexist not in bareexist_to_calibrate_data_dict:
+        logger.debug(f'OVIIIDDDWJ calibrate_img bareexist={bareexist}')
+        assert(False)
+
+    calibrate_data = bareexist_to_calibrate_data_dict[bareexist]
+
+    img = img_data['img']
     sy0, sy1, sx0, sx1 = calibrate_data['src_yyxx']
     dy0, dy1, dx0, dx1 = calibrate_data['dest_yyxx']
 
@@ -342,16 +405,28 @@ def calibrate_img(img, calibrate_data):
 
     # common.cv2_imwrite('calibrate_img.png', ret_img)
 
-    return ret_img
+    img_data['calibrate_img'] = ret_img
+    img_data['calibrate_mask'] = calibrate_data['mask']
+
+    return
 
 
-def get_bareexist(img):
-    _,_,_,bar_e = get_bar_nswe(img)
-    return bar_e > 4
+def get_bareexist(img_data):
+    if 'bareexist' in img_data:
+        return img_data['bareexist']
+    _,_,_,bar_e = get_bar_nswe(img_data)
+    ret = bar_e > 4
+    img_data['bareexist'] = ret
+    return ret
 
 
-def get_bar_nswe(img):
-    _detect_bar_color(img)
+def get_bar_nswe(img_data):
+    if 'bar_nswe' in img_data:
+        return img_data['bar_nswe']
+
+    _detect_bar_color(img_data)
+
+    img = img_data['img']
 
     img1 = np.equal(img, bar_color).all(axis=2)
     h,w = img1.shape
@@ -377,22 +452,26 @@ def get_bar_nswe(img):
     bar_w = bar_x0
     bar_e = w-bar_x1
 
-    return bar_n, bar_s, bar_w, bar_e
+    ret = bar_n, bar_s, bar_w, bar_e
+    img_data['bar_nswe'] = ret
+    return ret
 
-def _detect_bar_color(img):
+def _detect_bar_color(img_data):
     global bar_color
     if bar_color is not None:
         return
+    img = img_data['img']
     if config.my_config_data['DEBUG_MODE']:
         os.makedirs(os.path.join(const.APP_PATH, 'tmp', 'debug'), exist_ok=True) 
         common.cv2_imwrite(os.path.join(const.APP_PATH, 'tmp', 'debug', 'bar_color.png'), img)
     bar_color = _top_count_color(img[1:3])
     logger.debug(f'KKZHHDZLRF bar_color: {bar_color}')
 
-def _detect_bg_color(img):
+def _detect_bg_color(img_data):
     global bg_color
     if bg_color is not None:
         return
+    img = img_data['img']
     if config.my_config_data['DEBUG_MODE']:
         os.makedirs(os.path.join(const.APP_PATH, 'tmp', 'debug'), exist_ok=True) 
         common.cv2_imwrite(os.path.join(const.APP_PATH, 'tmp', 'debug', 'bg_color.png'), img)

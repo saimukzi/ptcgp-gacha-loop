@@ -120,6 +120,7 @@ class LDPlayerInstance(LDPlayerGlobal):
         if self.screencap_method == 'WC2501':
             if self.wc2501_windows_agent is None:
                 return self.adb_screencap(), None
+            self.wc2501_windows_agent.fix_target_wh_m()
             if self.wc2501_windows_agent.require_calibrate():
                 return self.adb_screencap(), None
             img, mask = self.wc2501_windows_agent.get_calibrated_img_mask_m()
