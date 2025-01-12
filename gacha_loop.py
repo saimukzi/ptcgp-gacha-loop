@@ -365,15 +365,14 @@ def main():
                 debug_img_fn = os.path.join(my_path.instance_debug(), 'debug_img', '%02d.png'%debug_img_idx)
                 os.makedirs(os.path.dirname(debug_img_fn), exist_ok=True)
                 try:
-                    if os.path.exists(debug_img_fn):
-                        os.remove(debug_img_fn)
+                    # if os.path.exists(debug_img_fn):
+                    #     os.remove(debug_img_fn)
                     # img_encode = cv2.imencode('.png', img)[1]
                     # with open(debug_img_fn, 'wb') as f:
                     #     f.write(img_encode)
                     # cv2.imwrite(debug_img_fn, img)
                     common.cv2_imwrite(debug_img_fn, img)
                 except:
-                    logger.error(f'TMLQKSZIOH debug_img_fn={debug_img_fn}')
                     pass
                 debug_img_idx += 1
                 debug_img_idx %= 100
