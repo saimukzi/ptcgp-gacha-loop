@@ -362,7 +362,7 @@ def main():
 
             if config_data['DEBUG_MODE']:
                 logger.debug(f'CNRSFFOMKV debug_img_idx={debug_img_idx}, state={state}')
-                debug_img_fn = os.path.join(my_path.instance_debug(), 'debug_img', '%02d.png'%debug_img_idx)
+                debug_img_fn = os.path.join(my_path.instance_debug(), 'img_history', '%03d.png'%debug_img_idx)
                 os.makedirs(os.path.dirname(debug_img_fn), exist_ok=True)
                 try:
                     # if os.path.exists(debug_img_fn):
@@ -375,7 +375,7 @@ def main():
                 except:
                     pass
                 debug_img_idx += 1
-                debug_img_idx %= 100
+                debug_img_idx %= 1000
 
             # print(state_history, state)
             logger.debug(f'PSDLSJCDBB state_history={state_history}')
