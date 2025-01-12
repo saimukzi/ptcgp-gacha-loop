@@ -1,4 +1,5 @@
 import common
+import config
 import const
 import cv2
 import my_path
@@ -226,7 +227,7 @@ def get_state(src_img, src_img_mask, state_mask=None, debug=False):
             state_img_min = state_data['img_min']
             state_img_max = state_data['img_max']
             state_img_mask = state_data['img_mask']
-            new_diff = _get_state_diff(src_img, src_img_mask, state_img_min, state_img_max, state_img_mask)
+            new_diff = _get_state_diff(src_img, src_img_mask, state_img_min, state_img_max, state_img_mask, debug=debug, debug_state_name=f'{old_state}.{new_state}')
             if debug:
                 logger.debug(f'YUEAHCIRPJ {new_state}: {new_diff}')
             if new_diff < diff:
@@ -269,7 +270,7 @@ def _get_state_diff(src_img, src_img_mask, state_img_min, state_img_max, state_i
     # mask = mask.reshape(mask.shape[:2])
     mask = mask / 255
     diff = diff * mask
-    if debug:
+    if debug or config.my_config_data['DEBUG_IMG']:
         # os.makedirs(os.path.join(const.APP_PATH, 'tmp', 'debug'), exist_ok=True)
         common.cv2_imwrite(os.path.join(my_path.instance_debug(), f'{debug_state_name}.diff.png'), diff[:,:,:3].astype(np.uint8))
         mask_hwc = np.zeros((mask.shape[0], mask.shape[1], 3), dtype=np.uint8)

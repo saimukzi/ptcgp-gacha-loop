@@ -362,7 +362,7 @@ def main():
 
             if config_data['DEBUG_IMG']:
                 logger.debug(f'CNRSFFOMKV debug_img_idx={debug_img_idx}, state={state}')
-                debug_img_fn = os.path.join(INSTANCE_VAR_FOLDER, 'debug_img', '%02d.png'%debug_img_idx)
+                debug_img_fn = os.path.join(my_path.instance_debug(), 'debug_img', '%02d.png'%debug_img_idx)
                 os.makedirs(os.path.dirname(debug_img_fn), exist_ok=True)
                 try:
                     if os.path.exists(debug_img_fn):
@@ -761,6 +761,19 @@ def main():
                         time.sleep(0.2) # speed of typing
                     # time.sleep(TIME_SLEEP)
                     set_wait_state({state,'s05-name-02-empty'})
+                    continue
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['G_xy_list']))
+                # mywait('UIWAIT_NAME_NAME_OK')
+                # flag_set.add('s05-name-nonempty')
+                flag_set.add('s05-name')
+                set_wait_state({state,'s05-name-04','xxx-dialog-sbc','s05-name-06'})
+                continue # possible error msg here
+
+            if state == 's05-name-06':
+                if avoid_double_act(): continue
+                if 's05-name-err' in flag_set:
+                    my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['R_xy_list']))
+                    set_wait_state({state,'s05-name-03'})
                     continue
                 my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['G_xy_list']))
                 # mywait('UIWAIT_NAME_NAME_OK')
