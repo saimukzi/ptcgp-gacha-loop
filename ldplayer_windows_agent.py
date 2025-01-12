@@ -107,7 +107,8 @@ class LDPlayerWindowsAgent:
                 img = ret_img_data['img']
                 # img_wh = (ret_img.shape[1], ret_img.shape[0])
                 ret_img_data['wh'] = (img.shape[1], img.shape[0])
-                common.cv2_imwrite('get_img_data.png', img)
+                if config.my_config_data['DEBUG_MODE']:
+                    common.cv2_imwrite('get_img_data.png', img)
                 # return ret_img, img_wh
                 return ret_img_data
 
