@@ -172,7 +172,6 @@ def main():
     def avoid_double_act():
         nonlocal state_double_act_state
         nonlocal state_double_act_time
-        # avoid double act
         if state_history[-1] == state:
             if state_double_act_state != state:
                 state_double_act_state = state
@@ -182,6 +181,8 @@ def main():
                 return True
             state_double_act_state = None
             logger.debug(f'BBYLQOAYDP avoid_double_act pass state={state}')
+        else:
+            time.sleep(1.1/30) # one frame avoid first click too quick
         return False
 
     # state_double_act_img = None
@@ -243,6 +244,7 @@ def main():
             state_delay_state = state
             state_delay_time = time.time()
         if time.time() - state_delay_time < 1:
+            logger.debug(f'EUUCQCFRYP avoid state_delay state={state}')
             return True
         logger.debug(f'NRXLYRQKCM force accept state={state}')
         state_delay_state = None
@@ -1221,13 +1223,14 @@ def main():
                 if ('GACHA4-DONE' not in flag_set) or (state_history[-1] != 'xxx-msg'):
                     # may delay to 's12-end-00'
                     # may wait for 'xxx-msg'
-                    if state_delay_state != state or state_history[-1] != state:
-                        state_delay_state = state
-                        state_delay_time = time.time()
-                    if time.time() - state_delay_time < 1:
-                        continue
-                    logger.debug(f'ODGDDFJKZJ force accept state={state}')
-                    state_delay_state = None
+                    # if state_delay_state != state or state_history[-1] != state:
+                    #     state_delay_state = state
+                    #     state_delay_time = time.time()
+                    # if time.time() - state_delay_time < 1:
+                    #     continue
+                    # logger.debug(f'ODGDDFJKZJ force accept state={state}')
+                    # state_delay_state = None
+                    if avoid_state_delay_state(): continue
                 # # double confirm
                 # if ('s11-hourglass-00-pass' not in flag_set) and (state_history[-1] != state):
                 #     time.sleep(TIME_SLEEP/2)
@@ -1236,7 +1239,7 @@ def main():
                 flag_set.add('GACHA4-DONE')
                 # btn 開封1包
                 my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
-                set_wait_state({state,'s11-hourglass-01','xxx-msg','xxx-dialog-lw','xxx-dialog-lwc'})
+                set_wait_state({state,'xxx-msg','xxx-dialog-lw','xxx-dialog-lwc','s11-hourglass-01'})
                 # mywait('UIWAIT_GACHA5_BTN_0')
                 # state = 'xxx-msg'
                 # # msg 1個開包沙漏
@@ -1428,14 +1431,15 @@ def main():
                 flag_set.discard('xxx-cardlist-spam')
                 # may delay to s11-hourglass-02
                 if match_state_mask_set('s11-hourglass-02', state_mask_set):
-                    logger.debug(f'JIOYYZVYOM state_delay_state={state_delay_state}, state_delay_time={state_delay_time}, time={time.time()}')
-                    if (state_delay_state != state) or (state_history[-1] != state):
-                        state_delay_state = state
-                        state_delay_time = time.time()
-                    if time.time() - state_delay_time < 1:
-                        continue
-                    logger.debug(f'ITMPUNIZHQ force accept state={state}')
-                    state_delay_state = None
+                    # logger.debug(f'JIOYYZVYOM state_delay_state={state_delay_state}, state_delay_time={state_delay_time}, time={time.time()}')
+                    # if (state_delay_state != state) or (state_history[-1] != state):
+                    #     state_delay_state = state
+                    #     state_delay_time = time.time()
+                    # if time.time() - state_delay_time < 1:
+                    #     continue
+                    # logger.debug(f'ITMPUNIZHQ force accept state={state}')
+                    # state_delay_state = None
+                    if self.avoid_state_delay_state(): continue
                 state_pack = state[13:]
                 if state_pack != TARGET_PACK:
                     my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['R_xy_list']))
@@ -1452,7 +1456,7 @@ def main():
                         flag_set.add(f'GACHA{i+1}-ING')
                 # time.sleep(TIME_SLEEP)
                 # set_wait_state(state_list.state_prefix('xxx-gacha-02-')|state_list.state_prefix('xxx-gacha-03-'))
-                set_wait_state({state,f'xxx-gacha-02-{state_pack}',f'xxx-gacha-03-{state_pack}','s11-hourglass-02'})
+                set_wait_state({state,f'xxx-gacha-02-{state_pack}',f'xxx-gacha-03-{state_pack}'})
                 continue
 
             # gacha pack, fly in animation

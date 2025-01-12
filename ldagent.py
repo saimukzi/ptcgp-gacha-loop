@@ -165,6 +165,7 @@ class LDPlayerInstance(LDPlayerGlobal):
 
     def tap(self, x, y):
         try:
+            logger.debug(f'WPDBNFQOOD tap {x},{y}')
             return self._i_adb_cmd(['shell', 'input', 'tap', str(x), str(y)])
         except:
             logger.error(f'TNUQCEWOOO tap error')
@@ -172,6 +173,7 @@ class LDPlayerInstance(LDPlayerGlobal):
     
     def input_text(self, txt):
         try:
+            logger.debug(f'IFNZUKWLPQ input_text {txt}')
             return self._i_adb_cmd(['shell', 'input', 'text', txt])
         except:
             logger.error(f'SPMDGODODM input_text error')
@@ -179,6 +181,7 @@ class LDPlayerInstance(LDPlayerGlobal):
     
     def swipe(self, x1, y1, x2, y2, duration):
         try:
+            logger.debug(f'PQSULUQTHO swipe {x1},{y1} {x2},{y2} {duration}')
             return self._i_adb_cmd(['shell', 'input', 'swipe', str(x1), str(y1), str(x2), str(y2), str(int(duration))])
         except:
             logger.error(f'WRKCWLDNAQ swipe error')
@@ -186,6 +189,7 @@ class LDPlayerInstance(LDPlayerGlobal):
 
     def keyevent(self, key):
         try:
+            logger.debug(f'BRWAERNRNC keyevent {key}')
             return self._i_adb_cmd(['shell', 'input', 'keyevent', str(key)])
         except:
             logger.error(f'DKJWIXWXXB keyevent error')

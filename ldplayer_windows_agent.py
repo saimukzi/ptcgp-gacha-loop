@@ -47,6 +47,7 @@ class LDPlayerWindowsAgent:
         # self.img_tmp = None
         self.img_data_tmp = None
         self.img_idx = 0
+        self.img_debug_idx = 0
 
         # self.last_img_bareexist = None
         self._require_calibrate = True
@@ -111,10 +112,12 @@ class LDPlayerWindowsAgent:
                     ret_img_data['wh'] = (img.shape[1], img.shape[0])
                 if config.my_config_data['DEBUG_MODE']:
                     try:
-                        if 'debug-png' not in ret_img_data:
-                            str_idx = '%03d'%ret_img_data['idx']
+                        if 'debug-idx' not in ret_img_data:
+                            ret_img_data['debug-idx'] = self.img_debug_idx
+                            str_idx = '%03d'%(self.img_debug_idx)
                             common.cv2_imwrite(os.path.join(my_path.instance_debug(), 'get_img_data', f'{str_idx}.png'), img)
-                            ret_img_data['debug-png'] = True
+                            self.img_debug_idx += 1
+                            self.img_debug_idx %= 1000
                     except:
                         pass
                 # return ret_img, img_wh
@@ -300,9 +303,10 @@ class LDPlayerWindowsAgent:
                 good = True
                 break
             t = int(time.time())
-            logger.error(f'VZZTKINCTS bar_nswe={bar_nswe}')
+            idx = img_data['idx']
+            logger.error(f'VZZTKINCTS bar_nswe={bar_nswe}, idx={idx}')
             try:
-                common.cv2_imwrite(my_path.instance_debug(),'err_img',f'VZZTKINCTS-{t}.png')
+                common.cv2_imwrite(os.path.join(my_path.instance_debug(),'err_img',f'VZZTKINCTS-{t}.png'), img_data['img'])
             except:
                 pass
             time.sleep(1.1)
