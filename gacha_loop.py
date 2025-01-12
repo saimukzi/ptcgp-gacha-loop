@@ -237,6 +237,9 @@ def main():
 
     # in long UNKNOWN, give up state_mask_set
     unknown_time = None
+    # in long stable state, give up state_mask_set, flag_set
+    stable_state = None
+    stable_time = None
 
     state_delay_state = None
     state_delay_time = 0
@@ -342,6 +345,15 @@ def main():
                     state_mask_set = None
             else:
                 unknown_time = None
+
+            if state == stable_state:
+                if time.time() - stable_time > 30:
+                    logger.debug(f'KOROVAKOML long stable state, give up state_mask_set, flag_set')
+                    state_mask_set = None
+                    flag_set = set()
+            else:
+                stable_state = state
+                stable_time = time.time()
 
             if my_ldagent.screencap_require_calibrate():
                 if state in state_list.state_to_calibrate_mask_hwaf1_dict:
