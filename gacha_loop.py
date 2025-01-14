@@ -1812,6 +1812,8 @@ def check_disk_space(config_data):
 
 
 def write_debug_img(img):
+    if not config.my_config_data['DEBUG_MODE']:
+        return
     if img is None:
         logger.debug(f'EVDFRJINGC write_debug_img: img is None')
         return
