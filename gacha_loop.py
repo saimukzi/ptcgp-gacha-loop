@@ -340,6 +340,7 @@ def main():
                     unknown_time = time.time()
                 if time.time() - unknown_time > 10:
                     logger.warning(f'FTLJDAXKYE long UNKNOWN, give up state_mask_set')
+                    write_debug_img(img)
                     state_mask_set = None
                     flag_set = set()
                     if not unknown_check_pid_done:
