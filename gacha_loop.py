@@ -340,6 +340,7 @@ def main():
                 if time.time() - unknown_time > 10:
                     logger.warning(f'FTLJDAXKYE long UNKNOWN, give up state_mask_set')
                     state_mask_set = None
+                    flag_set = set()
             else:
                 unknown_time = None
 
@@ -500,6 +501,11 @@ def main():
             if state == 'err-nostoredata':
                 force_resetapp = True
                 continue
+
+            if state.startswith('xxx-dialog-b'):
+                logger.debug(f'ZDMLKMCYPA reset state_mask_set/flag_set on state={state}')
+                state_mask_set = None
+                flag_set = set()
 
             if state == 's00-cover':
                 check_disk_space(config_data)
@@ -771,7 +777,7 @@ def main():
                 # mywait('UIWAIT_NAME_NAME_OK')
                 # flag_set.add('s05-name-nonempty')
                 flag_set.add('s05-name')
-                set_wait_state({state,'s05-name-04','xxx-dialog-sbc','s05-name-06'})
+                set_wait_state({state,'s05-name-04','xxx-dialog-bsc','s05-name-06'})
                 continue # possible error msg here
 
             if state == 's05-name-06':
@@ -784,7 +790,7 @@ def main():
                 # mywait('UIWAIT_NAME_NAME_OK')
                 # flag_set.add('s05-name-nonempty')
                 flag_set.add('s05-name')
-                set_wait_state({state,'s05-name-04','xxx-dialog-sbc'})
+                set_wait_state({state,'s05-name-04','xxx-dialog-bsc'})
                 continue # possible error msg here
 
             if state == 's05-name-04':
@@ -797,7 +803,7 @@ def main():
                 my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['G_xy_list']))
                 # mywait('UIWAIT_NAME_ICONNAME_OK_0')
                 flag_set.add('s05-name')
-                set_wait_state({state,'s05-name-05','xxx-dialog-sbc'})
+                set_wait_state({state,'s05-name-05','xxx-dialog-bsc'})
                 continue # possible error msg here
 
             if state == 's05-name-05':
@@ -810,16 +816,16 @@ def main():
                 my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['G_xy_list']))
                 # mywait('UIWAIT_NAME_ICONNAME_OK_1')
                 flag_set.add('s05-name-05-after')
-                set_wait_state({state,'s06-gacha1-00','xxx-dialog-sbc'})
+                set_wait_state({state,'s06-gacha1-00','xxx-dialog-bsc'})
                 continue
 
             if 's05-name' in flag_set:
-                if state in ['xxx-dialog-sbc']:
+                if state in ['xxx-dialog-bsc']:
                     flag_set.add('s05-name-err')
                     flag_set.discard('s05-name-05-after')
 
             if 's05-name-05-after' in flag_set:
-                if state not in {'s06-gacha1-00','xxx-dialog-sbc'}:
+                if state not in {'s06-gacha1-00','xxx-dialog-bsc'}:
                     my_ldagent.tap(10,10)
                     continue
 
@@ -1618,6 +1624,7 @@ def main():
                         # force_resetapp = True
 
                     if ('WONDER_SAINT' in flag_set) and ('s11-hourglass' in flag_set):
+                        logger.debug(f'TDODGWPXQR WONDER_SAINT force_resetapp')
                         force_resetapp = True
                         continue
 
