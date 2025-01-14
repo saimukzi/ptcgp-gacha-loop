@@ -274,10 +274,12 @@ class LDPlayerInstance(LDPlayerGlobal):
             # launch app
             time_start = time.time()
             while True:
-                process_ret = subprocess.run([self.adb_path, "-s", f"emulator-{self.adb_idx}",'shell', 'pidof', PACKAGE_NAME], capture_output=True, timeout=30)
-                logger.debug(f'OIADLYZHXI pidof returncode = {process_ret.returncode}')
-                if process_ret.returncode == 0:
-                    logger.debug(f'PJESCSKYDC pidof stdout = {process_ret.stdout}')
+                # process_ret = subprocess.run([self.adb_path, "-s", f"emulator-{self.adb_idx}",'shell', 'pidof', PACKAGE_NAME], capture_output=True, timeout=30)
+                # logger.debug(f'OIADLYZHXI pidof returncode = {process_ret.returncode}')
+                # if process_ret.returncode == 0:
+                #     logger.debug(f'PJESCSKYDC pidof stdout = {process_ret.stdout}')
+                #     break
+                if self.get_pid() is not None:
                     break
                 if time.time() - time_start > 60:
                     logger.error(f'FPVMAQKLOG recover timeout')
@@ -314,6 +316,15 @@ class LDPlayerInstance(LDPlayerGlobal):
         list2_ret = list(filter(lambda x: x['NAME']==new_name, list2_ret))
         logger.debug(f'PXSQPZBCVP list2_ret = {list2_ret}')
         assert(len(list2_ret) == 1)
+
+    def get_pid(self):
+        try:
+            ret = self._i_adb_cmd(['shell', 'pidof', PACKAGE_NAME], check=False)
+            logger.debug(f'SIJFCXRAJK get_pid={ret}')
+            return ret
+        except:
+            logger.debug(f'VHNVECMDBG get_pid=None')
+            return None
 
     def killapp(self):
         self._i_ldconsole_cmd(['killapp', '--packagename', PACKAGE_NAME])

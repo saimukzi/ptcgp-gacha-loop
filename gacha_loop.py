@@ -231,6 +231,7 @@ def main():
 
     # in long UNKNOWN, give up state_mask_set
     unknown_time = None
+    unknown_check_pid_done = False
     # in long stable state, give up state_mask_set, flag_set
     stable_state = None
     stable_time = None
@@ -341,8 +342,15 @@ def main():
                     logger.warning(f'FTLJDAXKYE long UNKNOWN, give up state_mask_set')
                     state_mask_set = None
                     flag_set = set()
+                    if not unknown_check_pid_done:
+                        if my_ldagent.get_pid() is None:
+                            logger.warning(f'TMLOUKGSMO app not running, force resetapp')
+                            force_resetapp = True
+                            continue
+                        unknown_check_pid_done = True
             else:
                 unknown_time = None
+                unknown_check_pid_done = False
 
             if state == stable_state:
                 if time.time() - stable_time > 30:
