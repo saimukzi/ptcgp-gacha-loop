@@ -523,6 +523,8 @@ def main():
                 # if 's12-end-03-confirm' in flag_set:
                 #     flag_set = set()
 
+                s99_done = 's99_done' in flag_set
+
                 flag_set = set()
 
                 # [ZRTRNAFFLV] restart emu to free memory
@@ -534,7 +536,10 @@ def main():
                     continue
                     
                 my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
-                set_wait_state(None)
+                if s99_done:
+                    set_wait_state({state,'s01-info-00'})
+                else:
+                    set_wait_state(None)
                 continue
 
             if state == 's01-info-00':
@@ -1298,6 +1303,7 @@ def main():
             # no energy
             # no double click
             if state == 's12-end-00':
+                if avoid_double_act(): continue
                 flag_set.discard('xxx-cardlist-spam')
                 flag_set.add('GACHA5-DONE') # mark energy burn out
                 if check_cycle_loop_state in [None, 's03-start-00']:
@@ -1323,6 +1329,7 @@ def main():
             # menu appear, click other
             # double click ok, avoided next state
             if state == 's12-end-01':
+                if avoid_double_act(): continue
                 # # remain
                 # if 's12-end-01-remain' in flag_set:
                 #     flag_set.discard('s12-end-01-remain')
@@ -1343,13 +1350,14 @@ def main():
                     continue
                 else:
                     my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state][f'R_xy_list']))
-                    set_wait_state({'-',state})
+                    set_wait_state(None)
                     continue
             flag_set.discard('s12-end-01-remain')
 
             # menu > other appear, click acc
             # double click ok, avoided next state
             if state == 's12-end-02':
+                if avoid_double_act(): continue
                 # # remain
                 # if 's12-end-02-remain' in flag_set:
                 #     flag_set.discard('s12-end-02-remain')
@@ -1370,13 +1378,14 @@ def main():
                     continue
                 else:
                     my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state][f'R_xy_list']))
-                    set_wait_state({'-',state})
+                    set_wait_state(None)
                     continue
             flag_set.discard('s12-end-02-remain')
 
             # menu > acc, click del
             # double click ok, avoided next state
             if state == 's12-end-03':
+                if avoid_double_act(): continue
                 # # remain
                 # if 's12-end-03-remain' in flag_set:
                 #     flag_set.discard('s12-end-03-remain')
@@ -1396,7 +1405,7 @@ def main():
                     # my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state][f'xy_list']))
                     # mywait('UIWAIT_END_DIALOG_0')
                     # state = 'xxx-dialog-swr'
-                    # flag_set.add('s12-end-03-confirm')
+                    flag_set.add('s99_done')
                     # my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state][f'xy_list']))
                     # # state = 'xxx-dialog-sc'
                     # # loading here
@@ -1406,7 +1415,7 @@ def main():
                 else:
                     my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state][f'R_xy_list']))
                     # time.sleep(TIME_SLEEP)
-                    set_wait_state({'-',state})
+                    set_wait_state(None)
                     continue
             # flag_set.discard('s12-end-03-remain')
 
@@ -1459,7 +1468,7 @@ def main():
                     #     continue
                     # logger.debug(f'ITMPUNIZHQ force accept state={state}')
                     # state_delay_state = None
-                    if self.avoid_state_delay_state(): continue
+                    if avoid_state_delay_state(): continue
                 state_pack = state[13:]
                 if state_pack != TARGET_PACK:
                     my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['R_xy_list']))

@@ -132,6 +132,7 @@ class LDPlayerInstance(LDPlayerGlobal):
 
     def adb_screencap(self):
         try:
+            logger.debug(f'JUAVSOAWAG adb_screencap')
             sleep_time = self.last_adb_screencap_time + 0.5 - time.time()
             if sleep_time > 0:
                 time.sleep(sleep_time)
@@ -319,7 +320,7 @@ class LDPlayerInstance(LDPlayerGlobal):
 
     def get_pid(self):
         try:
-            ret = self._i_adb_cmd(['shell', 'pidof', PACKAGE_NAME], check=False)
+            ret = self._i_adb_cmd(['shell', 'pidof', PACKAGE_NAME])
             logger.debug(f'SIJFCXRAJK get_pid={ret}')
             return ret
         except:

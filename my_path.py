@@ -24,4 +24,5 @@ def makedirs():
     os.makedirs(global_var(), exist_ok=True)
     os.makedirs(instance_var(), exist_ok=True)
     os.makedirs(instance_debug(), exist_ok=True)
-    os.makedirs(instance_gacha_result(), exist_ok=True)
+    os.makedirs(global_gacha_result(), exist_ok=True)
+    os.makedirs(global_bingo(), exist_ok=True)
