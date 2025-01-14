@@ -336,14 +336,14 @@ def main():
                 if unknown_time is None:
                     unknown_time = time.time()
                 if time.time() - unknown_time > 10:
-                    logger.debug(f'FTLJDAXKYE long UNKNOWN, give up state_mask_set')
+                    logger.warning(f'FTLJDAXKYE long UNKNOWN, give up state_mask_set')
                     state_mask_set = None
             else:
                 unknown_time = None
 
             if state == stable_state:
                 if time.time() - stable_time > 30:
-                    logger.debug(f'KOROVAKOML long stable state, give up state_mask_set, flag_set')
+                    logger.warning(f'KOROVAKOML long stable state, give up state_mask_set, flag_set')
                     state_mask_set = None
                     flag_set = set()
             else:
