@@ -289,6 +289,7 @@ def main():
                 allow_platinmods_speed_3 = False
                 force_resetapp = False
                 force_killapp = False
+                check_cycle_last_reset = time.time()
                 continue
 
             if force_killapp:
@@ -302,7 +303,7 @@ def main():
             # there must be something wrong
             # force reset app to avoid infinite loop
             if (config_data['CHECK_CYCLE_SECONDS'] is not None) and (time.time() - check_cycle_last_reset > config_data['CHECK_CYCLE_SECONDS']):
-                logger.debug(f'PNOCLZOWIW cycle timeout')
+                logger.warning(f'PNOCLZOWIW cycle timeout')
                 check_cycle_last_reset = time.time()
                 force_resetapp = True
                 continue
