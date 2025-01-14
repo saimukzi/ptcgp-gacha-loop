@@ -304,6 +304,7 @@ def main():
             # force reset app to avoid infinite loop
             if (config_data['CHECK_CYCLE_SECONDS'] is not None) and (time.time() - check_cycle_last_reset > config_data['CHECK_CYCLE_SECONDS']):
                 logger.warning(f'PNOCLZOWIW cycle timeout')
+                write_debug_img(img)
                 check_cycle_last_reset = time.time()
                 force_resetapp = True
                 continue
@@ -598,6 +599,7 @@ def main():
             if state == 's02-toc-00':
                 if avoid_double_act(): continue
                 if check_cycle_loop_state in [None, 's12-end-00']:
+                    logger.debug(f'JVUDJTQGFR check_cycle_loop_state={state}')
                     check_cycle_loop_state = state
                     check_cycle_last_reset = time.time()
 
@@ -651,6 +653,7 @@ def main():
             if state == 's03-start-00':
                 if avoid_double_act(): continue
                 if check_cycle_loop_state in [None, 's02-toc-00']:
+                    logger.debug(f'JVUDJTQGFR check_cycle_loop_state={state}')
                     check_cycle_loop_state = state
                 # avoid double click
                 if state_history[-1] == 1:
@@ -1283,6 +1286,7 @@ def main():
                 flag_set.discard('xxx-cardlist-spam')
                 flag_set.add('GACHA5-DONE') # mark energy burn out
                 if check_cycle_loop_state in [None, 's03-start-00']:
+                    logger.debug(f'JVUDJTQGFR check_cycle_loop_state={state}')
                     check_cycle_loop_state = state
                 # avoid double click
                 if state_history[-1] == state:
@@ -1789,6 +1793,19 @@ def check_disk_space(config_data):
     if free_space < config_data['MIN_FREE_DISK_SPACE']:
         logger.error(f'XOCKTBIWKG not enough disk space: {free_space}')
         sys.exit(1)
+
+
+def write_debug_img(img):
+    if img is None:
+        logger.debug(f'EVDFRJINGC write_debug_img: img is None')
+        return
+    img = img.astype(np.uint8)
+    t = int(time.time())
+    ret_fn = os.path.join(my_path.instance_debug(), 'debug_img', f'{t}.png')
+    os.makedirs(os.path.dirname(ret_fn), exist_ok=True)
+    logger.debug(f'CTXXIWQWYT write_debug_img: {ret_fn}')
+    common.cv2_imwrite(ret_fn, img)
+
 
 RARE_SUFFIX_LIST = ['_UR', '_IM', '_SR', '_SAR', '_AR']
 def is_rare(card_id):
