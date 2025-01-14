@@ -1583,7 +1583,8 @@ def main():
                     check_disk_space(config_data)
                     t = int(time.time())
                     logger.debug(f'ZNHRHBHGMT GACHA_RESULT: {t}')
-                    ret_fn = os.path.join(my_path.instance_gacha_result(), f'{t}.png')
+                    instance_id = config_data['INSTANCE_ID']
+                    ret_fn = os.path.join(my_path.global_gacha_result(), f'{t}-{instance_id}.png')
                     common.cv2_imwrite(ret_fn, img)
                     gacha_result = card_list.read_gacha_result(img)
                     is_target = len(set(gacha_result) & TARGET_CARD_SET)>0
@@ -1617,7 +1618,9 @@ def main():
                         logger.debug(f'YXJNLZDDAN STOP')
                         sys.exit(0)
                     if handle_way == 'BACKUP':
-                        logger.debug(f'PUOWNPVFXS BACKUP')
+                        logger.debug(f'PUOWNPVFXS BACKUP {t}')
+                        ret_fn = os.path.join(my_path.global_bingo(), f'{t}-{instance_id}.png')
+                        common.cv2_imwrite(ret_fn, img)
                         force_copyemu_name = config_data['LD_EMU_NAME'] + '-' + str(t)
                         force_copyemu_resetapp = True
                         continue
