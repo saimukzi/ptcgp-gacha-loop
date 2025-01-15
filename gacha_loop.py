@@ -217,9 +217,14 @@ def main():
     #     time.sleep(wait_time)
     #     last_mywait_time = time.time()
 
+    last_set_wait_state_args = None
     state_mask_set = None
-    def set_wait_state(wait_set):
+    state_mask_timeout = None
+    def set_wait_state(wait_set, timeout=None):
+        nonlocal last_set_wait_state_args
         nonlocal state_mask_set
+        nonlocal state_mask_timeout
+        set_wait_state_args = (wait_set,timeout)
         if wait_set is None:
             state_mask_set = None
         else:
@@ -228,6 +233,12 @@ def main():
                 state_mask_set.add('platinmods-menu-1')
                 state_mask_set.add('platinmods-menu-2')
                 state_mask_set.add('platinmods-menu-3')
+        if timeout is None:
+            state_mask_timeout = None
+        else:
+            if set_wait_state_args != last_set_wait_state_args:
+                state_mask_timeout = time.time()+timeout
+        last_set_wait_state_args = set_wait_state_args
 
     # in long UNKNOWN, give up state_mask_set
     unknown_time = None
@@ -339,25 +350,31 @@ def main():
                 if unknown_time is None:
                     unknown_time = time.time()
                 if time.time() - unknown_time > 10:
-                    logger.warning(f'FTLJDAXKYE long UNKNOWN, give up state_mask_set')
-                    write_debug_img(img)
-                    state_mask_set = None
-                    flag_set = set()
-                    if not unknown_check_pid_done:
-                        if my_ldagent.get_pid() is None:
-                            logger.warning(f'TMLOUKGSMO app not running, force resetapp')
-                            force_resetapp = True
-                            continue
-                        unknown_check_pid_done = True
+                    if (state_mask_timeout is None) or (time.time()>state_mask_timeout):
+                        logger.warning(f'FTLJDAXKYE long UNKNOWN, give up state_mask_set')
+                        write_debug_img(img)
+                        state_mask_set = None
+                        flag_set = set()
+                        if not unknown_check_pid_done:
+                            if my_ldagent.get_pid() is None:
+                                logger.warning(f'TMLOUKGSMO app not running, force resetapp')
+                                force_resetapp = True
+                                continue
+                            unknown_check_pid_done = True
+                    else:
+                        logger.debug('WTRWLSZEJT state_mask_timeout')
             else:
                 unknown_time = None
                 unknown_check_pid_done = False
 
             if state == stable_state:
                 if time.time() - stable_time > 30:
-                    logger.warning(f'KOROVAKOML long stable state, give up state_mask_set, flag_set')
-                    state_mask_set = None
-                    flag_set = set()
+                    if (state_mask_timeout is None) or (time.time()>state_mask_timeout):
+                        logger.warning(f'KOROVAKOML long stable state, give up state_mask_set, flag_set')
+                        state_mask_set = None
+                        flag_set = set()
+                    else:
+                        logger.debug('RTMSNSWYYJ state_mask_timeout')
             else:
                 stable_state = state
                 stable_time = time.time()
@@ -692,7 +709,7 @@ def main():
                 my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
                 # mywait('UIWAIT_ACC_NO_LINK')'
                 flag_set.add('s03-start-01-skip-anime')
-                set_wait_state({'s03-start-01','xxx-dialog-swc', 'xxx-dialog-sc', 'xxx-dialog-lw','s04-welcome-00'})
+                set_wait_state({'s03-start-01','xxx-dialog-swc', 'xxx-dialog-sc', 'xxx-dialog-lw','s04-welcome-00'}, timeout=120)
                 continue
 
             if 's03-start-01-skip-anime' in flag_set:
@@ -1540,7 +1557,7 @@ def main():
                     next_state_set.add('s06-gacha1-04')
                     next_state_set.add('xxx-gacha-04')
                     next_state_set.add('xxx-gacha-05')
-                set_wait_state(next_state_set)
+                set_wait_state(next_state_set, timeout=60)
                 continue # swipe may fail
 
             # gacha pack, after swipe, show one by one
@@ -1632,6 +1649,7 @@ def main():
                         common.cv2_imwrite(ret_fn, img)
                         force_copyemu_name = config_data['LD_EMU_NAME'] + '-' + str(t)
                         force_copyemu_resetapp = True
+                        check_cycle_last_reset = time.time()
                         continue
 
                     exist_cost4 = any(map(is_cost4, gacha_result))
@@ -1647,6 +1665,7 @@ def main():
                     if ('WONDER_SAINT' in flag_set) and ('s11-hourglass' in flag_set):
                         logger.debug(f'TDODGWPXQR WONDER_SAINT force_resetapp')
                         force_resetapp = True
+                        check_cycle_last_reset = time.time()
                         continue
 
                 # ldagent.tap(150,377)
