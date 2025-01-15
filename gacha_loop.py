@@ -17,19 +17,6 @@ from my_logger import logger, update_logger
 import const
 import shutil
 
-# YYYYMMDDHH = time.strftime('%Y%m%d%H', time.localtime(time.time()))
-
-# GACHA_RESULT_XY_LIST = [
-#     (51,111),(119,111),(187,111),
-#     (84,205),(154,205),
-# ]
-# GACHA_RESULT_SIZE = (62,86)
-
-# TARGET_PACK = 'c'
-# TARGET_CARD_SET = set(['cTR_20_000170_00_NATSUME_SR'])
-
-# USERNAME = 'abc'
-
 def main():
     global ALLOW_PLATINMODS_SPEED_3_STATE_SET
     parser = argparse.ArgumentParser(description='Gacha loop')
@@ -38,11 +25,6 @@ def main():
     args = parser.parse_args()
 
     if args.version:
-        # if os.path.exists(const.VERSION_FN):
-        #     with open(const.VERSION_FN, 'r') as f:
-        #         print(f.read())
-        # else:
-        #     print('dev')
         print(get_version())
         sys.exit(0)
 
@@ -120,8 +102,6 @@ def main():
     force_copyemu_name = None
 
     INSTANCE_VAR_FOLDER = my_path.instance_var()
-    # logger.debug(f'INSTANCE_VAR_FOLDER={INSTANCE_VAR_FOLDER}')
-    # os.makedirs(INSTANCE_VAR_FOLDER, exist_ok=True)
     USER_IDX_PATH = os.path.join(INSTANCE_VAR_FOLDER, 'user_idx.txt')
     user_idx = 0
     try:
@@ -132,7 +112,6 @@ def main():
         logger.error(f'DKZEUSMNFN user_idx load error')
         user_idx = 0
 
-    # ldagent.config(config_data)
     my_ldagent = ldagent.get_ldagent(config_data)
 
     check_disk_space(config_data)
@@ -141,12 +120,6 @@ def main():
     if not ret:
         logger.error(f'FYPBSVTUKY emu is locked')
         sys.exit(1)
-    # emu_lock_path = get_emu_lock_path(ldagent.LDPLAYER_PATH, str(ldagent.EMU_IDX))
-    # logger.debug(f'XFLZMQZROH emu_lock_path={emu_lock_path}')
-    # emu_lock = filelock.lock(emu_lock_path, f'{START_YYYYMMDDHHMMSS},{MY_PID}')
-    # if emu_lock is None:
-    #     logger.error(f'emu is locked: {ldagent.EMU_IDX}')
-    #     sys.exit(1)
 
     flag_set = set()
     
@@ -185,12 +158,6 @@ def main():
             time.sleep(1.1/30) # one frame avoid first click too quick
         return False
 
-    # state_double_act_img = None
-    # STATE_DOUBLE_ACT_WAIT = 5
-    # double_act_img = None
-    # double_act_time = time.time()
-    # DOUBLE_ACT_TIMEOUT = 5
-
     platinmods_speed = None
     allow_platinmods_speed_3 = False
     target_platinmods_speed = 3
@@ -199,23 +166,6 @@ def main():
     last_swipe_time = 0
 
     ALLOW_PLATINMODS_SPEED_3_STATE_SET |= state_list.state_prefix('xxx-gacha')
-
-    # mywait
-    # last_mywait_time = time.time()
-    # def reset_mywait():
-    #     nonlocal last_mywait_time
-    #     last_mywait_time = time.time()
-    # def mywait(id):
-    #     nonlocal last_mywait_time
-    #     sec = config_data[id]
-    #     while isinstance(sec, str):
-    #         sec = config_data[sec]
-    #     wait_time = last_mywait_time + sec + config_data['UIWAIT_OFFSET'] - time.time()
-    #     wait_time = wait_time/30
-    #     wait_time = wait_time/config_data['SPEED_FACTOR']
-    #     wait_time = max(1.1/30, wait_time) # one frame
-    #     time.sleep(wait_time)
-    #     last_mywait_time = time.time()
 
     last_set_wait_state_args = None
     state_mask_set = None
@@ -401,19 +351,12 @@ def main():
                 debug_img_fn = os.path.join(my_path.instance_debug(), 'img_history', '%03d.png'%debug_img_idx)
                 os.makedirs(os.path.dirname(debug_img_fn), exist_ok=True)
                 try:
-                    # if os.path.exists(debug_img_fn):
-                    #     os.remove(debug_img_fn)
-                    # img_encode = cv2.imencode('.png', img)[1]
-                    # with open(debug_img_fn, 'wb') as f:
-                    #     f.write(img_encode)
-                    # cv2.imwrite(debug_img_fn, img)
                     common.cv2_imwrite(debug_img_fn, img)
                 except:
                     pass
                 debug_img_idx += 1
                 debug_img_idx %= 1000
 
-            # print(state_history, state)
             logger.debug(f'PSDLSJCDBB state_history={state_history}')
             logger.debug(f'WJPUTEHGOE state={state}')
             logger.debug(f'YAISJIINTI flag_set={flag_set}')
@@ -478,44 +421,7 @@ def main():
                         my_ldagent.tap(170, 324)
                         continue
                     
-            # if 'xxx-gacha-03' in flag_set:
-            #     # after gacha, may play fking animation
-            #     if state not in ['xxx-gacha-05','s06-gacha1-03','s06-gacha1-04'] and (not state.startswith('xxx-gacha-03')):
-            #         my_ldagent.tap(150,304)
-            #         my_ldagent.tap(281,381)
-            #         my_ldagent.tap(281,381)
-            #         time.sleep(TIME_SLEEP/2)
-            #         continue
-            #     if state in ['xxx-gacha-05','s06-gacha1-03','s06-gacha1-04']:
-            #         flag_set.remove('xxx-gacha-03')
-
             logger.debug(f'IWFCYLNYDB state={state} flag_set={flag_set}')
-
-            # if (state == state_double_act_state) and (time.time() - state_double_act_time < STATE_DOUBLE_ACT_WAIT):
-            #     is_double_act = True
-            #     if state in state_list.state_to_forget_img_dict:
-            #         mask_img = state_list.state_to_forget_img_dict[state]
-            #         img_diff = np.abs(img - state_double_act_img)
-            #         img_diff = img_diff * mask_img
-            #         img_diff = img_diff.sum() / mask_img.sum() / img_diff.shape[2]
-            #         logger.debug(f'LZKXOWTZMK img_diff={img_diff}')
-            #         if img_diff > 5:
-            #             is_double_act = False
-            #     if is_double_act:
-            #         logger.debug(f'AXTNCKYONS double_act')
-            #         time.sleep(TIME_SLEEP/2)
-            #         continue
-
-            # if state == 'err-badname':
-            #     flag_set.add('err')
-
-            # if 'err-badname' in flag_set:
-            #     if state == 'xxx-dialog-sc':
-            #         state = 's05-name-00'
-            #     if state == 'xxx-dialog-swc':
-            #         ldagent.tap(150, 179)
-            #         time.sleep(TIME_SLEEP)
-            #         state = 's05-name-02'
 
             if state == 'err-launch-00':
                 force_resetapp = True
@@ -537,10 +443,6 @@ def main():
             if state == 's00-cover':
                 check_disk_space(config_data)
 
-                # just after del account
-                # if 's12-end-03-confirm' in flag_set:
-                #     flag_set = set()
-
                 s99_done = 's99_done' in flag_set
 
                 flag_set = set()
@@ -555,22 +457,14 @@ def main():
                     
                 my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
                 if s99_done:
+                    flag_set.add('s99_done')
                     set_wait_state({state,'s01-info-00'})
                 else:
                     set_wait_state(None)
                 continue
 
             if state == 's01-info-00':
-                # if my_ldagent.screencap_require_calibrate():
-                #     my_ldagent.calibrate_screencap(os.path.join(const.MY_PATH, 'res', 's01_info_00-calibrate-mask.png'))
-                #     # img_mask = my_ldagent.screencap_mask()
-                #     # state_list.set_mask(img_mask)
-                #     # state_list.src_mask_hwab = img_mask.astype(np.float32)
-                #     continue
-                # my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
-                # mywait('UIWAIT_INFO_OPEN_YEAR')
-                # state = 's01-info-01'
-                # avoid double click
+                flag_set.discard('s99_done')
                 if avoid_double_act(): continue
                 my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
                 set_wait_state({state,'s01-info-01'})
@@ -579,16 +473,12 @@ def main():
             if state == 's01-info-01':
                 if avoid_double_act(): continue
                 my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
-                # mywait('UIWAIT_INFO_SELECT_YEAR')
-                # state = 's01-info-02'
                 set_wait_state({state,'s01-info-02'})
                 continue
 
             if state == 's01-info-02':
                 if avoid_double_act(): continue
                 my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
-                # mywait('UIWAIT_INFO_OPEN_MONTH')
-                # state = 's01-info-03'
                 set_wait_state({state,'s01-info-03'})
                 continue
 
