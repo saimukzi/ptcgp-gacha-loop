@@ -229,10 +229,6 @@ def main():
             state_mask_set = None
         else:
             state_mask_set = set(wait_set)
-            if time.time() - platinmods_menu_enable_time < 3:
-                state_mask_set.add('platinmods-menu-1')
-                state_mask_set.add('platinmods-menu-2')
-                state_mask_set.add('platinmods-menu-3')
         if timeout is None:
             state_mask_timeout = None
         else:
@@ -339,8 +335,17 @@ def main():
             img, img_mask = my_ldagent.screencap()
             img = img.astype(np.float32)
 
+            if state_mask_set is not None:
+                _state_mask_set = set(state_mask_set)
+                if time.time() - platinmods_menu_enable_time < 3:
+                    _state_mask_set.add('platinmods-menu-1')
+                    _state_mask_set.add('platinmods-menu-2')
+                    _state_mask_set.add('platinmods-menu-3')
+            else:
+                _state_mask_set = None
             logger.debug(f'JMKSJZGZVD state_mask_set={state_mask_set}')
-            state = state_list.get_state(img, img_mask, state_mask_set)
+            logger.debug(f'FGFDLRKKFP _state_mask_set={_state_mask_set}')
+            state = state_list.get_state(img, img_mask, _state_mask_set)
             if state_double_act_state != state:
                 state_double_act_state = None
             if state_delay_state != state:
@@ -457,19 +462,15 @@ def main():
                     platinmods_menu_enable_time = time.time()
                     if not state.startswith('platinmods-menu-'):
                         my_ldagent.tap(18, 125)
-                        set_wait_state(state_mask_set)
                         continue
                     if target_platinmods_speed == 1:
                         my_ldagent.tap(35, 214)
-                        set_wait_state(state_mask_set)
                         continue
                     if target_platinmods_speed == 2:
                         my_ldagent.tap(109, 214)
-                        set_wait_state(state_mask_set)
                         continue
                     if target_platinmods_speed == 3:
                         my_ldagent.tap(182, 214)
-                        set_wait_state(state_mask_set)
                         continue
                 if (target_platinmods_speed == platinmods_speed):
                     if state.startswith('platinmods-menu-'):
