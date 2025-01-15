@@ -555,14 +555,6 @@ def main():
                 if check_cycle_loop_state in [None, 's02-toc-00']:
                     logger.debug(f'JVUDJTQGFR check_cycle_loop_state={state}')
                     check_cycle_loop_state = state
-                # avoid double click
-                if state_history[-1] == 1:
-                    if state_double_act_state != state:
-                        state_double_act_state = state
-                        state_double_act_time = time.time()
-                    if time.time() - state_double_act_time < 1:
-                        continue
-                    state_double_act_state = None
                 my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
                 set_wait_state({state,'s03-start-01'})
                 continue
@@ -891,14 +883,6 @@ def main():
                 if check_cycle_loop_state in [None, 's03-start-00']:
                     logger.debug(f'JVUDJTQGFR check_cycle_loop_state={state}')
                     check_cycle_loop_state = state
-                # avoid double click
-                if state_history[-1] == state:
-                    if state_double_act_state != state:
-                        state_double_act_state = state
-                        state_double_act_time = time.time()
-                    if time.time() - state_double_act_time < 1:
-                        continue
-                    state_double_act_state = None
                 my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
                 set_wait_state({state,'s12-end-01'})
                 continue
