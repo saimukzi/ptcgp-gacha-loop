@@ -100,19 +100,19 @@ class LDPlayerInstance(LDPlayerGlobal):
         self.wc2501_windows_agent = None
 
     def is_emu_running(self):
-        for _ in range(5):
+        for _ in range(60):
             ret = self._i_ldconsole_cmd(['isrunning']).strip()
             # print(ret)
             assert(ret in ['running', 'stop',''])
             if ret == '':
                 logger.error(f'XTDWEGPNFD is running no output')
-                time.sleep(1.1/60)
+                time.sleep(10)
                 continue
             ret = (ret == 'running')
             logger.debug(f'FXWVANPZJD isrunning = {ret}')
             return ret
         logger.error(f'ZVRWINULMI is running no output x5')
-        return False
+        assert(False)
 
 
     def screencap(self):
