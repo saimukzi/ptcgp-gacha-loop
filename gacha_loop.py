@@ -338,7 +338,7 @@ def main():
             if state == 'xxx-gacha-05-U':
                 state = 'UNKNOWN'
 
-            if config_data['DEBUG_MODE']:
+            if config_data['DEBUG_IMG']:
                 logger.debug(f'CNRSFFOMKV debug_img_idx={debug_img_idx}, state={state}')
                 debug_img_fn = os.path.join(my_path.instance_debug(), 'img_history', '%03d.png'%debug_img_idx)
                 os.makedirs(os.path.dirname(debug_img_fn), exist_ok=True)
@@ -1229,7 +1229,7 @@ def check_disk_space(config_data):
 
 
 def write_debug_img(img):
-    if not config.my_config_data['DEBUG_MODE']:
+    if not config.my_config_data['DEBUG_IMG']:
         return
     if img is None:
         logger.debug(f'EVDFRJINGC write_debug_img: img is None')

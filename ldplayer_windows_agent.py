@@ -110,7 +110,7 @@ class LDPlayerWindowsAgent:
                 # img_wh = (ret_img.shape[1], ret_img.shape[0])
                 if 'wh' not in ret_img_data:
                     ret_img_data['wh'] = (img.shape[1], img.shape[0])
-                if config.my_config_data['DEBUG_MODE']:
+                if config.my_config_data['DEBUG_IMG']:
                     try:
                         if 'debug-idx' not in ret_img_data:
                             ret_img_data['debug-idx'] = self.img_debug_idx
@@ -494,7 +494,7 @@ def _detect_bar_color(img_data):
     if bar_color is not None:
         return
     img = img_data['img']
-    if config.my_config_data['DEBUG_MODE']:
+    if config.my_config_data['DEBUG_IMG']:
         try:
             common.cv2_imwrite(os.path.join(my_path.instance_debug(), 'bar_color.png'), img)
         except:
@@ -507,7 +507,7 @@ def _detect_bg_color(img_data):
     if bg_color is not None:
         return
     img = img_data['img']
-    if config.my_config_data['DEBUG_MODE']:
+    if config.my_config_data['DEBUG_IMG']:
         try:
             common.cv2_imwrite(os.path.join(my_path.instance_debug(), 'bg_color.png'), img)
         except:

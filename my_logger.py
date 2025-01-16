@@ -25,7 +25,7 @@ logger_file_handler = None
 logger_file_handler_yyyymmddhh = None
 def update_logger(config_data):
     global logger_file_handler, logger_file_handler_yyyymmddhh
-    if not config_data['DEBUG_MODE']: return
+    if not config_data['DEBUG_LOG']: return
     INSTANCE_ID = config_data['INSTANCE_ID']
     yyyymmddhh = time.strftime('%Y%m%d%H', time.localtime(time.time()))
     yyyy = yyyymmddhh[:4]
