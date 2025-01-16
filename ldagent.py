@@ -363,6 +363,9 @@ class LDPlayerInstance(LDPlayerGlobal):
         assert(False)
 
     def lock_emu(self):
+        if self.emu_lock is not None:
+            logger.debug(f'XXATZBWTUF emu is already locked')
+            return True
         emu_lock_path = self.get_emu_lock_path()
         logger.debug(f'XFLZMQZROH emu_lock_path={emu_lock_path}')
         yyyymmddhhmmss = time.strftime('%Y%m%d%H%M%S', time.localtime())
