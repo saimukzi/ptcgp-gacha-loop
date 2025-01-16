@@ -112,7 +112,7 @@ class LDPlayerInstance(LDPlayerGlobal):
             logger.debug(f'FXWVANPZJD isrunning = {ret}')
             return ret
         logger.error(f'ZVRWINULMI is running no output x5')
-        assert(False)
+        return False
 
 
     def screencap(self):
