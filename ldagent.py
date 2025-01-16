@@ -335,6 +335,8 @@ class LDPlayerInstance(LDPlayerGlobal):
             return ret
         except:
             logger.debug(f'VHNVECMDBG get_pid=None')
+            # no trace, exception is expected
+            # traceback.print_exc()
             return None
 
     def killapp(self):
