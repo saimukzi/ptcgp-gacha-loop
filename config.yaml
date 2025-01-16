@@ -105,7 +105,7 @@ ENABLE_REBOOT: true
 STATE_DETECT_THRESHOLD: 1.0
 
 # SWIPE_UP_ESCAPE: 第一次抽包時，重啟遊戲，跳過滑動輸入
-# 如果卡在第一次抽包時的滑動輸入，設定為 true
+# 如果經常卡在第一次抽包時的向上滑動輸入，設定為 true
 FIRST_SWIPE_UP_KILL_APP: false
 
 # 支援 Platinmods，預設為 false
