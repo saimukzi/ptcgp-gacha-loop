@@ -920,7 +920,7 @@ def main():
                 if avoid_double_act(): continue
                 if 'GACHA5-DONE' in flag_set:
                     my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state][f'G_xy_list']))
-                    set_wait_state({state,'xxx-dialog-lwr','xxx-dialog-swr','xxx-dialog-sc','s00-cover'})
+                    set_wait_state({state,'xxx-dialog-lwr','xxx-dialog-swr','xxx-dialog-sc','s00-cover'},timeout=20)
                     flag_set.add('s99_done')
                     continue
                 else:
