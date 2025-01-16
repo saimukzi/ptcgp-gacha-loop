@@ -822,7 +822,9 @@ def main():
                 my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
                 flag_set.add('GACHA2-DONE')
                 flag_set.add('WONDER-DONE')
-                set_wait_state({state,'xxx-swipeup'})
+                # if first gacha have cPK_20_000010_00_FUSHIGIDANE_AR
+                # will direct to 's09-wonder-16'
+                set_wait_state({state,'xxx-swipeup','s09-wonder-16'})
                 continue
 
             # wonder result 5 cards
@@ -1033,6 +1035,11 @@ def main():
                 flag_set.discard('xxx-gacha-03-after')
                 xxxgacha03_start_time = None
 
+                for i in range(2,6):
+                    if f'GACHA{i}-ING' in flag_set:
+                        flag_set.discard(f'GACHA{i}-ING')
+                        flag_set.add(f'GACHA{i}-DONE')
+
                 if state not in state_history: # possible first click no response
                     check_disk_space(config_data)
                     t = int(time.time())
@@ -1097,13 +1104,13 @@ def main():
 
                 my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
                 next_state_set = {state}
-                if 'GACHA2-ING' in flag_set:
+                if 'GACHA2-DONE' in flag_set:
                     next_state_set.add('xxx-swipeup')
-                elif 'GACHA3-ING' in flag_set:
+                elif 'GACHA3-DONE' in flag_set:
                     next_state_set.add('xxx-tips16')
-                elif 'GACHA4-ING' in flag_set:
+                elif 'GACHA4-DONE' in flag_set:
                     next_state_set.add('xxx-swipeup')
-                elif 'GACHA5-ING' in flag_set:
+                elif 'GACHA5-DONE' in flag_set:
                     next_state_set.add('xxx-tips25')
                 else:
                     next_state_set.add('xxx-tips16')
@@ -1124,10 +1131,6 @@ def main():
                 continue
 
             if state == 'xxx-swipeup':
-                for i in range(2,6):
-                    if f'GACHA{i}-ING' in flag_set:
-                        flag_set.discard(f'GACHA{i}-ING')
-                        flag_set.add(f'GACHA{i}-DONE')
                 my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
 
                 next_state_set = {state,'xxx-cont','xxx-cardlist'}
