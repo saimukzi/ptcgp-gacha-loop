@@ -6,6 +6,7 @@ import os
 import shutil
 import threading
 import time
+import traceback
 import windows_capture
 import cv2
 import subprocess
@@ -329,10 +330,22 @@ class LDPlayerInstance(LDPlayerGlobal):
             return None
 
     def killapp(self):
-        self._i_ldconsole_cmd(['killapp', '--packagename', PACKAGE_NAME])
+        try:
+            self._i_ldconsole_cmd(['killapp', '--packagename', PACKAGE_NAME])
+            return True
+        except:
+            logger.warning(f'OYHXXQNDKH killapp error')
+            traceback.print_exc()
+        return False
 
     def resetapp(self):
-        self._i_adb_cmd(['shell', 'pm', 'clear', PACKAGE_NAME])
+        try:
+            self._i_adb_cmd(['shell', 'pm', 'clear', PACKAGE_NAME])
+            return True
+        except:
+            logger.warning(f'CXJABORNHT resetapp error')
+            traceback.print_exc()
+        return False
 
     def get_app_version(self):
         ret = self._i_adb_cmd(['shell', 'dumpsys', 'package', PACKAGE_NAME])

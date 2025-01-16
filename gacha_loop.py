@@ -241,18 +241,21 @@ def main():
 
             if force_resetapp and my_ldagent.is_emu_running():
                 logger.debug(f'SRDWQJYJIR force_resetapp')
-                my_ldagent.killapp()
+                if not my_ldagent.killapp():
+                    continue
                 emu_ok = False
-                my_ldagent.resetapp()
+                if not my_ldagent.resetapp():
+                    continue
                 allow_platinmods_speed_3 = False
-                force_resetapp = False
                 force_killapp = False
                 check_cycle_last_reset = time.time()
+                force_resetapp = False
                 continue
 
             if force_killapp:
                 logger.debug(f'NFTCLCTTHC force_killapp')
-                my_ldagent.killapp()
+                if not my_ldagent.killapp():
+                    continue
                 emu_ok = False
                 force_killapp = False
                 continue
