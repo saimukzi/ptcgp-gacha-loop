@@ -59,13 +59,9 @@ def main():
 
     TIME_SLEEP = 0.5 / config_data['SPEED_FACTOR']
     logger.debug(f'IMLIDECFNW TIME_SLEEP={TIME_SLEEP}')
-    if config_data['SWIPE_PACK_SEC'] is not None:
-        SWIPE_PACK_MS = int(config_data['SWIPE_PACK_SEC'] * 1000)
-    elif config_data['ENABLE_PLATINMODS']:
-        SWIPE_PACK_MS = 1000
-    else:
-        SWIPE_PACK_MS = int(1000/config_data['SPEED_FACTOR'])
-    logger.debug(f'KQOHOWKNBY SWIPE_PACK_MS={SWIPE_PACK_MS}')
+
+    SWIPE_PACK_MS = int(config_data['SWIPE_PACK_SEC'] * 1000)
+    SWIPE_UP_SEC = int(config_data['SWIPE_UP_SEC'] * 1000)
 
     config_fn_lock_path = get_config_fn_lock_path(args_config)
     logger.debug(f'UKKDANILYL config_fn_lock_path={config_fn_lock_path}')
@@ -723,8 +719,7 @@ def main():
                 action = state_list.state_to_action_dist[state]
                 from_xy = _get_xy(action['from_xy_list'])
                 to_xy = _get_xy(action['to_xy_list'])
-                duration = int(action['duration'] / swipe_speed_factor) # TODO become var
-                my_ldagent.swipe(*from_xy, *to_xy, duration)
+                my_ldagent.swipe(*from_xy, *to_xy, SWIPE_UP_SEC)
                 set_wait_state({state,'xxx-msg','s06-gacha1-06'})
                 continue
 
@@ -1007,8 +1002,7 @@ def main():
                 action = state_list.state_to_action_dist[state]
                 from_xy = _get_xy(action['from_xy_list'])
                 to_xy = _get_xy(action['to_xy_list'])
-                duration = int(action['duration'] / swipe_speed_factor)
-                my_ldagent.swipe(*from_xy, *to_xy, duration)
+                my_ldagent.swipe(*from_xy, *to_xy, SWIPE_PACK_MS)
                 last_swipe_time = time.time()
                 flag_set.add('xxx-gacha-03-after')
                 xxxgacha03_start_time = time.time()

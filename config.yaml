@@ -91,9 +91,11 @@ USERNAME: "abc{IDX}"
 # SPEED_FACTOR: 執行速度倍率
 SPEED_FACTOR: 1.0
 
-# 刷包動作秒數
-# 若不設定，則為 (1/SPEED_FACTOR) 秒
-# SWIPE_PACK_SEC: 1.0
+# 開包，手指橫滑打開卡包秒數
+SWIPE_PACK_SEC: 1.0
+
+# 第一次開包後，手指上滑把卡片送到圖鑑的秒數
+SWIPE_UP_SEC: 0.05
 
 # ENABLE_REBOOT: 容許重開模擬器
 ENABLE_REBOOT: true
