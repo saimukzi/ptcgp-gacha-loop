@@ -53,13 +53,6 @@ def main():
     START_YYYYMMDDHHMMSS = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
     MY_PID = os.getpid()
 
-    swipe_speed_factor = config_data['SPEED_FACTOR']
-    if config_data['ENABLE_PLATINMODS']:
-        swipe_speed_factor = 1
-
-    TIME_SLEEP = 0.5 / config_data['SPEED_FACTOR']
-    logger.debug(f'IMLIDECFNW TIME_SLEEP={TIME_SLEEP}')
-
     SWIPE_PACK_MS = int(config_data['SWIPE_PACK_SEC'] * 1000)
     SWIPE_UP_SEC = int(config_data['SWIPE_UP_SEC'] * 1000)
 
@@ -1200,7 +1193,7 @@ def main():
                 if action['action'] == 'swipe':
                     from_xy = _get_xy(action['from_xy_list'])
                     to_xy = _get_xy(action['to_xy_list'])
-                    duration = int(action['duration'] / swipe_speed_factor)
+                    duration = int(action['duration'])
                     my_ldagent.swipe(*from_xy, *to_xy, duration)
                     last_swipe_time = time.time()
                     continue
