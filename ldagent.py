@@ -111,7 +111,7 @@ class LDPlayerInstance(LDPlayerGlobal):
             ret = (ret == 'running')
             logger.debug(f'FXWVANPZJD isrunning = {ret}')
             return ret
-        logger.error(f'ZVRWINULMI is running no output x5')
+        logger.error(f'ZVRWINULMI is running no output 60x10sec')
         assert(False)
 
 
@@ -295,10 +295,13 @@ class LDPlayerInstance(LDPlayerGlobal):
 
     def killemu(self):
         logger.debug('ROSHSALFRW killemu START')
-        while True:
+        for _ in range(600):
             if not self.is_emu_running():
-                break
+                return
             self._i_ldconsole_cmd(['quit'])
+            time.sleep(1)
+        logger.error(f'NKAODLNOOT killemu fail 600x1sec')
+        assert(False)
 
     def copyemu(self, new_name):
         logger.debug(f'ASCYGHOHGH copyemu START new_name = {new_name}')
@@ -307,7 +310,9 @@ class LDPlayerInstance(LDPlayerGlobal):
         list2_ret = self.list2()
         list2_ret = list(filter(lambda x: x['NAME']==new_name, list2_ret))
         logger.debug(f'ICYZPBNKEQ list2_ret = {list2_ret}')
-        assert(len(list2_ret) == 0)
+        if len(list2_ret) != 0:
+            logger.error(f'new_name already exists')
+            assert(False)
 
         # copy emu
         # it will return emu id as exit code, so check=False
@@ -317,7 +322,9 @@ class LDPlayerInstance(LDPlayerGlobal):
         list2_ret = self.list2()
         list2_ret = list(filter(lambda x: x['NAME']==new_name, list2_ret))
         logger.debug(f'PXSQPZBCVP list2_ret = {list2_ret}')
-        assert(len(list2_ret) == 1)
+        if len(list2_ret) != 1:
+            logger.error(f'new_name not created')
+            assert(False)
 
     def get_pid(self):
         try:
