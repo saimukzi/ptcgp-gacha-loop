@@ -321,6 +321,7 @@ class LDPlayerInstance(LDPlayerGlobal):
     def get_pid(self):
         try:
             ret = self._i_adb_cmd(['shell', 'pidof', PACKAGE_NAME])
+            ret = ret.strip()
             logger.debug(f'SIJFCXRAJK get_pid={ret}')
             return ret
         except:
