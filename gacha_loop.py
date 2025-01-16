@@ -713,7 +713,7 @@ def main():
                 from_xy = _get_xy(action['from_xy_list'])
                 to_xy = _get_xy(action['to_xy_list'])
                 my_ldagent.swipe(*from_xy, *to_xy, SWIPE_UP_SEC)
-                set_wait_state({state,'xxx-msg','s06-gacha1-06'})
+                set_wait_state({state,'xxx-msg','s06-gacha1-06'}, timeout=20)
                 continue
 
             # may delay to 'xxx-msg' and back
