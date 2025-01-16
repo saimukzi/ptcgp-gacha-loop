@@ -1040,7 +1040,8 @@ def main():
                         flag_set.discard(f'GACHA{i}-ING')
                         flag_set.add(f'GACHA{i}-DONE')
 
-                if state not in state_history: # possible first click no response
+                # 20250116-2344: I saw it let a leaf get away, very sus
+                if state != state_history[-1]: # possible first click no response
                     check_disk_space(config_data)
                     t = int(time.time())
                     logger.debug(f'ZNHRHBHGMT GACHA_RESULT: {t}')
