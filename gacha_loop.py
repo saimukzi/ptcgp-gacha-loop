@@ -44,7 +44,7 @@ def main():
     logger.debug(f'JSOFIXCPAG config_data={config_data}')
 
     INSTANCE_ID = config_data['INSTANCE_ID']
-    logger.debug(f'INSTANCE_ID={INSTANCE_ID}')
+    logger.debug(f'HCJDEXBAEZ INSTANCE_ID={INSTANCE_ID}')
 
     TARGET_PACK = config_data['TARGET_PACK']
     TARGET_CARD_SET = set(config_data['TARGET_CARD_LIST'])
