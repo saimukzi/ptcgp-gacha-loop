@@ -91,6 +91,7 @@ class LDPlayerInstance(LDPlayerGlobal):
     def __init__(self, ldplayer_path, emu_idx, ldconsole_encoding='gb18030', screencap_method='WC2501'):
         super().__init__(ldplayer_path, ldconsole_encoding)
         assert(screencap_method in ['WC2501','ADB'])
+        self.emu_lock = None
         self.emu_idx = emu_idx
         # refer to https://help.ldmnq.com/docs/LD9adbserver
         self.adb_idx = str(int(emu_idx)*2+5554)
