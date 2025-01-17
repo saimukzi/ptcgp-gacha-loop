@@ -1048,6 +1048,11 @@ def main():
                 common.cv2_imwrite(ret_fn, img)
                 gacha_result = card_list.read_gacha_result(img)
 
+                if gacha_result == 'GRAY':
+                    state = 'xxx-gacha-05-gray'
+                    logger.warning('GACHA_RESULT: GRAY')
+                    continue
+
                 check_disk_space(config_data)
 
                 # 20250116-2344: I saw it let a leaf get away, very sus
