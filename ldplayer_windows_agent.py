@@ -316,12 +316,12 @@ class LDPlayerWindowsAgent:
             assert(False)
 
         # find target_outer_width
-        le = TARGET_INNER_W - 20
-        g = TARGET_INNER_W + bar_w + bar_e + 20
+        le = TARGET_INNER_W - 100
+        g = TARGET_INNER_W + bar_w + bar_e + 100
 
         while g-le > 1:
             m = (le+g)//2
-            self._change_wh_m((m,TARGET_INNER_H + bar_n + bar_s + 20))
+            self._change_wh_m((m,TARGET_INNER_H + bar_n + bar_s + 100))
             # have saw case skipped value, need more frame to confirm
             for _ in range(5):
                 img_data = self.get_img_data(nnext=True)
@@ -359,7 +359,7 @@ class LDPlayerWindowsAgent:
 
         while g-le > 1:
             m = (le+g)//2
-            self._change_wh_m((TARGET_INNER_W + bar_w + bar_e + 20,m))
+            self._change_wh_m((TARGET_INNER_W + bar_w + bar_e + 100,m))
             for _ in range(5):
                 img_data = self.get_img_data(nnext=True)
                 bar_n, bar_s, bar_w, bar_e = bar_nswe = get_bar_nswe(img_data)
