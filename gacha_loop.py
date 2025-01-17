@@ -256,7 +256,7 @@ def main():
             # force reset app to avoid infinite loop
             if (config_data['CHECK_CYCLE_SECONDS'] is not None) and (time.time() - check_cycle_last_reset > config_data['CHECK_CYCLE_SECONDS']):
                 logger.warning(f'PNOCLZOWIW cycle timeout')
-                write_debug_img(img)
+                write_warning_img(img)
                 check_cycle_last_reset = time.time()
                 force_resetapp = True
                 continue
@@ -301,7 +301,7 @@ def main():
                 if time.time() - unknown_time > 10:
                     if (state_mask_timeout is None) or (time.time()>state_mask_timeout):
                         logger.warning(f'FTLJDAXKYE long UNKNOWN, give up state_mask_set')
-                        write_debug_img(img)
+                        write_warning_img(img)
                         state_mask_set = None
                         flag_set = set()
                         if not unknown_check_pid_done:
@@ -1236,17 +1236,15 @@ def check_disk_space(config_data):
         sys.exit(1)
 
 
-def write_debug_img(img):
-    if not config.my_config_data['DEBUG_IMG']:
-        return
+def write_warning_img(img):
     if img is None:
-        logger.debug(f'EVDFRJINGC write_debug_img: img is None')
+        logger.warning(f'EVDFRJINGC write_warning_img: img is None')
         return
     img = img.astype(np.uint8)
     t = int(time.time())
     ret_fn = os.path.join(my_path.instance_debug(), 'debug_img', f'{t}.png')
     os.makedirs(os.path.dirname(ret_fn), exist_ok=True)
-    logger.debug(f'CTXXIWQWYT write_debug_img: {ret_fn}')
+    logger.debug(f'CTXXIWQWYT write_warning_img: {ret_fn}')
     common.cv2_imwrite(ret_fn, img)
 
 
