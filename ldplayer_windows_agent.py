@@ -292,6 +292,7 @@ class LDPlayerWindowsAgent:
 
     def __detect_target_outer_wh_m(self):
         self.restore_game_window_m()
+        self.game_window.moveTo(100,100)
         self._detect_bg_color_m()
         # img, wh = self.get_img_wh_m()
         img_data = self.get_img_data()
@@ -408,8 +409,9 @@ class LDPlayerWindowsAgent:
     def _change_wh_m(self, wh):
         while True:
             self.restore_game_window_m()
-            self.game_window.size = wh
-            time.sleep(0.1)
+            if self.game_window.size != wh:
+                self.game_window.size = wh
+                time.sleep(0.1)
             img_data = self.get_img_data()
             if img_data['wh'] == wh:
                 return
