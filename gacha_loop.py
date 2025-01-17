@@ -1242,7 +1242,7 @@ def write_warning_img(img):
         return
     img = img.astype(np.uint8)
     t = int(time.time())
-    ret_fn = os.path.join(my_path.instance_debug(), 'debug_img', f'{t}.png')
+    ret_fn = os.path.join(my_path.instance_debug(), 'warning_img', f'{t}.png')
     os.makedirs(os.path.dirname(ret_fn), exist_ok=True)
     logger.debug(f'CTXXIWQWYT write_warning_img: {ret_fn}')
     common.cv2_imwrite(ret_fn, img)
