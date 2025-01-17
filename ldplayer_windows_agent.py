@@ -409,6 +409,7 @@ class LDPlayerWindowsAgent:
         while True:
             self.restore_game_window_m()
             self.game_window.size = wh
+            time.sleep(0.1)
             img_data = self.get_img_data()
             if img_data['wh'] == wh:
                 return
