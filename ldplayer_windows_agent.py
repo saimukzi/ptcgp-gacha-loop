@@ -325,6 +325,16 @@ class LDPlayerWindowsAgent:
             # have saw case skipped value, need more frame to confirm
             for _ in range(5):
                 img_data = self.get_img_data(nnext=True)
+                bar_n, bar_s, bar_w, bar_e = bar_nswe = get_bar_nswe(img_data)
+                if bar_n >= 5:
+                    break
+                t = int(time.time())
+                idx = img_data['idx']
+                logger.error(f'KQGQQSBYQF bar_nswe={bar_nswe}, idx={idx}')
+                try:
+                    common.cv2_imwrite(os.path.join(my_path.instance_debug(),'err_img',f'KQGQQSBYQF-{t}.png'), img_data['img'])
+                except:
+                    pass
             img = img_data['img']
             img1 = np.equal(img, bg_color).all(axis=2)
             y_sum = img1.sum(axis=1)
@@ -352,6 +362,16 @@ class LDPlayerWindowsAgent:
             self._change_wh_m((TARGET_INNER_W + bar_w + bar_e + 20,m))
             for _ in range(5):
                 img_data = self.get_img_data(nnext=True)
+                bar_n, bar_s, bar_w, bar_e = bar_nswe = get_bar_nswe(img_data)
+                if bar_n >= 5:
+                    break
+                t = int(time.time())
+                idx = img_data['idx']
+                logger.error(f'DTIGVLYJWS bar_nswe={bar_nswe}, idx={idx}')
+                try:
+                    common.cv2_imwrite(os.path.join(my_path.instance_debug(),'err_img',f'DTIGVLYJWS-{t}.png'), img_data['img'])
+                except:
+                    pass
             img = img_data['img']
             # have saw case skipped value, need more frame to confirm
             img1 = np.equal(img, bg_color).all(axis=2)
@@ -399,7 +419,10 @@ class LDPlayerWindowsAgent:
             self.windows_capture_control = None
 
     def _windows_capture__frame_handler(self, frame: Frame, capture_control: InternalCaptureControl):
-        #frame.save_as_img("tmp.png")
+        # possible to have full zero frame, skip
+        if (not frame.frame_buffer.any()):
+            logger.warning('KGRWTXPIIJ zero content')
+            return
         with self.img_condition:
             self.img_data_tmp = {
                 'img': frame.frame_buffer,
