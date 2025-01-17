@@ -200,6 +200,8 @@ def main():
     # in xxx-gacha-04, with pm, if time too long, go normal speed
     xxxgacha03_start_time = None
 
+    last_gacha_result = None
+
     while True:
         try:
             update_logger(config_data)
@@ -1040,15 +1042,19 @@ def main():
                         flag_set.discard(f'GACHA{i}-ING')
                         flag_set.add(f'GACHA{i}-DONE')
 
+                t = int(time.time())
+                logger.debug(f'ZNHRHBHGMT GACHA_RESULT: {t}')
+                instance_id = config_data['INSTANCE_ID']
+                ret_fn = os.path.join(my_path.global_gacha_result(), f'{t}-{instance_id}.png')
+                common.cv2_imwrite(ret_fn, img)
+                gacha_result = card_list.read_gacha_result(img)
+
+                check_disk_space(config_data)
+
                 # 20250116-2344: I saw it let a leaf get away, very sus
-                if state != state_history[-1]: # possible first click no response
-                    check_disk_space(config_data)
-                    t = int(time.time())
-                    logger.debug(f'ZNHRHBHGMT GACHA_RESULT: {t}')
-                    instance_id = config_data['INSTANCE_ID']
-                    ret_fn = os.path.join(my_path.global_gacha_result(), f'{t}-{instance_id}.png')
-                    common.cv2_imwrite(ret_fn, img)
-                    gacha_result = card_list.read_gacha_result(img)
+                # possible first click no response
+                if (state != state_history[-1]) and (gacha_result==last_gacha_result):
+                    last_gacha_result = gacha_result
                     is_target = len(set(gacha_result) & TARGET_CARD_SET)>0
                     logger.debug(f'OKTLVAGTGC is_target: {is_target}')
                     all_wonder = gacha_result
@@ -1102,6 +1108,8 @@ def main():
                         force_resetapp = True
                         check_cycle_last_reset = time.time()
                         continue
+                else:
+                    logger.debug(f'EWUJYXTFAN same state, should be double click')
 
                 my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
                 next_state_set = {state}
