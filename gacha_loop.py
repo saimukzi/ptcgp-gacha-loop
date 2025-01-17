@@ -852,8 +852,6 @@ def main():
                 if ('GACHA4-DONE' not in flag_set) or (state_history[-1] != 'xxx-msg'):
                     if avoid_state_delay_state(): continue
                 flag_set.add('GACHA4-DONE')
-                # click this btn too quick may cause error in s11-hourglass-01
-                time.sleep(2.1/60)
                 # btn 開封1包
                 my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
                 set_wait_state({state,'xxx-msg','xxx-dialog-lw','xxx-dialog-lwc','s11-hourglass-01'})

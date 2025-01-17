@@ -222,7 +222,7 @@ def get_state(src_img, src_img_mask, state_mask=None, debug=False):
         diff, state = STATE_DETECT_THRESHOLD, state
         for state_data in state_fix_dict[state]:
             new_state = state_data['state1']
-            if _state_mask_cal is not None and new_state not in _state_mask_cal:
+            if (_state_mask_cal is not None) and (new_state not in _state_mask_cal) and (new_state != 'UNKNOWN'):
                 continue
             state_img_min = state_data['img_min']
             state_img_max = state_data['img_max']
