@@ -410,7 +410,8 @@ class LDPlayerWindowsAgent:
             self.img_condition.notify()
 
     def _windows_capture__closed_handler(self):
-        print("Capture Session Closed")
+        # print("Capture Session Closed")
+        logger.debug("AOIXXTFNAF Capture Session Closed")
         if self.windows_capture_control is not None:
             self.windows_capture_control.stop()
             self.windows_capture_control = None
