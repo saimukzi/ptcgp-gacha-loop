@@ -1054,7 +1054,7 @@ def main():
 
                 # 20250116-2344: I saw it let a leaf get away, very sus
                 # possible first click no response
-                if (state != state_history[-1]) and (gacha_result==last_gacha_result):
+                if (state != state_history[-1]) and (gacha_result!=last_gacha_result):
                     last_gacha_result = gacha_result
                     is_target = len(set(gacha_result) & TARGET_CARD_SET)>0
                     logger.debug(f'OKTLVAGTGC is_target: {is_target}')
