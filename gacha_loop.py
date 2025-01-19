@@ -1136,7 +1136,7 @@ def main():
                     next_state_set.add('xxx-tips16')
                     next_state_set.add('xxx-swipeup')
                     next_state_set.add('xxx-tips25')
-                set_wait_state(next_state_set)
+                set_wait_state(next_state_set, timeout=20)
                 continue
 
             # from 's09-wonder-16', delay to 'xxx-msg','xxx-dialog-l*' and back
