@@ -693,7 +693,7 @@ def main():
                     flag_set.add('FIRST_SWIPE_UP_KILL_APP')
                 my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
                 flag_set.add('s06-gacha1-01-after')
-                set_wait_state(state_list.state_prefix('xxx-gacha-03-'))
+                set_wait_state(state_list.state_prefix('xxx-gacha-03-'),timeout=20)
                 continue
 
             # 's06-gacha1-03' spam
