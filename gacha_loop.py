@@ -1047,8 +1047,9 @@ def main():
                 t = int(time.time())
                 logger.debug(f'ZNHRHBHGMT GACHA_RESULT: {t}')
                 instance_id = config_data['INSTANCE_ID']
-                ret_fn = os.path.join(my_path.global_gacha_result(), f'{t}-{instance_id}.png')
+                ret_fn = os.path.join(my_path.global_gacha_result(), 'all', f'{t}-{instance_id}.png')
                 common.cv2_imwrite(ret_fn, img)
+
                 gacha_result = card_list.read_gacha_result(img)
 
                 if gacha_result == 'GRAY':
@@ -1061,6 +1062,9 @@ def main():
                 # 20250116-2344: I saw it let a leaf get away, very sus
                 # possible first click no response
                 if (state != state_history[-1]) and (gacha_result!=last_gacha_result):
+                    ret_fn = os.path.join(my_path.global_gacha_result(), f'{t}-{instance_id}.png')
+                    common.cv2_imwrite(ret_fn, img)
+
                     last_gacha_result = gacha_result
                     is_target = len(set(gacha_result) & TARGET_CARD_SET)>0
                     logger.debug(f'OKTLVAGTGC is_target: {is_target}')
