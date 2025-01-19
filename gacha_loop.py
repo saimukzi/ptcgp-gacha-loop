@@ -764,7 +764,7 @@ def main():
                 flag_set.add('GACHA2-ING')
                 my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
                 flag_set.add('xxx-gacha-02-spam')
-                set_wait_state({'xxx-gacha-02-mewtwo','xxx-gacha-03-mewtwo'})
+                set_wait_state({'xxx-gacha-02-mewtwo','xxx-gacha-03-mewtwo'},timeout=20)
                 continue
 
 
