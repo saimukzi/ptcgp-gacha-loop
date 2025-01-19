@@ -301,9 +301,10 @@ def main():
                 if time.time() - unknown_time > 10:
                     if (state_mask_timeout is None) or (time.time()>state_mask_timeout):
                         logger.warning(f'FTLJDAXKYE long UNKNOWN, give up state_mask_set')
-                        write_warning_img(img)
-                        state_mask_set = None
-                        flag_set = set()
+                        if (state_mask_set is not None) and (len(flag_set)>0):
+                            write_warning_img(img)
+                            state_mask_set = None
+                            flag_set = set()
                         if not unknown_check_pid_done:
                             if my_ldagent.get_pid() is None:
                                 logger.warning(f'TMLOUKGSMO app not running, force resetapp')
@@ -320,8 +321,10 @@ def main():
                 if time.time() - stable_time > 30:
                     if (state_mask_timeout is None) or (time.time()>state_mask_timeout):
                         logger.warning(f'KOROVAKOML long stable state, give up state_mask_set, flag_set')
-                        state_mask_set = None
-                        flag_set = set()
+                        if (state_mask_set is not None) and (len(flag_set)>0):
+                            write_warning_img(img)
+                            state_mask_set = None
+                            flag_set = set()
                     else:
                         logger.debug('RTMSNSWYYJ state_mask_timeout')
             else:
