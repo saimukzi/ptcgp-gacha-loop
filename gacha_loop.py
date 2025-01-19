@@ -868,7 +868,7 @@ def main():
                 flag_set.add('xxx-gacha-02-spam')
                 flag_set.discard('GACHA4-DONE')
                 flag_set.add('GACHA5-ING')
-                set_wait_state(state_list.state_prefix('xxx-gacha-02-')|state_list.state_prefix('xxx-gacha-03-')|{state,'xxx-msg','xxx-dialog-lw','xxx-dialog-lwc'})
+                set_wait_state(state_list.state_prefix('xxx-gacha-02-')|state_list.state_prefix('xxx-gacha-03-')|{state,'xxx-msg','xxx-dialog-lw','xxx-dialog-lwc'},timeout=20)
                 continue
 
             # no energy
@@ -967,7 +967,7 @@ def main():
                     if f'GACHA{i}-DONE' in flag_set:
                         flag_set.discard(f'GACHA{i}-DONE')
                         flag_set.add(f'GACHA{i+1}-ING')
-                set_wait_state({state,f'xxx-gacha-02-{state_pack}',f'xxx-gacha-03-{state_pack}'})
+                set_wait_state({state,f'xxx-gacha-02-{state_pack}',f'xxx-gacha-03-{state_pack}'},timeout=20)
                 continue
 
             # gacha pack, fly in animation
