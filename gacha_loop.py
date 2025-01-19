@@ -724,7 +724,7 @@ def main():
             # may delay to 'xxx-msg' and back
             if state == 's06-gacha1-06':
                 my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['xy_list']))
-                set_wait_state({state,'xxx-msg','s06-gacha1-07'})
+                set_wait_state({state,'xxx-msg','s06-gacha1-07'}, timeout=20)
                 continue
 
             # move card in diff angle
