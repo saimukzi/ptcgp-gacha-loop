@@ -4,6 +4,7 @@ import cv2
 import my_path
 import numpy as np
 import pygetwindow as gw
+import pygetwindow._pygetwindow_win as gw_win
 import threading
 import time
 
@@ -292,7 +293,7 @@ class LDPlayerWindowsAgent:
 
     def __detect_target_outer_wh_m(self):
         self.restore_game_window_m()
-        self.game_window.moveTo(100,100)
+        # self.game_window.moveTo(100,100)
         self._detect_bg_color_m()
         # img, wh = self.get_img_wh_m()
         img_data = self.get_img_data()
@@ -411,6 +412,7 @@ class LDPlayerWindowsAgent:
             self.restore_game_window_m()
             if self.game_window.size != wh:
                 self.game_window.size = wh
+                self._fix_pos()
                 time.sleep(0.1)
             img_data = self.get_img_data()
             if img_data['wh'] == wh:
@@ -425,6 +427,9 @@ class LDPlayerWindowsAgent:
         # possible to have full zero frame, skip
         if (not frame.frame_buffer.any()):
             logger.warning('KGRWTXPIIJ zero content')
+            return
+        if not self._fix_pos():
+            logger.warning('NHTHXZVTNH not good pos')
             return
         with self.img_condition:
             self.img_data_tmp = {
@@ -442,6 +447,29 @@ class LDPlayerWindowsAgent:
             self.windows_capture_control.stop()
             self.windows_capture_control = None
             atexit.unregister(self._atexit)
+
+    def _fix_pos(self):
+        BORDER = 10
+        sw,sh = gw_win.resolution()
+        # logger.debug(f'OYDWCYQVMO sw={sw}, sh={sh}')
+        left,top = self.game_window.topleft
+        w,h = self.game_window.size
+        good = True
+        if top < BORDER:
+            top = BORDER
+            good = False
+        if left < BORDER:
+            left = BORDER
+            good = False
+        if top + h > sh - BORDER:
+            top = sh - h - BORDER
+            good = False
+        if left + w > sw - BORDER:
+            left = sw - w - BORDER
+            good = False
+        if not good:
+            self.game_window.moveTo(left,top)
+        return good
 
 
 def calibrate_img(img_data):
