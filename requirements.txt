@@ -2,5 +2,6 @@ charset-normalizer
 numpy
 opencv-python
 portalocker
+pygetwindow
 pyyaml
 windows-capture
