@@ -142,7 +142,9 @@ class LDPlayerInstance(LDPlayerGlobal):
                 stdout = self._i_adb_cmd(['exec-out', 'screencap', '-p'], binary=True)
                 self.last_adb_screencap_time = time.time()
                 if len(stdout) > 0:
-                    return cv2.imdecode(np.frombuffer(stdout, np.uint8), cv2.IMREAD_COLOR)
+                    ret = cv2.imdecode(np.frombuffer(stdout, np.uint8), cv2.IMREAD_COLOR)
+                    if ret is not None:
+                        return ret
                 logger.error(f'HPHJGWWXOR screencap stdout too short')
             raise LdAgentException('adb screencap no data')
         except subprocess.TimeoutExpired:
@@ -284,6 +286,8 @@ class LDPlayerInstance(LDPlayerGlobal):
                 #     break
                 if self.get_pid() is not None:
                     break
+                if not self.is_emu_running():
+                    raise LdAgentException('emu die again')
                 if time.time() - time_start > 60:
                     logger.error(f'FPVMAQKLOG recover timeout')
                     raise LdAgentException('recover timeout')
