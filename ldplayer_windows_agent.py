@@ -1,18 +1,19 @@
-import atexit
+# import atexit
 import os
 import cv2
 import my_path
 import numpy as np
 import pygetwindow as gw
 import pygetwindow._pygetwindow_win as gw_win
-import threading
+# import threading
 import time
+import windows_capture_process as wcpa
 
 import common
 import config
 import const
 from my_logger import logger
-from windows_capture import WindowsCapture, Frame, InternalCaptureControl
+# from windows_capture import WindowsCapture, Frame, InternalCaptureControl
 
 TARGET_INNER_W = 300
 TARGET_INNER_H = 400
@@ -33,102 +34,118 @@ class LDPlayerWindowsAgent:
         assert len(all_windows) == 1
         self.game_window = all_windows[0]
 
-        # windows capture
-        self.windows_capture = WindowsCapture(
-            cursor_capture=False,
-            draw_border=None,
-            monitor_index=None,
-            window_name=self.window_name,
-        )
-        self.windows_capture.frame_handler = self._windows_capture__frame_handler
-        self.windows_capture.closed_handler = self._windows_capture__closed_handler
-        self.windows_capture_control = None
+        # # windows capture
+        # self.windows_capture = WindowsCapture(
+        #     cursor_capture=False,
+        #     draw_border=None,
+        #     monitor_index=None,
+        #     window_name=self.window_name,
+        # )
+        # self.windows_capture.frame_handler = self._windows_capture__frame_handler
+        # self.windows_capture.closed_handler = self._windows_capture__closed_handler
+        # self.windows_capture_control = None
 
-        self.img_condition = threading.Condition()
-        # self.img_tmp = None
-        self.img_data_tmp = None
-        self.img_idx = 0
-        self.img_debug_idx = 0
+        # self.img_condition = threading.Condition()
+        # # self.img_tmp = None
+        # self.img_data_tmp = None
+        # self.img_idx = 0
+        # self.img_debug_idx = 0
+
+        # windows capture
+        self.windows_capture_process = wcpa.WindowsCaptureProcess(self.window_name, config.my_config_data)
 
         # self.last_img_bareexist = None
         self._require_calibrate = True
+
+        # self.get_img_data()
+        self.last_get_img_data_ret = None
+        self.img_debug_idx = 0
         
 
     def start(self):
-        self.windows_capture_control = self.windows_capture.start_free_threaded()
-        atexit.register(self._atexit)
+        # self.windows_capture_control = self.windows_capture.start_free_threaded()
+        # atexit.register(self._atexit)
+        self.windows_capture_process.start()
 
     def stop(self):
-        if self.windows_capture_control is not None:
-            self.windows_capture_control.stop()
-            self.windows_capture_control = None
-            atexit.unregister(self._atexit)
+        # if self.windows_capture_control is not None:
+        #     self.windows_capture_control.stop()
+        #     self.windows_capture_control = None
+        #     atexit.unregister(self._atexit)
+        self.windows_capture_process.stop()
 
 
-    # def get_img_wh_m(self, auto_restore=True, nnext=False):
+    # def get_img_data(self, nnext=False):
     #     with self.img_condition:
     #         old_img_idx = self.img_idx
     #         while True:
-    #             if auto_restore:
-    #                 self.restore_game_window_m()
     #             if nnext and (self.img_idx == old_img_idx):
     #                 self.img_condition.wait(0.1)
     #                 continue
-    #             ret_img = self.img_tmp
-    #             if ret_img is None:
+    #             ret_img_data = self.img_data_tmp
+    #             if ret_img_data is None:
     #                 self.img_condition.wait(0.1)
     #                 continue
-    #             _detect_bar_color(ret_img)
-    #             self.last_img_bareexist = get_bareexist(ret_img)
-    #             img_wh = (ret_img.shape[1], ret_img.shape[0])
-    #             if auto_restore:
-    #                 if img_wh != self.game_window.size:
-    #                     self.img_condition.wait(0.1)
-    #                     continue
-    #                 if self.last_img_bareexist not in bareexist_to_target_outer_wh_dict:
-    #                     self._detect_target_outer_wh_m()
-    #                     continue
-    #                 if img_wh != bareexist_to_target_outer_wh_dict[self.last_img_bareexist]:
-    #                     self.fix_target_wh_m()
-    #                     continue
-    #             # common.cv2_imwrite('get_img_wh_m.png', ret_img)
-    #             return ret_img, img_wh
+    #             # _detect_bar_color(ret_img)
+    #             # self.last_img_bareexist = get_bareexist(ret_img)
+    #             img = ret_img_data['img']
+    #             # img_wh = (ret_img.shape[1], ret_img.shape[0])
+    #             if 'wh' not in ret_img_data:
+    #                 ret_img_data['wh'] = (img.shape[1], img.shape[0])
+    #             if config.my_config_data['DEBUG_IMG']:
+    #                 try:
+    #                     if 'debug-idx' not in ret_img_data:
+    #                         ret_img_data['debug-idx'] = self.img_debug_idx
+    #                         str_idx = '%03d'%(self.img_debug_idx)
+    #                         common.cv2_imwrite(os.path.join(my_path.instance_debug(), 'get_img_data', f'{str_idx}.png'), img)
+    #                         self.img_debug_idx += 1
+    #                         self.img_debug_idx %= 1000
+    #                 except:
+    #                     pass
+    #             # return ret_img, img_wh
+    #             return ret_img_data
 
     def get_img_data(self, nnext=False):
-        with self.img_condition:
-            old_img_idx = self.img_idx
-            while True:
-                if nnext and (self.img_idx == old_img_idx):
-                    self.img_condition.wait(0.1)
-                    continue
-                ret_img_data = self.img_data_tmp
-                if ret_img_data is None:
-                    self.img_condition.wait(0.1)
-                    continue
-                # _detect_bar_color(ret_img)
-                # self.last_img_bareexist = get_bareexist(ret_img)
-                img = ret_img_data['img']
-                # img_wh = (ret_img.shape[1], ret_img.shape[0])
-                if 'wh' not in ret_img_data:
-                    ret_img_data['wh'] = (img.shape[1], img.shape[0])
-                if config.my_config_data['DEBUG_IMG']:
-                    try:
-                        if 'debug-idx' not in ret_img_data:
-                            ret_img_data['debug-idx'] = self.img_debug_idx
-                            str_idx = '%03d'%(self.img_debug_idx)
-                            common.cv2_imwrite(os.path.join(my_path.instance_debug(), 'get_img_data', f'{str_idx}.png'), img)
-                            self.img_debug_idx += 1
-                            self.img_debug_idx %= 1000
-                    except:
-                        pass
-                # return ret_img, img_wh
-                return ret_img_data
+        if not self._fix_pos():
+            nnext = True
+
+        get_frame_ret = self.windows_capture_process.get_frame(nnext=nnext)
+        if get_frame_ret is None:
+            if not nnext:
+                return self.last_get_img_data_ret
+            return None
+
+        frame_img, frame_idx = get_frame_ret
+        if (self.last_get_img_data_ret is not None) and (frame_idx == self.last_get_img_data_ret['frame_idx']):
+            return self.last_get_img_data_ret
+
+        wh = (frame_img.shape[1], frame_img.shape[0])
+
+        ret_img_data = {
+            'frame_idx': frame_idx,
+            'img': frame_img,
+            'wh': wh,
+        }
+        self.last_get_img_data_ret = ret_img_data
+
+        if config.my_config_data['DEBUG_IMG']:
+            img_debug_idx = self.img_debug_idx
+            ret_img_data['img_debug_idx'] = img_debug_idx
+            self.img_debug_idx += 1
+            self.img_debug_idx %= 1000
+            str_idx = '%03d'%(img_debug_idx)
+            common.cv2_imwrite(os.path.join(my_path.instance_debug(), 'get_img_data', f'{str_idx}.png'), frame_img)
+
+        return ret_img_data
 
     def get_calibrated_img_mask_m(self):
         logger.debug(f'PAQSBDIAQU get_calibrated_img_mask_m')
         self.restore_game_window_m()
         self.fix_target_wh_m()
         img_data = self.get_img_data()
+        if img_data is None:
+            logger.debug('XOFQVPOQQL get_img_data=None')
+            return None, None
         bareexist = get_bareexist(img_data)
         # img, wh = self.get_img_wh_m()
         # bareexist = get_bareexist(img)
@@ -150,6 +167,9 @@ class LDPlayerWindowsAgent:
         # img, wh = self.get_img_wh_m(nnext=True)
         self.restore_game_window_m()
         img_data = self.get_img_data(nnext=True)
+        if img_data is None:
+            logger.debug('QMGQVEHMFJ get_img_data=None')
+            return
         bareexist = get_bareexist(img_data)
         logger.debug(f'BACGWQPWBP bareexist={bareexist}')
         if bareexist in bareexist_to_calibrate_data_dict:
@@ -162,6 +182,9 @@ class LDPlayerWindowsAgent:
         
         self.restore_game_window_m()
         img_data = self.get_img_data(nnext=True)
+        if img_data is None:
+            logger.debug('WMYYMKQAXU get_img_data=None')
+            return
         img = img_data['img']
         wh = img_data['wh']
 
@@ -194,7 +217,7 @@ class LDPlayerWindowsAgent:
         game_wh = (game_w, game_h)
         logger.debug(f'FTNVLLKQUI game_wh={game_wh}')
 
-        src_mask9 = img[game_y0-1:game_y1+1, game_x0-1:game_x1+1, 3]
+        src_mask9 = img[game_y0-1:game_y1+1, game_x0-1:game_x1+1, 3].copy()
 
         src_mask9[0,:] = 0
         src_mask9[-1,:] = 0
@@ -280,12 +303,18 @@ class LDPlayerWindowsAgent:
         self.restore_game_window_m()
         self._detect_target_outer_wh_m()
         img_data = self.get_img_data()
+        if img_data is None:
+            logger.debug('BTQSBSMJIM get_img_data=None')
+            return
         bareexist = get_bareexist(img_data)
         self._change_wh_m(bareexist_to_target_outer_wh_dict[bareexist])
 
     def _detect_target_outer_wh_m(self):
         self.restore_game_window_m()
         img_data = self.get_img_data()
+        if img_data is None:
+            logger.debug('URPQEDODSU get_img_data=None')
+            return
         bareexist = get_bareexist(img_data)
         if bareexist not in bareexist_to_target_outer_wh_dict:
             target_outer_wh = self.__detect_target_outer_wh_m()
@@ -299,18 +328,19 @@ class LDPlayerWindowsAgent:
         img_data = self.get_img_data()
         good = False
         for _ in range(5):
-            bar_n, bar_s, bar_w, bar_e = bar_nswe = get_bar_nswe(img_data)
-            logger.debug(f'NWKDLGNXQG bar_nswe={bar_nswe}')
-            if bar_n >= 5:
-                good = True
-                break
-            t = int(time.time())
-            idx = img_data['idx']
-            logger.error(f'VZZTKINCTS bar_nswe={bar_nswe}, idx={idx}')
-            try:
-                common.cv2_imwrite(os.path.join(my_path.instance_debug(),'err_img',f'VZZTKINCTS-{t}.png'), img_data['img'])
-            except:
-                pass
+            if img_data is not None:
+                bar_n, bar_s, bar_w, bar_e = bar_nswe = get_bar_nswe(img_data)
+                logger.debug(f'NWKDLGNXQG bar_nswe={bar_nswe}')
+                if bar_n >= 5:
+                    good = True
+                    break
+                t = int(time.time())
+                idx = img_data['idx']
+                logger.error(f'VZZTKINCTS bar_nswe={bar_nswe}, idx={idx}')
+                try:
+                    common.cv2_imwrite(os.path.join(my_path.instance_debug(),'err_img',f'VZZTKINCTS-{t}.png'), img_data['img'])
+                except:
+                    pass
             time.sleep(1.1)
             img_data = self.get_img_data(nnext=True)
         if not good:
@@ -325,18 +355,24 @@ class LDPlayerWindowsAgent:
             m = (le+g)//2
             self._change_wh_m((m,TARGET_INNER_H + bar_n + bar_s + 100))
             # have saw case skipped value, need more frame to confirm
+            good = False
             for _ in range(5):
                 img_data = self.get_img_data(nnext=True)
-                bar_n, bar_s, bar_w, bar_e = bar_nswe = get_bar_nswe(img_data)
-                if bar_n >= 5:
-                    break
-                t = int(time.time())
-                idx = img_data['idx']
-                logger.error(f'KQGQQSBYQF bar_nswe={bar_nswe}, idx={idx}')
-                try:
-                    common.cv2_imwrite(os.path.join(my_path.instance_debug(),'err_img',f'KQGQQSBYQF-{t}.png'), img_data['img'])
-                except:
-                    pass
+                if img_data is not None:
+                    bar_n, bar_s, bar_w, bar_e = bar_nswe = get_bar_nswe(img_data)
+                    if bar_n >= 5:
+                        good = True
+                        break
+                    t = int(time.time())
+                    idx = img_data['idx']
+                    logger.error(f'KQGQQSBYQF bar_nswe={bar_nswe}, idx={idx}')
+                    try:
+                        common.cv2_imwrite(os.path.join(my_path.instance_debug(),'err_img',f'KQGQQSBYQF-{t}.png'), img_data['img'])
+                    except:
+                        pass
+            if not good:
+                logger.error(f'JSUAMGYYNI')
+                assert(False)
             img = img_data['img']
             img1 = np.equal(img, bg_color).all(axis=2)
             y_sum = img1.sum(axis=1)
@@ -362,18 +398,24 @@ class LDPlayerWindowsAgent:
         while g-le > 1:
             m = (le+g)//2
             self._change_wh_m((TARGET_INNER_W + bar_w + bar_e + 100,m))
+            good = False
             for _ in range(5):
                 img_data = self.get_img_data(nnext=True)
-                bar_n, bar_s, bar_w, bar_e = bar_nswe = get_bar_nswe(img_data)
-                if bar_n >= 5:
-                    break
-                t = int(time.time())
-                idx = img_data['idx']
-                logger.error(f'DTIGVLYJWS bar_nswe={bar_nswe}, idx={idx}')
-                try:
-                    common.cv2_imwrite(os.path.join(my_path.instance_debug(),'err_img',f'DTIGVLYJWS-{t}.png'), img_data['img'])
-                except:
-                    pass
+                if img_data is not None:
+                    bar_n, bar_s, bar_w, bar_e = bar_nswe = get_bar_nswe(img_data)
+                    if bar_n >= 5:
+                        good = True
+                        break
+                    t = int(time.time())
+                    idx = img_data['idx']
+                    logger.error(f'DTIGVLYJWS bar_nswe={bar_nswe}, idx={idx}')
+                    try:
+                        common.cv2_imwrite(os.path.join(my_path.instance_debug(),'err_img',f'DTIGVLYJWS-{t}.png'), img_data['img'])
+                    except:
+                        pass
+            if not good:
+                logger.error(f'MBEBNQIQLD')
+                assert(False)
             img = img_data['img']
             # have saw case skipped value, need more frame to confirm
             img1 = np.equal(img, bg_color).all(axis=2)
@@ -402,9 +444,13 @@ class LDPlayerWindowsAgent:
             return
         self.restore_game_window_m()
         img_data = self.get_img_data()
+        if img_data is None:
+            return
         bar_n,bar_s,bar_w,bar_e = get_bar_nswe(img_data)
         self._change_wh_m((TARGET_INNER_W+40+bar_w+bar_e,TARGET_INNER_H+bar_n+bar_s))
         img_data = self.get_img_data(nnext=True)
+        if img_data is None:
+            return
         _detect_bg_color(img_data)
 
     def _change_wh_m(self, wh):
@@ -415,38 +461,40 @@ class LDPlayerWindowsAgent:
                 self._fix_pos()
                 time.sleep(0.1)
             img_data = self.get_img_data()
+            if img_data is None:
+                continue
             if img_data['wh'] == wh:
                 return
 
-    def _atexit(self):
-        if self.windows_capture_control is not None:
-            self.windows_capture_control.stop()
-            self.windows_capture_control = None
+    # def _atexit(self):
+    #     if self.windows_capture_control is not None:
+    #         self.windows_capture_control.stop()
+    #         self.windows_capture_control = None
 
-    def _windows_capture__frame_handler(self, frame: Frame, capture_control: InternalCaptureControl):
-        # possible to have full zero frame, skip
-        if (not frame.frame_buffer.any()):
-            logger.warning('KGRWTXPIIJ zero content')
-            return
-        if not self._fix_pos():
-            logger.warning('NHTHXZVTNH not good pos')
-            return
-        with self.img_condition:
-            self.img_data_tmp = {
-                'img': frame.frame_buffer,
-                'idx': self.img_idx,
-            }
-            self.img_idx += 1
-            self.img_idx %= 1000
-            self.img_condition.notify()
+    # def _windows_capture__frame_handler(self, frame: Frame, capture_control: InternalCaptureControl):
+    #     # possible to have full zero frame, skip
+    #     if (not frame.frame_buffer.any()):
+    #         logger.warning('KGRWTXPIIJ zero content')
+    #         return
+    #     if not self._fix_pos():
+    #         logger.warning('NHTHXZVTNH not good pos')
+    #         return
+    #     with self.img_condition:
+    #         self.img_data_tmp = {
+    #             'img': frame.frame_buffer,
+    #             'idx': self.img_idx,
+    #         }
+    #         self.img_idx += 1
+    #         self.img_idx %= 1000
+    #         self.img_condition.notify()
 
-    def _windows_capture__closed_handler(self):
-        # print("Capture Session Closed")
-        logger.debug("AOIXXTFNAF Capture Session Closed")
-        if self.windows_capture_control is not None:
-            self.windows_capture_control.stop()
-            self.windows_capture_control = None
-            atexit.unregister(self._atexit)
+    # def _windows_capture__closed_handler(self):
+    #     # print("Capture Session Closed")
+    #     logger.debug("AOIXXTFNAF Capture Session Closed")
+    #     if self.windows_capture_control is not None:
+    #         self.windows_capture_control.stop()
+    #         self.windows_capture_control = None
+    #         atexit.unregister(self._atexit)
 
     def _fix_pos(self):
         BORDER = 10

@@ -286,6 +286,8 @@ class LDPlayerInstance(LDPlayerGlobal):
                 #     break
                 if self.get_pid() is not None:
                     break
+                if not self.is_emu_running():
+                    raise LdAgentException('emu die again')
                 if time.time() - time_start > 60:
                     logger.error(f'FPVMAQKLOG recover timeout')
                     raise LdAgentException('recover timeout')
