@@ -14,7 +14,7 @@ class WindowsCaptureProcess:
         self.config_data = config_data
 
         self.active = False
-        self.alive_time = repeat_timer.RepeatTimer(1, self.keep_process_alive)
+        self.alive_time = repeat_timer.RepeatTimer(10, self.keep_process_alive)
         self.condition = threading.Condition()
         self.p2c_queue = None
         self.c2p_queue = None
