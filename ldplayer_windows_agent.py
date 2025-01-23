@@ -116,13 +116,13 @@ class LDPlayerWindowsAgent:
             return None
 
         frame_img, frame_idx = get_frame_ret
-        if (self.last_get_img_data_ret is not None) and (frame_idx == self.last_get_img_data_ret['frame_idx']):
+        if (self.last_get_img_data_ret is not None) and (frame_idx == self.last_get_img_data_ret['idx']):
             return self.last_get_img_data_ret
 
         wh = (frame_img.shape[1], frame_img.shape[0])
 
         ret_img_data = {
-            'frame_idx': frame_idx,
+            'idx': frame_idx,
             'img': frame_img,
             'wh': wh,
         }
