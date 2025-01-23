@@ -1,5 +1,6 @@
 import const
 import logging
+import my_runtime
 import os
 import sys
 import time
@@ -14,10 +15,15 @@ logging.basicConfig(
 )
 
 def handle_exception(exc_type, exc_value, exc_traceback):
-    if issubclass(exc_type, KeyboardInterrupt):
-        sys.__excepthook__(exc_type, exc_value, exc_traceback)
-        return
-    logger.error("WCEUIDZYXD Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
+    my_runtime.at_exit = True
+    if not issubclass(exc_type, KeyboardInterrupt):
+        logger.error("WCEUIDZYXD Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
+    sys.__excepthook__(exc_type, exc_value, exc_traceback)
+    # if issubclass(exc_type, KeyboardInterrupt):
+    #     sys.__excepthook__(exc_type, exc_value, exc_traceback)
+    #     return
+    # logger.error("WCEUIDZYXD Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
+    # sys.__excepthook__(exc_type, exc_value, exc_traceback)
 
 sys.excepthook = handle_exception
 

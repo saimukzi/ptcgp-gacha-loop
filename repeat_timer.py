@@ -1,4 +1,5 @@
 import atexit
+import my_runtime
 import threading
 import traceback
 
@@ -20,6 +21,8 @@ class RepeatTimer:
         if not self.is_active:
             return
         if self.is_atexit:
+            return
+        if my_runtime.at_exit:
             return
         try:
             self.function(*self.args, **self.kwargs)
