@@ -3,6 +3,7 @@ import common
 import filelock
 import numpy as np
 import os
+import pygetwindow as gw
 import shutil
 import threading
 import time
@@ -117,20 +118,23 @@ class LDPlayerInstance(LDPlayerGlobal):
 
 
     def screencap(self):
-        if self.screencap_method == 'ADB':
-            return self.adb_screencap(), None
-        if self.screencap_method == 'WC2501':
-            if self.wc2501_windows_agent is None:
+        try:
+            if self.screencap_method == 'ADB':
                 return self.adb_screencap(), None
-            self.wc2501_windows_agent.fix_target_wh_m()
-            if self.wc2501_windows_agent.require_calibrate():
+            if self.screencap_method == 'WC2501':
+                if self.wc2501_windows_agent is None:
+                    return self.adb_screencap(), None
+                self.wc2501_windows_agent.fix_target_wh_m()
+                if self.wc2501_windows_agent.require_calibrate():
+                    return self.adb_screencap(), None
+                img, mask = self.wc2501_windows_agent.get_calibrated_img_mask_m()
+                if img is not None:
+                    return img, mask
                 return self.adb_screencap(), None
-            img, mask = self.wc2501_windows_agent.get_calibrated_img_mask_m()
-            if img is not None:
-                return img, mask
-            return self.adb_screencap(), None
-        else:
-            assert(False)
+            else:
+                assert(False)
+        except gw.PyGetWindowException:
+            raise LdAgentException('PyGetWindowException')
 
     def adb_screencap(self):
         try:
@@ -273,6 +277,9 @@ class LDPlayerInstance(LDPlayerGlobal):
             # launch WC2501
             if self.screencap_method == 'WC2501':
                 if emu_name is None: emu_name = self.i_list2()['NAME']
+                if self.wc2501_windows_agent is not None:
+                    self.wc2501_windows_agent.stop()
+                    self.wc2501_windows_agent = None
                 self.wc2501_windows_agent = ldplayer_windows_agent.LDPlayerWindowsAgent(emu_name)
                 self.wc2501_windows_agent.start()
 

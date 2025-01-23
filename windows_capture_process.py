@@ -14,7 +14,7 @@ class WindowsCaptureProcess:
         self.config_data = config_data
 
         self.active = False
-        self.alive_time = repeat_timer.RepeatTimer(10, self.keep_process_alive)
+        self.alive_timer = repeat_timer.RepeatTimer(10, self.keep_process_alive)
         self.condition = threading.Condition()
         self.p2c_queue = None
         self.c2p_queue = None
@@ -25,15 +25,17 @@ class WindowsCaptureProcess:
         with self.condition:
             self.active = True
             self.keep_process_alive()
-            self.alive_time.start()
+            self.alive_timer.start()
 
     def stop(self):
         with self.condition:
             self.active = False
             self.call(('stop',))
-            self.alive_time.stop()
+            self.alive_timer.stop()
             if self.process is not None:
+                self.process.terminate()
                 self.process.join()
+                self.process.close()
             self.process = None
             self.p2c_queue = None
             self.c2p_queue = None
@@ -68,13 +70,15 @@ class WindowsCaptureProcess:
                     return
                 try:
                     self.process.close()
+                    self.process = None
                 except:
                     pass
             # logger.debug('XHESPDJOAZ keep_process_alive 4')
             self.p2c_queue = mp.Queue()
             self.c2p_queue = mp.Queue()
-            self.process = mp.Process(target=process_run, args=(self.window_name, self.config_data, self.p2c_queue, self.c2p_queue))
-            self.process.start()
+            if self.process is None:
+                self.process = mp.Process(target=process_run, args=(self.window_name, self.config_data, self.p2c_queue, self.c2p_queue))
+                self.process.start()
 
     # return None if fail
     def get_frame(self, nnext=False):
