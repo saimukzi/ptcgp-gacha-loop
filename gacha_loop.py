@@ -1104,7 +1104,7 @@ def main():
                 t = int(time.time())
                 logger.debug(f'ZNHRHBHGMT GACHA_RESULT: {t}')
                 instance_id = config_data['INSTANCE_ID']
-                ret_fn = os.path.join(my_path.global_gacha_result(), 'all', f'{t}-{instance_id}.png')
+                ret_fn = os.path.join(my_path.instance_debug(), 'gacha_result', f'{t}-{instance_id}.png')
                 common.cv2_imwrite(ret_fn, img)
 
                 gacha_result = card_list.read_gacha_result(img)
