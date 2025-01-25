@@ -980,6 +980,7 @@ def main():
                     next_state_set.add('xxx-home')
                 if color == 'G':
                     next_state_set.add(f'xxx-gacha-01-{state_pack}')
+                    next_state_set.add(f'xxx-gacha-06-{state_pack}')
                 set_wait_state(next_state_set)
                 continue
 
@@ -1015,12 +1016,8 @@ def main():
                     set_wait_state({f'xxx-gacha-00-{state_pack}','s11-hourglass-02'})
                     continue
                 my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['G_xy_list']))
-                flag_set.add('xxx-gacha-02-spam')
-                for i in range(6):
-                    if f'GACHA{i}-DONE' in flag_set:
-                        flag_set.discard(f'GACHA{i}-DONE')
-                        flag_set.add(f'GACHA{i+1}-ING')
-                set_wait_state({state,f'xxx-gacha-02-{state_pack}',f'xxx-gacha-03-{state_pack}'},timeout=20)
+                # set_wait_state({state,f'xxx-gacha-02-{state_pack}',f'xxx-gacha-03-{state_pack}'},timeout=20)
+                set_wait_state({state,'s11-hourglass-01'})
                 continue
 
             # gacha pack, fly in animation
