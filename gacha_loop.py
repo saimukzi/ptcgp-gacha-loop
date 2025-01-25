@@ -5,6 +5,7 @@ import os
 import random
 import sys
 import time
+import windows_capture_process
 import cv2
 import ldagent
 import numpy as np
@@ -202,6 +203,15 @@ def main():
     # in xxx-gacha-04, with pm, if time too long, go normal speed
     xxxgacha03_start_time = None
 
+    S11_HOURGLASS_00_NOHAND = common.load_img_matcher(
+        os.path.join(const.MY_PATH, 'res', 's11-hourglass-00', 'nohand.max.png'),
+        os.path.join(const.MY_PATH, 'res', 's11-hourglass-00', 'nohand.min.png'),
+        os.path.join(const.MY_PATH, 'res', 's11-hourglass-00', 'nohand.svmax.png'),
+        os.path.join(const.MY_PATH, 'res', 's11-hourglass-00', 'nohand.svmin.png'),
+        os.path.join(const.MY_PATH, 'res', 's11-hourglass-00', 'nohand.mask.png'),
+        state_list_mask255f,
+    )
+
     last_gacha_result = None
 
     while True:
@@ -235,9 +245,13 @@ def main():
             if force_resetapp and my_ldagent.is_emu_running():
                 logger.debug(f'SRDWQJYJIR force_resetapp')
                 if not my_ldagent.killapp():
+                    if config_data['ENABLE_REBOOT']:
+                        force_rebootemu = True
                     continue
                 emu_ok = False
                 if not my_ldagent.resetapp():
+                    if config_data['ENABLE_REBOOT']:
+                        force_rebootemu = True
                     continue
                 allow_platinmods_speed_3 = False
                 force_killapp = False
@@ -278,7 +292,23 @@ def main():
                 state_history.append(state)
             state_history = state_history[-5:]
 
-            img, img_mask = my_ldagent.screencap()
+            #my_ldagent.keep_process_alive()
+            try:
+                img, img_mask = my_ldagent.screencap()
+            except windows_capture_process.ProcessDownException:
+                logger.debug('QPMFTJDLMP ProcessDownException')
+                my_ldagent.keep_process_alive()
+                continue
+            except windows_capture_process.RPCTimeoutException:
+                logger.debug('OVKEDBSEUP RPCTimeoutException')
+                if config_data['ENABLE_REBOOT']:
+                    force_rebootemu = True
+                continue
+            except windows_capture_process.FrameTimeoutException:
+                logger.debug('OGTZBUNCSJ FrameTimeoutException')
+                if config_data['ENABLE_REBOOT']:
+                    force_rebootemu = True
+                continue
             img = img.astype(np.float32)
 
             if state_mask_set is not None:
@@ -856,6 +886,9 @@ def main():
             # may delay to 'xxx-msg', then back to 's11-hourglass-00'
             # in very rare case, click before xxx-msg appear may cause error
             if state == 's11-hourglass-00':
+                # detect no hand
+                if common.img_match(img, img_mask, S11_HOURGLASS_00_NOHAND) < 1:
+                    continue
                 if ('GACHA4-DONE' not in flag_set) or (state_history[-1] != 'xxx-msg'):
                     if avoid_state_delay_state(): continue
                 flag_set.add('GACHA4-DONE')
@@ -959,6 +992,26 @@ def main():
                 flag_set.discard('xxx-cardlist-spam')
                 # may delay to s11-hourglass-02
                 if match_state_mask_set('s11-hourglass-02', state_mask_set):
+                    if avoid_state_delay_state(): continue
+                state_pack = state[13:]
+                if state_pack != TARGET_PACK:
+                    my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['R_xy_list']))
+                    set_wait_state({f'xxx-gacha-00-{state_pack}','s11-hourglass-02'})
+                    continue
+                my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state]['G_xy_list']))
+                flag_set.add('xxx-gacha-02-spam')
+                for i in range(6):
+                    if f'GACHA{i}-DONE' in flag_set:
+                        flag_set.discard(f'GACHA{i}-DONE')
+                        flag_set.add(f'GACHA{i+1}-ING')
+                set_wait_state({state,f'xxx-gacha-02-{state_pack}',f'xxx-gacha-03-{state_pack}'},timeout=20)
+                continue
+
+            # may delay to s11-hourglass-00
+            if state.startswith('xxx-gacha-06-'):
+                flag_set.discard('xxx-cardlist-spam')
+                # may delay to s11-hourglass-02
+                if match_state_mask_set('s11-hourglass-00', state_mask_set):
                     if avoid_state_delay_state(): continue
                 state_pack = state[13:]
                 if state_pack != TARGET_PACK:

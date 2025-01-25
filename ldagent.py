@@ -167,6 +167,11 @@ class LDPlayerInstance(LDPlayerGlobal):
             adb_img = self.adb_screencap()
             self.wc2501_windows_agent.calibrate_m(adb_img, mask_hwaf1)
 
+    def keep_process_alive(self):
+        if self.screencap_method == 'WC2501':
+            return self.wc2501_windows_agent.keep_process_alive()
+        return
+
     # def screencap_mask(self):
     #     if self.screencap_method == 'WC2501':
     #         return self.wc2501_windows_agent.get_mask_hwa()

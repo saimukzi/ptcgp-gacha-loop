@@ -63,16 +63,25 @@ def load_state(input_mask255f_img = None):
         })
     
     state_fix_list = os.listdir(os.path.join(const.MY_PATH, 'res', 'state', 'fix'))
-    state_fix_list = filter(lambda x: x.endswith('.max.png'), state_fix_list)
-    state_fix_list = map(lambda x: x[:-8], state_fix_list)
+    state_fix_list = filter(lambda x: x.endswith('.mask.png'), state_fix_list)
+    state_fix_list = map(lambda x: x[:-9], state_fix_list)
     state_fix_list = list(state_fix_list)
     for state_fix in state_fix_list:
         state0, state1 = state_fix.split('.')
+        img_mask_fn = os.path.join(const.MY_PATH, 'res', 'state', 'fix', f'{state_fix}.mask.png')
+
         img_min_fn = os.path.join(const.MY_PATH, 'res', 'state', 'fix', f'{state_fix}.min.png')
+        if not os.path.exists(img_min_fn):
+            img_min_fn = os.path.join(const.MY_PATH, 'res', 'state', f'{state1}.min.png')
         img_max_fn = os.path.join(const.MY_PATH, 'res', 'state', 'fix', f'{state_fix}.max.png')
-        img_mask_fn = os.path.join(const.MY_PATH, 'res', 'state', 'fix', f'{state_fix}.mask.png')
+        if not os.path.exists(img_max_fn):
+            img_max_fn = os.path.join(const.MY_PATH, 'res', 'state', f'{state1}.max.png')
+        img_svmin_fn = os.path.join(const.MY_PATH, 'res', 'state', 'fix', f'{state_fix}.svmin.png')
+        if not os.path.exists(img_svmin_fn):
+            img_svmin_fn = os.path.join(const.MY_PATH, 'res', 'state', f'{state1}.svmin.png')
         img_svmax_fn = os.path.join(const.MY_PATH, 'res', 'state', 'fix', f'{state_fix}.svmax.png')
-        img_mask_fn = os.path.join(const.MY_PATH, 'res', 'state', 'fix', f'{state_fix}.mask.png')
+        if not os.path.exists(img_svmax_fn):
+            img_svmax_fn = os.path.join(const.MY_PATH, 'res', 'state', f'{state1}.svmax.png')
 
         img_min = common.cv2_imread(img_min_fn).astype(np.float32)
         img_max = common.cv2_imread(img_max_fn).astype(np.float32)

@@ -105,6 +105,9 @@ class LDPlayerWindowsAgent:
     #             # return ret_img, img_wh
     #             return ret_img_data
 
+    def keep_process_alive(self):
+        self.windows_capture_process.keep_process_alive()
+
     def get_img_data(self, nnext=False):
         if not self._fix_pos():
             nnext = True
@@ -307,6 +310,9 @@ class LDPlayerWindowsAgent:
             logger.debug('BTQSBSMJIM get_img_data=None')
             return
         bareexist = get_bareexist(img_data)
+        if bareexist not in bareexist_to_target_outer_wh_dict:
+            logger.warning('PVTFGZRBFV bareexist not in bareexist_to_target_outer_wh_dict')
+            return
         self._change_wh_m(bareexist_to_target_outer_wh_dict[bareexist])
 
     def _detect_target_outer_wh_m(self):
