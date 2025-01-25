@@ -5,7 +5,6 @@ import os
 import random
 import sys
 import time
-import windows_capture_process
 import cv2
 import ldagent
 import numpy as np
@@ -184,6 +183,8 @@ def main():
     stable_time = None
     # giveup time
     last_giveup_time = 0
+    # allow action after first known state
+    first_known_state_allow_action = False
 
     state_delay_state = None
     state_delay_time = 0
@@ -286,6 +287,8 @@ def main():
                 state_history = ['UNKNOWN']*10
                 platinmods_speed = None
                 target_platinmods_speed = 1
+                first_known_state_allow_action = False
+                my_ldagent.set_gameloop_enable_wc2501_windows_agent(False)
                 continue
 
             if state != 'UNKNOWN':
@@ -293,22 +296,7 @@ def main():
             state_history = state_history[-5:]
 
             #my_ldagent.keep_process_alive()
-            try:
-                img, img_mask = my_ldagent.screencap()
-            except windows_capture_process.ProcessDownException:
-                logger.debug('QPMFTJDLMP ProcessDownException')
-                my_ldagent.keep_process_alive()
-                continue
-            except windows_capture_process.RPCTimeoutException:
-                logger.debug('OVKEDBSEUP RPCTimeoutException')
-                if config_data['ENABLE_REBOOT']:
-                    force_rebootemu = True
-                continue
-            except windows_capture_process.FrameTimeoutException:
-                logger.debug('OGTZBUNCSJ FrameTimeoutException')
-                if config_data['ENABLE_REBOOT']:
-                    force_rebootemu = True
-                continue
+            img, img_mask = my_ldagent.screencap()
             img = img.astype(np.float32)
 
             if state_mask_set is not None:
@@ -364,6 +352,14 @@ def main():
             else:
                 stable_state = state
                 stable_time = time.time()
+
+            if state != 'UNKNOWN':
+                first_known_state_allow_action = True
+
+            if not first_known_state_allow_action:
+                continue
+
+            my_ldagent.set_gameloop_enable_wc2501_windows_agent(True)
 
             if my_ldagent.screencap_require_calibrate():
                 logger.debug(f'YKLZVQOJNZ screencap_require_calibrate')

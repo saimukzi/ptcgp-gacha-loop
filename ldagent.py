@@ -8,7 +8,7 @@ import shutil
 import threading
 import time
 import traceback
-import windows_capture
+import windows_capture_process
 import cv2
 import subprocess
 import ldplayer_windows_agent
@@ -101,6 +101,7 @@ class LDPlayerInstance(LDPlayerGlobal):
         self.last_adb_screencap_time = 0
 
         self.wc2501_windows_agent = None
+        self.gameloop_enable_wc2501_windows_agent = False
 
     def is_emu_running(self):
         for _ in range(60):
@@ -117,20 +118,42 @@ class LDPlayerInstance(LDPlayerGlobal):
         logger.error(f'ZVRWINULMI is running no output 60x10sec')
         assert(False)
 
+    def set_gameloop_enable_wc2501_windows_agent(self, value):
+        self.gameloop_enable_wc2501_windows_agent = value
+        if self.screencap_method != 'WC2501':
+            return
+        if self.wc2501_windows_agent is None:
+            return
+        if value:
+            self.wc2501_windows_agent.start()
+        else:
+            self.wc2501_windows_agent.stop()
 
     def screencap(self):
         try:
             if self.screencap_method == 'ADB':
                 return self.adb_screencap(), None
             if self.screencap_method == 'WC2501':
+                if not self.gameloop_enable_wc2501_windows_agent:
+                    return self.adb_screencap(), None
                 if self.wc2501_windows_agent is None:
                     return self.adb_screencap(), None
-                self.wc2501_windows_agent.fix_target_wh_m()
-                if self.wc2501_windows_agent.require_calibrate():
-                    return self.adb_screencap(), None
-                img, mask = self.wc2501_windows_agent.get_calibrated_img_mask_m()
-                if img is not None:
-                    return img, mask
+                try:
+                    self.wc2501_windows_agent.fix_target_wh_m()
+                    if self.wc2501_windows_agent.require_calibrate():
+                        return self.adb_screencap(), None
+                    img, mask = self.wc2501_windows_agent.get_calibrated_img_mask_m()
+                    if img is not None:
+                        return img, mask
+                except windows_capture_process.ProcessDownException:
+                    logger.debug('QPMFTJDLMP ProcessDownException')
+                    self.wc2501_windows_agent.keep_process_alive()
+                except windows_capture_process.RPCTimeoutException:
+                    logger.debug('OVKEDBSEUP RPCTimeoutException')
+                    raise LdAgentException('RPCTimeoutException')
+                except windows_capture_process.FrameTimeoutException:
+                    logger.debug('OGTZBUNCSJ FrameTimeoutException')
+                    raise LdAgentException('FrameTimeoutException')
                 return self.adb_screencap(), None
             else:
                 assert(False)
@@ -160,20 +183,29 @@ class LDPlayerInstance(LDPlayerGlobal):
 
     def screencap_require_calibrate(self):
         if self.screencap_method == 'WC2501':
-            return self.wc2501_windows_agent.require_calibrate()
+            if self.gameloop_enable_wc2501_windows_agent:
+                return self.wc2501_windows_agent.require_calibrate()
+            else:
+                return False
         return False
 
     def calibrate_screencap(self, mask_hwaf1):
         if self.screencap_method == 'WC2501':
+            if not self.gameloop_enable_wc2501_windows_agent:
+                return
             if not self.wc2501_windows_agent.require_calibrate():
                 return
             adb_img = self.adb_screencap()
             self.wc2501_windows_agent.calibrate_m(adb_img, mask_hwaf1)
 
-    def keep_process_alive(self):
-        if self.screencap_method == 'WC2501':
-            return self.wc2501_windows_agent.keep_process_alive()
-        return
+    # def keep_process_alive(self):
+    #     if self.screencap_method == 'WC2501':
+    #         if not self.gameloop_enable_wc2501_windows_agent:
+    #             return
+    #         if self.wc2501_windows_agent is None:
+    #             return
+    #         self.wc2501_windows_agent.keep_process_alive()
+    #     return
 
     # def screencap_mask(self):
     #     if self.screencap_method == 'WC2501':
@@ -214,6 +246,8 @@ class LDPlayerInstance(LDPlayerGlobal):
 
     def recover(self):
         logger.debug('YTQEMXRINZ recover START')
+
+        self.gameloop_enable_wc2501_windows_agent = False
 
         try:
             # loop until setting is good
@@ -289,7 +323,8 @@ class LDPlayerInstance(LDPlayerGlobal):
                     self.wc2501_windows_agent.stop()
                     self.wc2501_windows_agent = None
                 self.wc2501_windows_agent = ldplayer_windows_agent.LDPlayerWindowsAgent(emu_name)
-                self.wc2501_windows_agent.start()
+                if self.gameloop_enable_wc2501_windows_agent:
+                    self.wc2501_windows_agent.start()
 
             # launch app
             time_start = time.time()
@@ -315,6 +350,7 @@ class LDPlayerInstance(LDPlayerGlobal):
 
     def killemu(self):
         logger.debug('ROSHSALFRW killemu START')
+        self.gameloop_enable_wc2501_windows_agent = False
         for _ in range(600):
             if not self.is_emu_running():
                 return
@@ -325,6 +361,8 @@ class LDPlayerInstance(LDPlayerGlobal):
 
     def copyemu(self, new_name):
         logger.debug(f'ASCYGHOHGH copyemu START new_name = {new_name}')
+
+        self.gameloop_enable_wc2501_windows_agent = False
 
         # check if new_name already exists
         list2_ret = self.list2()
@@ -360,6 +398,7 @@ class LDPlayerInstance(LDPlayerGlobal):
 
     def killapp(self):
         try:
+            self.gameloop_enable_wc2501_windows_agent = False
             self._i_ldconsole_cmd(['killapp', '--packagename', PACKAGE_NAME])
             return True
         except:
@@ -369,6 +408,7 @@ class LDPlayerInstance(LDPlayerGlobal):
 
     def resetapp(self):
         try:
+            self.gameloop_enable_wc2501_windows_agent = False
             self._i_adb_cmd(['shell', 'pm', 'clear', PACKAGE_NAME])
             return True
         except:
