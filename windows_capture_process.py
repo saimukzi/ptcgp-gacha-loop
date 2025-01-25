@@ -131,6 +131,7 @@ def process_run(window_name, config_data, p2c_queue, c2p_queue):
     img_data_tmp = None
     img_idx = 0
     closed = False
+    deadman_time = time.time() + DEADMAN_SEC
 
     capture = WindowsCapture(
         cursor_capture=False,
@@ -143,9 +144,16 @@ def process_run(window_name, config_data, p2c_queue, c2p_queue):
     def on_frame_arrived(frame: Frame, capture_control: InternalCaptureControl):
         nonlocal img_data_tmp
         nonlocal img_idx
+        nonlocal windows_capture_control
+        nonlocal deadman_time
 
         if (not frame.frame_buffer.any()):
             logger.warning('KGRWTXPIIJ zero content')
+            return
+        if (time.time() >= deadman_time):
+            logger.warning('WJEVBGAQZW deadman switch')
+            if windows_capture_control is not None:
+                windows_capture_control.stop()
             return
         with condition:
             img_data_tmp = {
@@ -169,8 +177,6 @@ def process_run(window_name, config_data, p2c_queue, c2p_queue):
     atexit.register(my_atexit)
     windows_capture_control = capture.start_free_threaded()
 
-    deadman_time = time.time() + DEADMAN_SEC
-
     last_img_idx = None
     while True:
         try:
@@ -180,6 +186,9 @@ def process_run(window_name, config_data, p2c_queue, c2p_queue):
                 break
             if time.time() >= deadman_time:
                 logger.debug('QOVKCHADMJ deadman switch')
+                break
+            if windows_capture_control.is_finished():
+                logger.debug('FWUBMOTVOZ capture finished')
                 break
             cmd = p2c_queue.get(block=True, timeout=1)
             deadman_time = time.time() + DEADMAN_SEC
