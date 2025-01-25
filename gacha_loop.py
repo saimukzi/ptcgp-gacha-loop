@@ -905,6 +905,13 @@ def main():
                 set_wait_state(state_list.state_prefix('xxx-gacha-02-')|state_list.state_prefix('xxx-gacha-03-')|{state,'xxx-msg','xxx-dialog-lw','xxx-dialog-lwc'},timeout=20)
                 continue
 
+            # I tried my fking best to avoid this state
+            # but it still appear
+            if state == 's11-hourglass-01-err':
+                logger.warning(f'NLFQYZVOYY s11-hourglass-01-err')
+                force_rebootemu = True
+                continue
+
             # no energy
             # no double click
             if state == 's12-end-00':
