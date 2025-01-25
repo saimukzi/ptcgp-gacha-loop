@@ -1,5 +1,6 @@
 import common
 import filelock
+import multiprocessing
 import my_path
 import os
 import random
@@ -1388,4 +1389,5 @@ ALLOW_PLATINMODS_SPEED_3_STATE_SET = {
 }
 
 if __name__ == '__main__':
+    multiprocessing.freeze_support()
     main()
