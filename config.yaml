@@ -111,3 +111,8 @@ FIRST_SWIPE_UP_KILL_APP: false
 # 支援 Platinmods，預設為 false
 # 在沒有 Platinmods 的情況下，不要改動這個設定
 ENABLE_PLATINMODS: false
+
+# SCREENCAP_METHOD: 截圖方法
+# WC2501: 使用 Windows 的截圖功能 (2025年1月加入)
+# ADB: 使用 ADB 截圖 (初期方法)
+SCREENCAP_METHOD: "WC2501"
