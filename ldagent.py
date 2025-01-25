@@ -79,7 +79,8 @@ class LDPlayerGlobal:
         if process_ret.returncode != 0:
             if check:
                 logger.error(f'QNJYROXMAM cmd={cmd} returncode={process_ret.returncode}')
-                assert(False)
+                # assert(False)
+                raise AdbCmdException(f'cmd={cmd} returncode={process_ret.returncode}')
             else:
                 logger.debug(f'FWQDYCITFB cmd={cmd} returncode={process_ret.returncode}')
         ret = process_ret.stdout
@@ -154,6 +155,8 @@ class LDPlayerInstance(LDPlayerGlobal):
         except subprocess.TimeoutExpired:
             logger.error(f'SZLGCPJJAD adb_exec timeout')
             raise LdAgentException('adb_exec timeout')
+        except AdbCmdException:
+            raise LdAgentException('adb_exec error')
 
     def screencap_require_calibrate(self):
         if self.screencap_method == 'WC2501':
@@ -813,6 +816,9 @@ def get_ldagent(config_data):
 #     return process_stdout
 
 class LdAgentException(Exception):
+    pass
+
+class AdbCmdException(Exception):
     pass
 
 if __name__ == '__main__':
