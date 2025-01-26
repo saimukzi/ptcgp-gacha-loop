@@ -158,7 +158,7 @@ def load_state(input_mask255f_img = None):
                 'G_xy_list': _to_xy_list(img, 'G'),
                 'B_xy_list': _to_xy_list(img, 'B'),
                 'RG_xy_list': _to_xy_list(img, 'RG'),
-                'RB_xy_list': _to_xy_list(img, 'BB'),
+                'RB_xy_list': _to_xy_list(img, 'RB'),
                 'BG_xy_list': _to_xy_list(img, 'BG'),
                 'RGB_xy_list': _to_xy_list(img, 'RGB'),
             }
