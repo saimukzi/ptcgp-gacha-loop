@@ -113,7 +113,7 @@ def main():
 
     flag_set = set()
     
-    state_history = ['UNKNOWN']*10
+    state_history = [('UNKNOWN',0)]*10
     state = 'UNKNOWN'
 
     emu_ok = False
@@ -135,11 +135,12 @@ def main():
     def avoid_double_act():
         nonlocal state_double_act_state
         nonlocal state_double_act_time
-        if state_history[-1] == state:
+        now = time.time()
+        if (state_history[-1][0] == state) and (now - state_history[-1][1] < 1):
             if state_double_act_state != state:
                 state_double_act_state = state
-                state_double_act_time = time.time()
-            if time.time() - state_double_act_time < 1:
+                state_double_act_time = now
+            if now - state_double_act_time < 1:
                 logger.debug(f'YLLQZHFCHD avoid_double_act state={state}')
                 return True
             state_double_act_state = None
@@ -192,7 +193,7 @@ def main():
     def avoid_state_delay_state():
         nonlocal state_delay_state
         nonlocal state_delay_time
-        if state_delay_state != state or state_history[-1] != state:
+        if state_delay_state != state or state_history[-1][0] != state:
             state_delay_state = state
             state_delay_time = time.time()
         if time.time() - state_delay_time < 1:
@@ -285,7 +286,7 @@ def main():
                 emu_ok = True
                 flag_set = set()
                 state_mask_set = None
-                state_history = ['UNKNOWN']*10
+                state_history = [('UNKNOWN',0)]*10
                 platinmods_speed = None
                 target_platinmods_speed = 1
                 first_known_state_allow_action = False
@@ -293,7 +294,7 @@ def main():
                 continue
 
             if state != 'UNKNOWN':
-                state_history.append(state)
+                state_history.append((state,time.time()))
             state_history = state_history[-5:]
 
             #my_ldagent.keep_process_alive()
@@ -886,7 +887,7 @@ def main():
                 # detect no hand
                 if common.img_match(img, img_mask, S11_HOURGLASS_00_NOHAND) < 1:
                     continue
-                if ('GACHA4-DONE' not in flag_set) or (state_history[-1] != 'xxx-msg'):
+                if ('GACHA4-DONE' not in flag_set) or (state_history[-1][0] != 'xxx-msg'):
                     if avoid_state_delay_state(): continue
                 flag_set.add('GACHA4-DONE')
                 # btn 開封1包
@@ -915,6 +916,9 @@ def main():
             # no energy
             # no double click
             if state == 's12-end-00':
+                # may delay to s11-hourglass-02
+                if match_state_mask_set('s11-hourglass-02', state_mask_set):
+                    if avoid_state_delay_state(): continue
                 if avoid_double_act(): continue
                 flag_set.discard('xxx-cardlist-spam')
                 flag_set.add('GACHA5-DONE') # mark energy burn out
@@ -979,6 +983,8 @@ def main():
             if state.startswith('xxx-gacha-00-'):
                 flag_set.discard('xxx-gacha-00-before-spam')
 
+                if avoid_double_act(): continue
+
                 state_pack = state[13:]
                 color = XXX_GACHA_00_STATE_TARGET_TO_COLOR_DICT[(state_pack, TARGET_PACK)]
                 my_ldagent.tap(*_get_xy(state_list.state_to_action_dist[state][f'{color}_xy_list']))
@@ -986,10 +992,12 @@ def main():
                 next_state_set = {state}
                 if color == 'R':
                     next_state_set.add('xxx-home')
-                if color == 'G':
+                elif color == 'G':
                     next_state_set.add(f'xxx-gacha-01-{state_pack}')
                     next_state_set.add(f'xxx-gacha-06-{state_pack}')
                     next_state_set.add(f's12-end-00')
+                else:
+                    next_state_set |= state_list.state_prefix('xxx-gacha-00-')
                 set_wait_state(next_state_set)
                 continue
 
@@ -1013,11 +1021,12 @@ def main():
                 set_wait_state({state,f'xxx-gacha-02-{state_pack}',f'xxx-gacha-03-{state_pack}'},timeout=20)
                 continue
 
-            # may delay to s11-hourglass-00
             if state.startswith('xxx-gacha-06-'):
                 flag_set.discard('xxx-cardlist-spam')
+                # may delay to s11-hourglass-00
                 # may delay to s11-hourglass-02
-                if match_state_mask_set('s11-hourglass-00', state_mask_set):
+                if     match_state_mask_set('s11-hourglass-00', state_mask_set) \
+                    or match_state_mask_set('s11-hourglass-02', state_mask_set):
                     if avoid_state_delay_state(): continue
                 state_pack = state[13:]
                 if state_pack != TARGET_PACK:
@@ -1120,7 +1129,7 @@ def main():
 
                 # 20250116-2344: I saw it let a leaf get away, very sus
                 # possible first click no response
-                if (state != state_history[-1]) and (gacha_result!=last_gacha_result):
+                if (state != state_history[-1][0]) and (gacha_result!=last_gacha_result):
                     ret_fn = os.path.join(my_path.global_gacha_result(), f'{t}-{instance_id}.png')
                     common.cv2_imwrite(ret_fn, img)
 
