@@ -64,7 +64,7 @@ def load_img_matcher(img_min_fn,img_max_fn,img_svmin_fn,img_svmax_fn,img_mask_fn
         'img_mask': img_mask,
     }
 
-def img_match(src_img, src_img_mask, state_data, debug=True):
+def img_match(src_img, src_img_mask, state_data, debug=False):
     imgmx = src_img.max(axis=2)
     imgmn = src_img.min(axis=2)
     imgs = imgmx-imgmn
