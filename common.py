@@ -1,3 +1,4 @@
+import const
 import cv2
 import my_logger
 import numpy as np
@@ -63,7 +64,7 @@ def load_img_matcher(img_min_fn,img_max_fn,img_svmin_fn,img_svmax_fn,img_mask_fn
         'img_mask': img_mask,
     }
 
-def img_match(src_img, src_img_mask, state_data):
+def img_match(src_img, src_img_mask, state_data, debug=True):
     imgmx = src_img.max(axis=2)
     imgmn = src_img.min(axis=2)
     imgs = imgmx-imgmn
@@ -96,6 +97,16 @@ def img_match(src_img, src_img_mask, state_data):
     # mask = mask.reshape(mask.shape[:2])
     mask = mask / 255
     diff = diff * mask
+
+    if debug:
+        fn = os.path.join(const.MY_PATH, 'debug', 'img_match', f'{int(time.time())}.diff.png')
+        my_logger.logger.debug(f'img_match: {fn}')
+        cv2_imwrite(fn, diff[:,:,:3].astype(np.uint8))
+        fn = os.path.join(const.MY_PATH, 'debug', 'img_match', f'{int(time.time())}.mask.png')
+        mask_hwc = np.zeros((mask.shape[0], mask.shape[1], 3), dtype=np.uint8)
+        mask_hwc[:,:] = mask * 255
+        cv2_imwrite(fn, mask_hwc.astype(np.uint8))
+
     mask_sum = mask.sum()
     diff = diff.sum() / mask_sum / src_img.shape[2]
 

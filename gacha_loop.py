@@ -206,10 +206,10 @@ def main():
     xxxgacha03_start_time = None
 
     S11_HOURGLASS_00_NOHAND = common.load_img_matcher(
-        os.path.join(const.MY_PATH, 'res', 's11-hourglass-00', 'nohand.max.png'),
         os.path.join(const.MY_PATH, 'res', 's11-hourglass-00', 'nohand.min.png'),
-        os.path.join(const.MY_PATH, 'res', 's11-hourglass-00', 'nohand.svmax.png'),
+        os.path.join(const.MY_PATH, 'res', 's11-hourglass-00', 'nohand.max.png'),
         os.path.join(const.MY_PATH, 'res', 's11-hourglass-00', 'nohand.svmin.png'),
+        os.path.join(const.MY_PATH, 'res', 's11-hourglass-00', 'nohand.svmax.png'),
         os.path.join(const.MY_PATH, 'res', 's11-hourglass-00', 'nohand.mask.png'),
         state_list_mask255f,
     )
@@ -989,6 +989,7 @@ def main():
                 if color == 'G':
                     next_state_set.add(f'xxx-gacha-01-{state_pack}')
                     next_state_set.add(f'xxx-gacha-06-{state_pack}')
+                    next_state_set.add(f's12-end-00')
                 set_wait_state(next_state_set)
                 continue
 

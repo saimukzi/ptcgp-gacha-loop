@@ -2,6 +2,7 @@ import argparse
 import common
 import concurrent.futures as cf
 import const
+import cv2
 import os
 import state_list
 # import threading
@@ -26,10 +27,18 @@ def main():
             img_fn = os.path.join(state_path, fn)
             state_fn_list.append((state_name, img_fn))
     
+    # new file first
+    state_fn_list = sorted(state_fn_list)
+    state_fn_list = reversed(state_fn_list)
+    
     def process_state_fn(state_fn):
         state_name, img_fn = state_fn
-        img = common.cv2_imread(img_fn)
-        state = state_list.get_state(img, None)
+        img = common.cv2_imread(img_fn, flags=cv2.IMREAD_UNCHANGED)
+        mask = None
+        if img.shape[2] == 4:
+            mask = img[:,:,3:4]
+            img = img[:,:,0:3]
+        state = state_list.get_state(img, mask)
         print(f'{state_name}: {img_fn} -> {state}')
         assert(state == state_name)
 

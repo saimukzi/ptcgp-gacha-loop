@@ -13,6 +13,7 @@ import config
 def main():
     parser = argparse.ArgumentParser(description='Capture state')
     parser.add_argument('--append', action='store_true')
+    parser.add_argument('--until_stable', action='store_true')
     parser.add_argument('config', type=str)
     parser.add_argument('state', type=str)
     parser.add_argument('sec', type=int, nargs='?')
@@ -56,9 +57,17 @@ def main():
             shutil.copyfile(img_svmax_fn, img_svmax_fn + '.bak')
             img_svmax = common.cv2_imread(img_svmax_fn)
 
+    os.makedirs(os.path.join(const.MY_PATH, 'res', 'state'), exist_ok=True)
+
     t = time.time()
+    tt = time.time()
     i = 0
     while True:
+        if args.until_stable:
+            last_img_min = img_min
+            last_img_max = img_max
+            last_img_svmin = img_svmin
+            last_img_svmax = img_svmax
         img = my_ldagent.adb_screencap()
         img_zmax = img.max(axis=2)
         img_zmin = img.min(axis=2)
@@ -70,6 +79,24 @@ def main():
         img_max = cv2_max(img_max, img)
         img_svmin = cv2_min(img_svmin, imgsv)
         img_svmax = cv2_max(img_svmax, imgsv)
+        if args.until_stable:
+            good = True
+            good = good and not(check_diff(last_img_min, img_min))
+            good = good and not(check_diff(last_img_max, img_max))
+            good = good and not(check_diff(last_img_svmin, img_svmin))
+            good = good and not(check_diff(last_img_svmax, img_svmax))
+            if not good:
+                # print('Not stable')
+                i = 0
+                t = time.time()
+
+        if time.time() - tt >= 30:
+            common.cv2_imwrite(img_max_fn, img_max)
+            common.cv2_imwrite(img_min_fn, img_min)
+            common.cv2_imwrite(img_svmax_fn, img_svmax)
+            common.cv2_imwrite(img_svmin_fn, img_svmin)
+            tt = time.time()
+
         i += 1
         if args.sec is None and i >= 100:
             break
@@ -77,12 +104,23 @@ def main():
             break
         time.sleep(0.05)
     
-    os.makedirs(os.path.join(const.MY_PATH, 'res', 'state'), exist_ok=True)
-
     common.cv2_imwrite(img_max_fn, img_max)
     common.cv2_imwrite(img_min_fn, img_min)
     common.cv2_imwrite(img_svmax_fn, img_svmax)
     common.cv2_imwrite(img_svmin_fn, img_svmin)
+
+def check_diff(old_img, new_img):
+    if old_img is None:
+        return True
+    diff = old_img - new_img
+    diff = np.abs(diff)
+    diff = diff.sum()
+    diff = diff / old_img.size
+    if diff > 0.01:
+        print(f'diff: {diff}')
+        return True
+    return False
+
 
 def cv2_min(i0, i1):
     if i0 is None:
