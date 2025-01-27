@@ -42,14 +42,15 @@ ENABLE_PLATINMODS: false
 
 SCREENCAP_METHOD: "WC2501"
 
+# 不公開的秘技
+# 不要問我如何使用
+# 自己去看程式碼
+
 WORK_PATH: null
-
 VAR_PATH: null
-
 DEBUG_PATH: null
-
 GACHA_RESULT_PATH: null
-
 BINGO_PATH: null
-
 LOG_PATH: null
+
+# IMPORT_LIST: null

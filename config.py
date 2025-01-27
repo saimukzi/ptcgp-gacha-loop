@@ -13,7 +13,8 @@ def get_config(fn):
     global my_config_data
 
     ret = yaml.load(open(DEFAULT_CONFIG_PATH, 'rt', encoding='utf-8'), Loader=yaml.FullLoader)
-    config_data = yaml.load(open(fn, 'rt', encoding='utf-8'), Loader=yaml.FullLoader)
+    # config_data = yaml.load(open(fn, 'rt', encoding='utf-8'), Loader=yaml.FullLoader)
+    config_data = get_config_with_import(fn)
 
     # old value key
     if ('STOP_AT_WONDER_RARE_PACK' not in config_data) and ('STOP_AT_RARE_PACK' in config_data):
@@ -46,6 +47,17 @@ def get_config(fn):
     my_config_data = ret
 
     return ret
+
+def get_config_with_import(fn):
+    ret = yaml.load(open(fn, 'rt', encoding='utf-8'), Loader=yaml.FullLoader)
+    ret0 = {}
+    if ('IMPORT_LIST' in ret) and (ret['IMPORT_LIST'] is not None):
+        for import_fn in ret['IMPORT_LIST']:
+            import_fn0 = os.path.join(os.path.dirname(fn), import_fn)
+            ret1 = get_config_with_import(import_fn0)
+            ret0.update(ret1)
+    ret0.update(ret)
+    return ret0
 
 def check(config_data, check_TARGET_CARD_LIST=True):
     assert('TARGET_PACK' in config_data)
