@@ -1182,7 +1182,7 @@ def main():
                         force_copyemu_name = config_data['COPY_EMU_NAME']
                         force_copyemu_name = force_copyemu_name.replace('{INSTANCE_ID}', instance_id)
                         force_copyemu_name = force_copyemu_name.replace('{LD_EMU_NAME}', config_data['LD_EMU_NAME'])
-                        force_copyemu_name = force_copyemu_name.replace('{UNIX_TIMESTAMP}', t)
+                        force_copyemu_name = force_copyemu_name.replace('{UNIX_TIMESTAMP}', str(t))
                         force_copyemu_name = force_copyemu_name.replace('{USERNAME}', _username)
                         force_copyemu_name = force_copyemu_name.replace('{YYYY}', yyyymmddhhmmss[:4])
                         force_copyemu_name = force_copyemu_name.replace('{YY}', yyyymmddhhmmss[2:4])
