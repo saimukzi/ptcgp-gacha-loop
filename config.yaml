@@ -93,6 +93,13 @@ MIN_FREE_DISK_SPACE: 10737418240
 # - 不可以是 c40, c408, 就是不知道為甚麼
 USERNAME: "abc{IDX}"
 
+# 複製模擬器名稱的格式
+#  {YYYY}/{YY}: 4/2位數年份
+#  {MM}/{DD}: 2位數月份/日期
+#  {hh}/{mm}/{ss}: 2位數小時/分鐘/秒
+#  {USERNAME}: 使用者名稱
+COPY_EMU_NAME: "{USERNAME}-{YYYY}{MM}{DD}-{hh}{mm}{ss}"
+
 # 開包，手指橫滑打開卡包秒數
 SWIPE_PACK_SEC: 1.0
 

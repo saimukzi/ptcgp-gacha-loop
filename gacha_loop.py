@@ -217,6 +217,8 @@ def main():
 
     last_gacha_result = None
 
+    username = None # username of created account, can be None if forgot
+
     while True:
         try:
             update_logger(config_data)
@@ -256,6 +258,7 @@ def main():
                     if config_data['ENABLE_REBOOT']:
                         force_rebootemu = True
                     continue
+                username = None
                 allow_platinmods_speed_3 = False
                 force_killapp = False
                 check_cycle_last_reset = time.time()
@@ -632,6 +635,7 @@ def main():
                 flag_set.discard('s05-name-err')
                 yyyymmddhhmmss = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
                 username = USERNAME
+                username = username.replace('{INSTANCE_ID}', INSTANCE_ID)
                 username = username.replace('{IDX}', '%03d' % (user_idx%1000))
                 f = 10
                 for d in range(1,6):
@@ -1173,7 +1177,18 @@ def main():
                         logger.debug(f'PUOWNPVFXS BACKUP {t}')
                         ret_fn = os.path.join(my_path.global_bingo(), f'{t}-{instance_id}.png')
                         common.cv2_imwrite(ret_fn, img)
-                        force_copyemu_name = config_data['LD_EMU_NAME'] + '-' + str(t)
+                        # force_copyemu_name = config_data['LD_EMU_NAME'] + '-' + str(t)
+                        _username = username if username else 'UNKNOWN'
+                        force_copyemu_name = config_data['COPY_EMU_NAME']
+                        force_copyemu_name = force_copyemu_name.replace('{INSTANCE_ID}', INSTANCE_ID)
+                        force_copyemu_name = force_copyemu_name.replace('{USERNAME}', _username)
+                        force_copyemu_name = force_copyemu_name.replace('{YYYY}', yyyymmddhhmmss[:4])
+                        force_copyemu_name = force_copyemu_name.replace('{YY}', yyyymmddhhmmss[2:4])
+                        force_copyemu_name = force_copyemu_name.replace('{MM}', yyyymmddhhmmss[4:6])
+                        force_copyemu_name = force_copyemu_name.replace('{DD}', yyyymmddhhmmss[6:8])
+                        force_copyemu_name = force_copyemu_name.replace('{hh}', yyyymmddhhmmss[8:10])
+                        force_copyemu_name = force_copyemu_name.replace('{mm}', yyyymmddhhmmss[10:12])
+                        force_copyemu_name = force_copyemu_name.replace('{ss}', yyyymmddhhmmss[12:14])
                         force_copyemu_resetapp = True
                         check_cycle_last_reset = time.time()
                         continue
