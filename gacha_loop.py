@@ -1178,6 +1178,7 @@ def main():
                         ret_fn = os.path.join(my_path.global_bingo(), f'{t}-{instance_id}.png')
                         common.cv2_imwrite(ret_fn, img)
                         # force_copyemu_name = config_data['LD_EMU_NAME'] + '-' + str(t)
+                        yyyymmddhhmmss = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
                         _username = username if username else 'UNKNOWN'
                         force_copyemu_name = config_data['COPY_EMU_NAME']
                         force_copyemu_name = force_copyemu_name.replace('{INSTANCE_ID}', instance_id)
