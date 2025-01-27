@@ -32,7 +32,7 @@ logger_file_handler_yyyymmddhh = None
 def update_logger(config_data):
     global logger_file_handler, logger_file_handler_yyyymmddhh
     if not config_data['DEBUG_LOG']: return
-    INSTANCE_ID = config_data['INSTANCE_ID']
+    # INSTANCE_ID = config_data['INSTANCE_ID']
     yyyymmddhh = time.strftime('%Y%m%d%H', time.localtime(time.time()))
     yyyy = yyyymmddhh[:4]
     mm = yyyymmddhh[4:6]
@@ -40,7 +40,7 @@ def update_logger(config_data):
     hh = yyyymmddhh[8:10]
     if yyyymmddhh == logger_file_handler_yyyymmddhh:
         return
-    fn = os.path.join(const.APP_PATH,'log','instances',INSTANCE_ID, yyyy, mm, dd, f'{yyyy}{mm}{dd}-{hh}.log')
+    fn = os.path.join(instance_log_root_path(config_data), yyyy, mm, dd, f'{yyyy}{mm}{dd}-{hh}.log')
     # print(fn)
     os.makedirs(os.path.dirname(fn), exist_ok=True)
     new_logger_file_handler = logging.FileHandler(fn, encoding='utf-8')
@@ -52,3 +52,10 @@ def update_logger(config_data):
         logger_file_handler = None
     logger_file_handler = new_logger_file_handler
     logger_file_handler_yyyymmddhh = yyyymmddhh
+
+def instance_log_root_path(config_data):
+    if config_data['LOG_PATH'] is not None:
+        return config_data['LOG_PATH']
+    if config_data['WORK_PATH'] is not None:
+        return os.path.join(config_data['WORK_PATH'], 'log','instances',config_data['INSTANCE_ID'])
+    return os.path.join(const.APP_PATH, 'log','instances',config_data['INSTANCE_ID'])

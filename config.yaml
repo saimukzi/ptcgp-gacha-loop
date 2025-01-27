@@ -116,3 +116,10 @@ ENABLE_PLATINMODS: false
 # WC2501: 使用 Windows 的截圖功能 (2025年1月加入)
 # ADB: 使用 ADB 截圖 (初期方法)
 SCREENCAP_METHOD: "WC2501"
+
+# WORK_PATH: null
+# VAR_PATH: null
+# DEBUG_PATH: null
+# GACHA_RESULT_PATH: null
+# BINGO_PATH: null
+# LOG_PATH: null
