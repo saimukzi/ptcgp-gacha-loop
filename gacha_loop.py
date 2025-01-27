@@ -633,10 +633,10 @@ def main():
                 yyyymmddhhmmss = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
                 username = USERNAME
                 username = username.replace('{IDX}', '%03d' % (user_idx%1000))
-                username = username.replace('{IDX1}', '%01d' % (user_idx%10))
-                username = username.replace('{IDX2}', '%02d' % (user_idx%100))
-                username = username.replace('{IDX3}', '%03d' % (user_idx%1000))
-                username = username.replace('{IDX4}', '%04d' % (user_idx%10000))
+                f = 10
+                for d in range(1,6):
+                    username = username.replace('{IDX%d}'%d, ('%0'+str(d)+'d') % (user_idx%f))
+                    f *= 10
                 username = username.replace('{YYYY}', yyyymmddhhmmss[:4])
                 username = username.replace('{YY}', yyyymmddhhmmss[2:4])
                 username = username.replace('{MM}', yyyymmddhhmmss[4:6])
@@ -644,10 +644,15 @@ def main():
                 username = username.replace('{hh}', yyyymmddhhmmss[8:10])
                 username = username.replace('{mm}', yyyymmddhhmmss[10:12])
                 username = username.replace('{ss}', yyyymmddhhmmss[12:14])
+                t = str(int(time.time()))
+                for d,c in enumerate('OIZEASGTBP'):
+                    t = t.replace(str(d),c)
+                for d in range(1,len(t)+1):
+                    username = username.replace('{TG%d}'%d, t[-d:])
                 logger.debug(f'DCMMMGVEHA username={username}')
                 my_ldagent.input_text(username)
                 user_idx += 1
-                user_idx %= 10000
+                user_idx %= 100000000
                 try:
                     with open(USER_IDX_PATH, 'w') as f:
                         f.write(str(user_idx))

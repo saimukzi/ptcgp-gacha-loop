@@ -82,10 +82,15 @@ MIN_FREE_DISK_SPACE: 10737418240
 
 # USERNAME: 新帳號的名字
 #  {IDX}: 三位數流水號
-#  {IDX1}/{IDX2}/{IDX3}/{IDX4}: N位數流水號
+#  {IDX1}/{IDX2}/../{IDX5}: N位數流水號
 #  {YYYY}/{YY}: 4/2位數年份
 #  {MM}/{DD}: 2位數月份/日期
 #  {hh}/{mm}/{ss}: 2位數小時/分鐘/秒
+#  {TG1}/{TG2}/../{TG10}: Unix timestamp 尾 N 位數，0123456789變換為OIZEASGTBP
+# 名稱規則:
+# - 最長 14 個半形文字
+# - 不可以有六個數字，即使不連續也不行
+# - 不可以是 c40, c408, 就是不知道為甚麼
 USERNAME: "abc{IDX}"
 
 # 開包，手指橫滑打開卡包秒數
