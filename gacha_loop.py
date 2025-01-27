@@ -1180,7 +1180,9 @@ def main():
                         # force_copyemu_name = config_data['LD_EMU_NAME'] + '-' + str(t)
                         _username = username if username else 'UNKNOWN'
                         force_copyemu_name = config_data['COPY_EMU_NAME']
-                        force_copyemu_name = force_copyemu_name.replace('{INSTANCE_ID}', INSTANCE_ID)
+                        force_copyemu_name = force_copyemu_name.replace('{INSTANCE_ID}', instance_id)
+                        force_copyemu_name = force_copyemu_name.replace('{LD_EMU_NAME}', config_data['LD_EMU_NAME'])
+                        force_copyemu_name = force_copyemu_name.replace('{UNIX_TIMESTAMP}', t)
                         force_copyemu_name = force_copyemu_name.replace('{USERNAME}', _username)
                         force_copyemu_name = force_copyemu_name.replace('{YYYY}', yyyymmddhhmmss[:4])
                         force_copyemu_name = force_copyemu_name.replace('{YY}', yyyymmddhhmmss[2:4])
@@ -1189,6 +1191,7 @@ def main():
                         force_copyemu_name = force_copyemu_name.replace('{hh}', yyyymmddhhmmss[8:10])
                         force_copyemu_name = force_copyemu_name.replace('{mm}', yyyymmddhhmmss[10:12])
                         force_copyemu_name = force_copyemu_name.replace('{ss}', yyyymmddhhmmss[12:14])
+                        logger.debug(f'JQTVYTGHDT force_copyemu_name {force_copyemu_name}')
                         force_copyemu_resetapp = True
                         check_cycle_last_reset = time.time()
                         continue

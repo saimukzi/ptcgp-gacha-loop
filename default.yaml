@@ -28,6 +28,9 @@ INSTANCE_ID: "default"
 
 BACKUP_SEED_ID: "default"
 
+# old format
+COPY_EMU_NAME: "{LD_EMU_NAME}-{UNIX_TIMESTAMP}"
+
 SWIPE_PACK_SEC: 1.0
 
 SWIPE_UP_SEC: 0.05
