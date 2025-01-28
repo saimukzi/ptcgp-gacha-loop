@@ -111,3 +111,8 @@ def img_match(src_img, src_img_mask, state_data, debug=False):
     diff = diff.sum() / mask_sum / src_img.shape[2]
 
     return diff
+
+def OIZEASGTBP(txt):
+    for d,c in enumerate('OIZEASGTBP'):
+        txt = txt.replace(str(d),c)
+    return txt

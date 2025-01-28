@@ -649,10 +649,9 @@ def main():
                 username = username.replace('{mm}', yyyymmddhhmmss[10:12])
                 username = username.replace('{ss}', yyyymmddhhmmss[12:14])
                 t = str(int(time.time()))
-                for d,c in enumerate('OIZEASGTBP'):
-                    t = t.replace(str(d),c)
+                tg = common.OIZEASGTBP(t)
                 for d in range(1,len(t)+1):
-                    username = username.replace('{TG%d}'%d, t[-d:])
+                    username = username.replace('{TG%d}'%d, tg[-d:])
                 logger.debug(f'DCMMMGVEHA username={username}')
                 my_ldagent.input_text(username)
                 user_idx += 1
