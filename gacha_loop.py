@@ -1182,8 +1182,6 @@ def main():
                         sys.exit(0)
                     if handle_way == 'BACKUP':
                         logger.debug(f'PUOWNPVFXS BACKUP {t}')
-                        ret_fn = os.path.join(my_path.global_bingo(), f'{t}-{instance_id}.png')
-                        common.cv2_imwrite(ret_fn, img)
                         # force_copyemu_name = config_data['LD_EMU_NAME'] + '-' + str(t)
                         yyyymmddhhmmss = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
                         _username = username if username else 'UNKNOWN'
@@ -1200,6 +1198,8 @@ def main():
                         force_copyemu_name = force_copyemu_name.replace('{mm}', yyyymmddhhmmss[10:12])
                         force_copyemu_name = force_copyemu_name.replace('{ss}', yyyymmddhhmmss[12:14])
                         logger.debug(f'JQTVYTGHDT force_copyemu_name {force_copyemu_name}')
+                        ret_fn = os.path.join(my_path.global_bingo(), f'{force_copyemu_name}.png')
+                        common.cv2_imwrite(ret_fn, img)
                         force_copyemu_resetapp = True
                         check_cycle_last_reset = time.time()
                         continue
