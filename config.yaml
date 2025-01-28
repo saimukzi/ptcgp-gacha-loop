@@ -99,7 +99,7 @@ USERNAME: "abc{IDX}"
 #  {hh}/{mm}/{ss}: 2位數小時/分鐘/秒
 #  {USERNAME}: 使用者名稱
 #  {UNIX_TIMESTAMP}: Unix timestamp
-COPY_EMU_NAME: "{USERNAME}-{UNIX_TIMESTAMP}"
+COPY_EMU_NAME: "{USERNAME}-{YYYY}{MM}{DD}-{hh}{mm}{ss}"
 
 # 開包，手指橫滑打開卡包秒數
 SWIPE_PACK_SEC: 1.0
