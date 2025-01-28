@@ -468,9 +468,13 @@ def main():
                 continue
 
             if state.startswith('xxx-dialog-b'):
-                logger.debug(f'ZDMLKMCYPA reset state_mask_set/flag_set on state={state}')
-                state_mask_set = None
-                flag_set = set()
+                if 's05-name' in flag_set:
+                    flag_set.add('s05-name-err')
+                    flag_set.discard('s05-name-05-after')
+                else:
+                    logger.debug(f'ZDMLKMCYPA reset state_mask_set/flag_set on state={state}')
+                    state_mask_set = None
+                    flag_set = set()
 
             if state == 's00-cover':
                 check_disk_space(config_data)
@@ -718,10 +722,10 @@ def main():
                 set_wait_state({state,'s06-gacha1-00','xxx-dialog-bsc'})
                 continue
 
-            if 's05-name' in flag_set:
-                if state in ['xxx-dialog-bsc']:
-                    flag_set.add('s05-name-err')
-                    flag_set.discard('s05-name-05-after')
+            # if 's05-name' in flag_set:
+            #     if state in ['xxx-dialog-bsc']:
+            #         flag_set.add('s05-name-err')
+            #         flag_set.discard('s05-name-05-after')
 
             if 's05-name-05-after' in flag_set:
                 if state not in {'s06-gacha1-00','xxx-dialog-bsc'}:
